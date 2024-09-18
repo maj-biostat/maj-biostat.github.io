@@ -28,7 +28,7 @@ Simulate data from an oscillator:
 library(data.table)
 library(ggplot2)
 
-set.seed(12)
+set.seed(2)
 d_obs <- data.table(
   x = sort(runif(100, 0, 2*pi))
 )
@@ -62,7 +62,7 @@ ld = list(
   x = d_obs[, x], 
   y_mis = d_obs[, y_mis], 
   prior_only = F, 
-  r_nu = 10
+  r_nu =  3
   )
 
 
@@ -79,9 +79,11 @@ f1$summary(variables = c("nu"))
 
 Representation of output.
 
+
+
 ```{r, eval = T}
 #| label: fig-rw1
-#| fig-cap: 'True mean response (black), random walk (red) with 95% credible interval (ribbon)'
+#| fig-cap: 'True function (black line), data on which the model was fit (black points), data we did not see (black triangles), random walk (red line) with interpolated points (red) and uncertainty (red ribbon).'
 #| fig-cap-location: margin
 #| fig-height: 4
 
@@ -102,13 +104,18 @@ d_fig[, x := d_obs[ix, x]]
 ggplot(d_obs, aes(x = x, y = plogis(eta))) +
   geom_line(lty = 1) +
   geom_point(data = d_obs[y_mis == 0],
-             aes(x = x, y = y/n)) +
+             aes(x = x, y = y/n), size = 0.7) +
+  geom_point(data = d_obs[y_mis == 1],
+             aes(x = x, y = y/n), size = 0.7, pch = 2) +
   geom_ribbon(data = d_fig, 
               aes(x = x, ymin = q_025, ymax = q_975),
               inherit.aes = F, fill = 2, alpha = 0.3) +
   geom_line(data = d_fig, 
               aes(x = x, y = mu), col = 2) +
-
+  geom_point(data = d_fig, 
+              aes(x = x, y = mu), col = 2, size = 0.6) +
+  scale_x_continuous("x") +
+  scale_y_continuous("Probability") +
   theme_bw()
 
 ```
