@@ -1,0 +1,13 @@
+---
+title: "About"
+---
+
+Posts on various applied stats methods.
+
+## Repository status
+
+```{r}
+library(git2r)
+repo <- git2r::repository(path = ".")
+summary(repo)
+```

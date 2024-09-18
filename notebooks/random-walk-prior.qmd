@@ -1,0 +1,124 @@
+---
+title: "Random walk priors"
+author: "maj"
+---
+
+
+# First order random walk
+
+A first order random walk prior can be specified as:
+
+$$
+\begin{aligned}
+\eta_0 &\sim \text{Logistic}(0,1) \\
+\delta &\sim \text{Normal}(0, 1) \\
+\sigma_\delta &\sim \text{Exponential}(1) \\
+\eta_{[1]} &= \eta_0 \\
+\eta_{[k]} &= \sum_{i = 2}^{N}(\eta_{[k-1]}  + \delta  \sigma_\delta) \\
+\end{aligned}
+$$
+
+Simulate data from an oscillator:
+
+```{r}
+library(data.table)
+library(ggplot2)
+
+set.seed(12)
+d_obs <- data.table(
+  x = sort(runif(100, 0, 2*pi))
+)
+d_obs[, eta := sin(x)]
+d_obs[, n := rpois(.N, 200)]
+d_obs[, y := rbinom(.N, n, plogis(eta))]
+
+# we only observe 30% of the data generated
+d_obs[, y_mis := rbinom(.N, 1, 0.7)]
+
+```
+
+Naive implementation of a first order random walk in stan.
+
+```{r}
+#| class-output: stan
+#| echo: false
+
+cat(readLines("stan/random-walk-01.stan"), sep = "\n")
+```
+
+
+```{r, eval = T}
+m1 <- cmdstanr::cmdstan_model("stan/random-walk-01.stan")
+
+
+ld = list(
+  N = nrow(d_obs), 
+  y = d_obs[, y], 
+  n = d_obs[, n],
+  x = d_obs[, x], 
+  y_mis = d_obs[, y_mis], 
+  prior_only = F, 
+  r_nu = 10
+  )
+
+
+f1 <- m1$sample(
+  ld, iter_warmup = 1000, iter_sampling = 2000,
+  parallel_chains = 1, chains = 1, refresh = 0, show_exceptions = F,
+  max_treedepth = 10)
+
+f1$summary(variables = c("nu"))
+
+
+```
+
+
+Representation of output.
+
+```{r, eval = T}
+#| label: fig-rw1
+#| fig-cap: 'True mean response (black), random walk (red) with 95% credible interval (ribbon)'
+#| fig-cap-location: margin
+#| fig-height: 4
+
+
+d_out <- data.table(f1$draws(variables = "p", format = "matrix"))
+
+d_fig <- melt(d_out, measure.vars = names(d_out))
+d_fig <- d_fig[, .(
+  mu = mean(value), 
+  q_025 = quantile(value, prob = 0.025),
+  q_975 = quantile(value, prob = 0.975)
+), keyby = variable]
+d_fig[, ix := gsub("p[", "", variable, fixed = T)]
+d_fig[, ix := as.numeric(gsub("]", "", ix, fixed = T))]
+d_fig[, x := d_obs[ix, x]]
+
+
+ggplot(d_obs, aes(x = x, y = plogis(eta))) +
+  geom_line(lty = 1) +
+  geom_point(data = d_obs[y_mis == 0],
+             aes(x = x, y = y/n)) +
+  geom_ribbon(data = d_fig, 
+              aes(x = x, ymin = q_025, ymax = q_975),
+              inherit.aes = F, fill = 2, alpha = 0.3) +
+  geom_line(data = d_fig, 
+              aes(x = x, y = mu), col = 2) +
+
+  theme_bw()
+
+```
+
+
+# Second order random walk
+
+The second order random walk for regular locations has density
+
+$$
+\begin{aligned}
+\pi(x) \propto \exp\left( -\frac{1}{2} \sum_{i=2}^{n-1} (x_{i-1} - 2x_i + x_{i+1})^2  \right)
+\end{aligned}
+$$
+
+The main term can be interpreted as an estimate of the second order derivative of a continuous time function.
+But this is not generally suitable for irregular spacings of x.

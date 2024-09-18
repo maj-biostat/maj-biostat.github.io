@@ -1,6 +1,7 @@
 project:
   type: website
   output-dir: docs
+  execute-dir: project
 
 website:
   title: "maj-biostat.github.io"
@@ -9,6 +10,10 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
+  search: 
+    location: navbar
+    type: overlay
+  reader-mode: true
 
 format:
   html:

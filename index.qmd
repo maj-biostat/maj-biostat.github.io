@@ -1,11 +1,8 @@
 ---
 title: "maj-biostat.github.io"
+date: today
+date-modified: last-modified
 ---
 
-This is a Quarto website. Test
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
-
-```{r}
-1 + 1
-```
+[2024-09-18: Random walk prior in stan](notebooks/random-walk-prior.qmd)
