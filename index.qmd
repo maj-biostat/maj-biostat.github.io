@@ -1,8 +1,15 @@
 ---
 title: "maj-biostat.github.io"
+listing:
+  contents:
+    - "notebooks/*.qmd"
+    - "!notebooks/about.qmd"
+  type: table
+  max-items: 100
+  date-format: iso
+  fields: [image, date, title, reading-time]
 date: today
 date-modified: last-modified
+
 ---
 
-
-[2024-09-18: Random walk prior in stan](notebooks/random-walk-prior.qmd)

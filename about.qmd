@@ -1,5 +1,8 @@
 ---
 title: "About"
+author: "maj"
+date: today
+date-modified: last-modified
 ---
 
 Posts on various applied stats methods.

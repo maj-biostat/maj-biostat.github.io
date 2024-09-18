@@ -13,10 +13,14 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
+    tools:
+      - icon: github
+        menu:
+          - text: Source Code
+            href:  https://code.com
   search: 
     location: navbar
     type: overlay
-  reader-mode: true
 
 format:
   html:
