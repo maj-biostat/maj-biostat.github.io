@@ -10,7 +10,7 @@ csl: ../etc/biomed-central.csl
 
 # First order random walk
 
-A first order random walk prior can be specified as:
+For regular spacings, a first-order random walk prior can be specified as:
 
 $$
 \begin{aligned}
