@@ -3,6 +3,9 @@ project:
   output-dir: docs
   execute-dir: project
 
+highlight-style: github
+link-citations: true
+
 website:
   title: "maj-biostat.github.io"
   navbar:

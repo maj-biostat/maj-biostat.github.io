@@ -1,6 +1,10 @@
 ---
 title: "Random walk priors"
 author: "maj"
+date: today
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
 ---
 
 
@@ -121,4 +125,9 @@ $$
 $$
 
 The main term can be interpreted as an estimate of the second order derivative of a continuous time function.
-But this is not generally suitable for irregular spacings of x.
+But this is not generally suitable for irregular spacings of x [@lindgren2008].
+
+# References
+
+::: {#refs}
+:::
