@@ -18,13 +18,13 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "Posts on various applied stats methods."
+    "text": "Biostatistician working mostly in the area of Bayesian adaptive clinical trials using R and stan. The site contains various posts/reminders on topics that are relevant to my day-to-day work."
   },
   {
     "objectID": "about.html#repository-status",
     "href": "about.html#repository-status",
     "title": "About",
     "section": "Repository status",
-    "text": "Repository status\n\nlibrary(git2r)\nrepo &lt;- git2r::repository(path = \".\")\nsummary(repo)\n\nLocal:    main /Users/mark/Documents/project/website/src/maj-biostat.github.io\nRemote:   main @ origin (https://github.com/maj-biostat/maj-biostat.github.io)\nHead:     [ceabb23] 2024-09-18: minor edit\n\nBranches:         1\nTags:             0\nCommits:          8\nContributors:     2\nStashes:          0\nIgnored files:    2\nUntracked files:  5\nUnstaged files:  26\nStaged files:     0\n\nLatest commits:\n[ceabb23] 2024-09-18: minor edit\n[9e01149] 2024-09-18: add listing\n[19b90b8] 2024-09-18: wip\n[951c7f4] 2024-09-18: wip\n[de069ef] 2024-09-18: wip"
+    "text": "Repository status\n\nlibrary(git2r)\nrepo &lt;- git2r::repository(path = \".\")\nsummary(repo)\n\nLocal:    main /Users/mark/Documents/project/website/src/maj-biostat.github.io\nRemote:   main @ origin (https://github.com/maj-biostat/maj-biostat.github.io)\nHead:     [cfd1ac9] 2024-09-18: wip\n\nBranches:         1\nTags:             0\nCommits:          9\nContributors:     2\nStashes:          0\nIgnored files:    2\nUntracked files:  5\nUnstaged files:  27\nStaged files:     0\n\nLatest commits:\n[cfd1ac9] 2024-09-18: wip\n[ceabb23] 2024-09-18: minor edit\n[9e01149] 2024-09-18: add listing\n[19b90b8] 2024-09-18: wip\n[951c7f4] 2024-09-18: wip"
   }
 ]

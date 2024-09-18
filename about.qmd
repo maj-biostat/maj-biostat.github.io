@@ -5,7 +5,8 @@ date: today
 date-modified: last-modified
 ---
 
-Posts on various applied stats methods.
+Biostatistician working mostly in the area of Bayesian adaptive clinical trials using R and stan.
+The site contains various posts/reminders on topics that are relevant to my day-to-day work.
 
 ## Repository status
 
