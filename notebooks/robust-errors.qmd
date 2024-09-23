@@ -1,0 +1,174 @@
+---
+title: "Robust errors for estimating proportion"
+author: "maj"
+date: today
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+---
+
+
+The goto approach for estimating an uncertainty interval for a proportion is to use the normal approximation of the binomial distribution:
+
+$$
+\begin{aligned}
+\hat{p} \pm z_{(1 - \alpha)/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
+\end{aligned}
+$$
+
+where $n$ is the sample size, $\hat{p}$ is the observed sample proportion and $z$ is the standard normal quantile (and typically set to $\approx 2$).
+
+Say we had multiple estimates of the proportion, e.g. number of times we observe antimicrobial resistance out of the positive blood cultures we collected over the previous year.
+These estimates might come from differing hospitals and some might include repeat tests on individuals. 
+This means that we have multiple levels of variation to deal with.
+One approach is to use a robust  (sometimes call a Hubert White or sandwich) estimator for the standard errors.
+
+This can be achieved by fitting a standard glm and then making an adjustment to the standard errors using the tools provided in the R `sandwich` package.
+
+Simulate data for 500 patients from 10 sites, some patients having repeat measures.
+
+```{r}
+library(sandwich)
+library(data.table)
+library(ggplot2)
+library(marginaleffects)
+library(lme4)
+
+# N unique pts on which we have multiple obs, each pt nested within one of
+# the 10 sites
+N <- 500
+N_site <- 10
+p_site <- as.numeric(extraDistr::rdirichlet(1, rep(1, 10)))
+sites <- sample(1:N_site, N, replace = T, prob = p_site)
+d_pt <- data.table(
+  id_pt = 1:N,
+  site = sort(sites)
+)
+# number obs per pt - inflated here to make a point
+n_obs <- rpois(N, 2)
+d <- d_pt[unlist(lapply(1:N, function(x){
+  rep(x, n_obs[x])
+}))]
+d[, id_obs := 1:.N, keyby = id_pt]
+
+# about 60% (plogis(0.4)) resistant but with site and subject level
+# variability beyond the natural sampling variability due to varying 
+# number of subjects per site
+nu <- rnorm(N, 0, 0.5)
+# treat site as true fixed effect
+rho <- rnorm(N_site, 0, 0.7)
+d[, eta := 0.4 + rho[site] + nu[id_pt]]
+
+d[, y := rbinom(.N, 1, plogis(eta))]
+d[, site := factor(site)]
+d[, id_pt := factor(id_pt)]
+
+p_obs <- d[, sum(y)/.N]
+
+# d[, .(y = sum(y), n = .N)]
+# distribution of frequency of observations on a pt
+# hist(d[, .N, keyby = id_pt][, N])
+```
+
+The raw numbers of observations at each site are shown in @fig-n-by-site.
+
+```{r}
+#| label: fig-n-by-site
+#| fig-cap: 'Observations by site'
+#| fig-cap-location: margin
+#| fig-height: 4
+#| fig-width: 4
+
+d_fig <- copy(d)
+d_fig[y == 0, resp := "Susceptible"]
+d_fig[y == 1, resp := "Resistant"]
+ggplot(d_fig, aes(x = site, fill = resp)) +
+  geom_bar() +
+  scale_fill_discrete("") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+  
+```
+
+Overall, the observed proportion resistant to antibiotics is `r round(p_obs, 3)`.
+Various ways exist to estimate the uncertainty.
+
+The wald estimate for the uncertainty interval is calculated as:
+
+```{r}
+# wald (normal approximation)
+se_wald <- sqrt(p_obs * (1-p_obs) / nrow(d))
+p_0_lb <- p_obs - qnorm(0.975) * se_wald
+p_0_ub <- p_obs + qnorm(0.975) * se_wald
+```
+
+A GLM with only an intercept term will give the same prediction as the observed proportion and we can calculate the naive estimate of uncertainty as:
+
+```{r}
+# standard glm, not accounting for pt
+f1 <- glm(y ~ 1, family = binomial, data = d)
+
+predict(f1, type = "response")[1]
+
+# get naive standard errors
+s_f1 <- summary(f1)$coef
+
+# model uncertainty naive
+lo_1 <- qlogis(p_obs)
+# se from intercept term, i.e. we are just looking at the 'average' or
+# typical pt, over which we would expect heterogeneity
+p_1_lb <- plogis(lo_1 - qnorm(0.975) * s_f1[1, 2])
+p_1_ub <- plogis(lo_1 + qnorm(0.975) * s_f1[1, 2])
+```
+
+We can use the sandwich estimator to adjuste for heterogeneity as:
+
+```{r}
+# adjusted to account for heterogeneity due to site (we did not 
+# adjust for site in the model) and repeat measure for pt
+sw_se <- sqrt(vcovCL(f1, cluster = d[, .(site, id_pt)], type = "HC1")[1,1])
+p_2_lb <- plogis(lo_1 - qnorm(0.975) * sw_se)
+p_2_ub <- plogis(lo_1 + qnorm(0.975) * sw_se)
+```
+
+
+```{r}
+f2 <- glmer(y ~ (1|site) + (1|id_pt), data = d, family = binomial)
+```
+
+Note that in the `glmer` model (with a non-linear link function) the predictions are first made on the link scale, averaged, and then back transformed. 
+This means that the average prediction may not be exactly identical to the average of predictions.
+
+You'll note that the point estimate from the `glmer` deviates from the observed proportion.
+This can be for all of the following reasons:
+
++ The GLMM provides subject-specific estimates, conditional on the random effects.
++ GLMMs involve shrinkage, where estimates for groups with less data are pulled towards the overall mean.
++ Larger random effects can lead to bigger differences.
++ The GLMM estimate is a model-based estimate that accounts for the hierarchical structure of the data and provides a framework for inference.
+
+```{r}
+sprintf("%.4f (%.4f, %.4f)", p_obs, p_0_lb, p_0_ub)
+
+# Model based adjusting for site.
+sprintf("%.4f (%.4f, %.4f)", p_obs, p_1_lb, p_1_ub)
+
+# Adjusted - account for heterogeneity due to site (we did not 
+# adjust for site) and repeat measure for pt
+sprintf("%.4f (%.4f, %.4f)", p_obs, p_2_lb, p_2_ub)
+
+# Finally a random effects model
+avg_predictions(f2, re.form = NA, type = "link")
+avg_predictions(f2, re.form = NA, type = "response")
+
+## Step 1
+pred <- predictions(f2, type = "link", re.form = NA)$estimate
+## Step 2: average
+plogis(mean(pred))
+```
+
+
+# References
+
+<!-- ::: {#refs} -->
+<!-- ::: -->

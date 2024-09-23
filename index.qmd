@@ -9,6 +9,5 @@ listing:
   fields: [image, date, title, reading-time]
 date: today
 date-modified: last-modified
-
 ---
 
