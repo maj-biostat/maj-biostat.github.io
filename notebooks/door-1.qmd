@@ -8,6 +8,6 @@ csl: ../etc/biomed-central.csl
 ---
 
 There are two approaches to a DOOR analysis.
-The first uses pairwises comparisons with the approach being similar to that described in 
+The first uses pairwises comparisons with the approach being similar to that described in [Mann-Whitney-U](mann-whitney-u.qmd).
 
 
