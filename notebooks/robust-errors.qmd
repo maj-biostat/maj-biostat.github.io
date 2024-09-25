@@ -33,6 +33,8 @@ library(data.table)
 library(ggplot2)
 library(marginaleffects)
 library(lme4)
+# library(gee)
+library("geepack")
 
 # N unique pts on which we have multiple obs, each pt nested within one of
 # the 10 sites
@@ -146,6 +148,9 @@ This can be for all of the following reasons:
 + GLMMs involve shrinkage, where estimates for groups with less data are pulled towards the overall mean.
 + Larger random effects can lead to bigger differences.
 + The GLMM estimate is a model-based estimate that accounts for the hierarchical structure of the data and provides a framework for inference.
+
+
+In theory, a GEE could also be used but in R the GEE framework is not particularly well set up for multiple levels of clustering.
 
 ```{r}
 sprintf("%.4f (%.4f, %.4f)", p_obs, p_0_lb, p_0_ub)
