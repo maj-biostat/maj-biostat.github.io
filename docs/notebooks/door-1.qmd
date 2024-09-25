@@ -1,0 +1,13 @@
+---
+title: "Desirability of Outcome Ranking (DOOR)"
+author: "maj"
+date: today
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+---
+
+There are two approaches to a DOOR analysis.
+The first uses pairwises comparisons with the approach being similar to that described in 
+
+
