@@ -1,0 +1,112 @@
+---
+title: "User-defined Probability Distributions in Stan"
+author: "maj"
+date: today
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+---
+
+# Overview
+
+Some of this material can be found in the stan user guide and this is solely to serve as a reference in my own words.
+
+To implement, you just need to provide a function to increment the total log-probability appropriately.
+
+
+::: {.callout-note}
+When a function with the name ending in *_lpdf* or *_lpmf* is defined, the stan compiler automatically makes a *_lupdf* or *lupmf* version.
+Only normalised custom distributions are permitted.
+:::
+
+Assume that we want to create a custom distribution per:
+
+$$
+\begin{aligned}
+f(x) &= (1-a) x^{-a}
+\end{aligned}
+$$
+
+defined for $a \in [0,1]$ and $x \in [0,1]$ with cdf:
+
+$$
+\begin{aligned}
+F_x &= x^{a-1}
+\end{aligned}
+$$
+
+We can generate draws from this distribution using the inverse cdf method:
+
+```{r}
+library(data.table)
+library(ggplot2)
+library(cmdstanr)
+
+f_x <- function(x, a){
+  if(a < 0 | a > 1) stop("only defined for a in [0,1]")
+  if(any(x < 0 | x > 1)) stop("only defined for x in [0,1]")
+  (1-a) * x ^ -a
+}
+F_x <- function(x, a){
+  if(a < 0 | a > 1) stop("only defined for a in [0,1]")
+  if(any(x < 0 | x > 1)) stop("only defined for x in [0,1]")
+  x^(1-a)
+}
+F_inv_x <- function(u, a){
+  if(a < 0 | a > 1) stop("only defined for a in [0,1]")
+  if(any(u < 0 | u > 1)) stop("only defined for x in [0,1]")
+  u ^ (1 / (1-a))
+}
+
+a <- 0.35
+x <- seq(0, 1, len = 1000)
+d_fig <- data.table(x = x, y = f_x(x, a))
+d_sim <- data.table(
+  y_sim = F_inv_x(runif(1e6), a)
+)
+
+ggplot(d_fig, aes(x = x, y = y)) +
+  geom_histogram(data = d_sim, aes(x = y_sim, y = ..density..),
+               inherit.aes = F, fill = 1, alpha = 0.2,
+               binwidth = density(d_sim$y_sim)$bw) + 
+  geom_line() +
+  theme_bw()
+```
+
+```{r}
+#| class-output: stan
+#| echo: false
+
+cat(readLines("stan/custom-dist-1.stan"), sep = "\n")
+```
+
+```{r, eval = T}
+m1 <- cmdstanr::cmdstan_model("stan/custom-dist-1.stan")
+
+ld = list(
+  N = 1000, 
+  y = d_sim$y_sim[1:1000]
+)
+
+
+f1 <- m1$sample(
+  ld, iter_warmup = 1000, iter_sampling = 1000,
+  parallel_chains = 1, chains = 1, refresh = 0, show_exceptions = F,
+  max_treedepth = 10)
+
+f1$summary(variables = c("a"))
+
+post <- data.table(f1$draws(variables = "a", format = "matrix"))
+hist(post$a)
+```
+
+
+
+
+
+
+
+# References
+
+<!-- ::: {#refs} -->
+<!-- ::: -->
