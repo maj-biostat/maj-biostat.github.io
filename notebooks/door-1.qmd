@@ -7,7 +7,427 @@ bibliography: ../etc/refs.bib
 csl: ../etc/biomed-central.csl
 ---
 
-There are two approaches to a DOOR analysis.
-The first uses pairwises comparisons with the approach being similar to that described in [Mann-Whitney-U](mann-whitney-u.qmd).
+
+DOOR analyses are claimed to be more patient centric.
+Instead of constructing summary measures by group for each outcome, the DOOR approach combines endpoints at a patient level and then creates a summary measure of the composite view for each intervention.
+
+There are two approaches to a DOOR analysis, see @Chamberlain2023.
+The first approach uses the pairwise comparisons as introduced in [Mann-Whitney-U](mann-whitney-u.qmd).
+However, unlike the classical MWU, in the DOOR analysis, all the paired results are incorporated into the test statistic (this can also be done in MWU but wasn't discussed in the earlier post).
+The other method used for the DOOR is a partial credit approach, but I do not really understand what that is about.
+
+As a result, the DOOR analysis gives you an estimate of the probability that a randomly selected patient in the experimental group will have a better ranking than a randomly selected patient in the control group.
+The calculation used for the aggregated pairwise comparisons is:
+
+$$
+\begin{aligned}
+\text{Pr}(door) = \frac{ (n_{win} + 0.5 n_{tie}) } { n_e n_c }
+\end{aligned}
+$$
+
+where $n_{win}$ is the number of times the units in the experimental group had better outcomes compared to the control group, $n_{tie}$ is the number of ties, $n_e$ is the number of units in the experimental group and $n_c$ the number of units in the control group.
+
+If there is no difference between the two arms, the probability will be close to 50%.
+Uncertainty intervals can be obtained via bootstrap or other means.
+
+```{r}
+#| echo: FALSE
+#| label: tbl-sec-door
+#| tbl-pos: H
+#| tbl-cap: "Ranking criteria for desirability of outcome for PJI"
+
+library(data.table)
+library(nomnoml)
+library(ggplot2)
+suppressPackageStartupMessages(library(data.table))
+library(tibble)
+library(gt)
+suppressPackageStartupMessages(library(qs))
+library(git2r)
+library(BuyseTest)
+
+d_tbl <- tribble(
+  ~ rank, ~ alive, ~ jointfunc, ~ success , ~ qol, 
+  "1", "Yes", "Good", 
+    "Yes", "Tiebreaker based on EQ5D5L",
+  "2", "Yes", "Good", "No", "Tiebreaker based on EQ5D5L",
+  "3", "Yes", "Poor", "Yes", "Tiebreaker based on EQ5D5L",
+  "4", "Yes", "Poor", "No", "Tiebreaker based on EQ5D5L",
+  "5", "No", "-", "-", "-"
+  )
+
+gt_tbl <- gt(d_tbl) |>
+  cols_align(
+    align = "left",
+    columns = everything()
+  ) |>
+  cols_width(
+    qol ~ px(200)
+  ) |>
+  cols_label(
+    rank = "Rank",
+    alive = "Alive",
+    jointfunc = "Joint Function",
+    success = "Trt Success",
+    qol = "QoL"
+  ) |> 
+   tab_footnote(
+    footnote = md("*Good* joint function is based on thresholds related to patient reported success. A successful outcome at 12-months will be defined for knee PJI with an Oxford Knee Score (OKS) at 12 months of >36 or an improvement (delta) from baseline of >9 and for hip PJI as a Oxford Hip Score (OHS) of >38 or an improvement of >12 (35)."),
+    locations = cells_body(
+      columns = jointfunc,
+      rows = 3
+    )
+  )
+gt_tbl
+```
+
+Consider a DOOR schema and ranking specification for prosthetic joint infection as per @tbl-sec-door.
+Patients are assessed and assigned ranks based on how they align with the schema with the goal of differentiating the overall or global outcome of a patient state.
+
+Below 100 people per group are simulated based on some hypothetical pair of distributions for the schema.
+The door probability is computed along with its confidence interval (by bootstrapping):
+
+```{r}
+seed <- 1
+set.seed(seed)
+
+n_e <- 100
+n_c <- 100
+p_x_e <- c(0.5, 0.3, 0.1, 0.1, 0.0)
+p_x_c <- c(0.3, 0.2, 0.2, 0.2, 0.1)
+  
+x_e <- sample(1:5, n_e, replace = T, p_x_e)
+x_c <- sample(1:5, n_c, replace = T, p_x_c)  
+
+n_win <- 0
+n_tie <- 0
+for(i in 1:n_e){
+  for(j in 1:n_c){
+    if(x_e[i] < x_c[j]) n_win <- n_win + 1
+    if(x_e[i] == x_c[j]) n_tie <- n_tie + 1
+  }
+}
+
+# estimate for door
+pr_door <- (n_win + 0.5 * n_tie)/(n_e*n_c)
+
+boot_door <- function(ix_e, ix_c){
+  
+  x_e_new <- x_e[ix_e]
+  x_c_new <- x_c[ix_e]
+  
+  n_win <- 0
+  n_tie <- 0
+  for(i in 1:n_e){
+    for(j in 1:n_c){
+      if(x_e_new[i] < x_c_new[j]) n_win <- n_win + 1
+      if(x_e_new[i] == x_c_new[j]) n_tie <- n_tie + 1
+    }
+  }
+  
+  (n_win + 0.5 * n_tie)/(n_e*n_c)
+}
+
+n_boot <- 1000
+pr_door_rep <- numeric(n_boot)
+for(i in 1:n_boot){
+  ix_e <- sample(1:n_e, size = n_e, replace = T)
+  ix_c <- sample(1:n_c, size = n_c, replace = T)
+  pr_door_rep[i] <- boot_door(ix_e, ix_c)
+}
+# 
+door_ci <- quantile(pr_door_rep, probs = c(0.025, 0.975))
+
+# c(pr_door, door_ci)
+```
+
+From above, the estimate for the door probability is `r sprintf("%.2f", pr_door)` with a (bootstrapped) 95% CI of `r sprintf("%.2f, %.2f" , door_ci[1], door_ci[2])`.
+
+The process is simple but the procedure itself does not readily admit to complex modelling.
+However, Follmann proposed using a logistic regression for the probability of superiority for each determinate pair of patients $i$, $j$ and covariate vectors $\vec{z}_{ij} = \vec{z}_i - \vec{z}_j$ such that the parameters in the model correspond to the log-odds that a patient with $\vec{z}_i$ has an outcome that is better than a patient with $\vec{z}_j$ @Follmann2002.
+The approach is pretty convoluted and I am not so sure about its utility, but that might just be due to a lack of familirity.
+
+A shiny application for door analyses can be found at [DOOR](https://methods.bsc.gwu.edu/web/methods/door-professional-edition) although it does not give any detail on the implementation of the methods used.
+Under the probability-based analysis tab, the overall door and then a decomposition based on each of the dichotomous door components is shown.
+
+Scraping the source data of the site, you can at least recreate some of the statistics.
+For example, the door probabilities for the ARLG CRACKLE-I demo data as detailed in the door probability-based analysis tab, are replicated below for discharge from hospital:
+
+```{r}
+#| echo: FALSE
+#| label: tbl-colistin
+#| tbl-pos: H
+#| tbl-cap: "Colistin data from shiny application for DOOR"
+
+d <- fread("data/colistin.csv")
+names(d) <- c(
+  "id", "trt", "id_trt", "inv_wt", "door_txt", "door_num", 
+  "discharge_txt", "discharge_num", "renal_txt", "renal_num",
+  "death_txt", "death_num")
+gt(d[, .N, keyby = .(trt, door_num, door_txt)])
+```
 
 
+```{r}
+n_e <- d[trt == "CAZ-AVB", .N]
+n_c <- d[trt == "Colistin", .N]
+
+n_win <- 0
+n_tie <- 0
+for(i in 1:n_e){
+  for(j in 1:n_c){
+    if(d[trt == "CAZ-AVB"][i, discharge_num] < 
+       d[trt == "Colistin"][j, discharge_num]) n_win <- n_win + 1
+    if(d[trt == "CAZ-AVB"][i, discharge_num] == 
+       d[trt == "Colistin"][j, discharge_num]) n_tie <- n_tie + 1
+  }
+}
+pr_door_colistin <- (n_win + 0.5 * n_tie)/(n_e*n_c)
+
+
+boot_door <- function(ix_e, ix_c){
+  
+  x_e_new <- d[trt == "CAZ-AVB"][ix_e, discharge_num]
+  x_c_new <- d[trt == "Colistin"][ix_c, discharge_num]
+  
+  n_win <- 0
+  n_tie <- 0
+  for(i in 1:n_e){
+    for(j in 1:n_c){
+      if(x_e_new[i] < x_c_new[j]) n_win <- n_win + 1
+      if(x_e_new[i] == x_c_new[j]) n_tie <- n_tie + 1
+    }
+  }
+  
+  (n_win + 0.5 * n_tie)/(n_e*n_c)
+}
+
+n_boot <- 1e3
+pr_door_rep <- numeric(n_boot)
+for(i in 1:n_boot){
+  ix_e <- sample(1:n_e, size = n_e, replace = T)
+  ix_c <- sample(1:n_c, size = n_c, replace = T)
+  pr_door_rep[i] <- boot_door(ix_e, ix_c)
+}
+pr_door_colistin_ci <- quantile(pr_door_rep, probs = c(0.025, 0.975))
+```
+
+
+Giving `r sprintf("%.2f", pr_door_colistin)` and 95% CI of `r sprintf("%.2f, %.2f" , pr_door_colistin_ci[1], pr_door_colistin_ci[2])`.
+
+Similarly, for renal failure:
+
+```{r}
+d[, .N, keyby = .(trt, renal_num, renal_txt)]
+
+n_win <- 0
+n_tie <- 0
+for(i in 1:n_e){
+  for(j in 1:n_c){
+    if(d[trt == "CAZ-AVB"][i, renal_num] < 
+       d[trt == "Colistin"][j, renal_num]) n_win <- n_win + 1
+    if(d[trt == "CAZ-AVB"][i, renal_num] == 
+       d[trt == "Colistin"][j, renal_num]) n_tie <- n_tie + 1
+  }
+}
+pr_door_colistin <- (n_win + 0.5 * n_tie)/(n_e*n_c)
+```
+
+which gives `r sprintf("%.2f", pr_door_colistin)` aligning with the shiny app results.
+
+# Generalised pairwise comparisons
+
+GPC is a related method and frankly it seems a bit better thought out than DOOR, but I am not sure that it is as popular @Buyse2010.
+The outcomes of interest are first ranked in terms of importance and the pairwise comparison is run progressively on each outcome for all pairs.
+For the ties under each outcome, the procedure moves on to the outcome that has the next highest priority and so on.
+
+
+While GPC can be used to produce a range of summary measures, the original paper used net treatment benefit (NTB). 
+
+$$
+\begin{aligned}
+NTB = \frac{ (n_{win} - n_{loss}) } { n_{win} + n_{loss} + n_{tie} }
+\end{aligned}
+$$
+
+where $n_{win} + n_{loss} + n_{tie}$ is typically equal to the total number of pairwise comparisons.
+
+Unlike the DOOR approach, GPC allows for component level contribution and event level correlation. 
+In contrast to the Win Ratio, the net treatment benefit incorporates ties.
+
+As an example, consider a situation where we have outcomes, as above, for death, joint function, treatment success and QoL.
+The procedure first runs pairwise comparisons for all units on death and the number of wins, draws and losses recorded, demonstration below.
+
+```{r}
+set.seed(seed)
+N <- 100
+d <- data.table(
+  id = 1:(2*N),
+  # expt is 1
+  trt = rep(1:0, each = N)
+)
+d[, death := rbinom(.N, 1, prob = 0.4 - 0.2 * trt)]
+d[, jf := rbinom(.N, 1, prob = 0.6 - 0 * trt)]
+d[, success := rbinom(.N, 1, prob = 0.65 + 0.15 * trt)]
+d[, qol := rnorm(.N, 0 + 0.4 * trt, 1)]
+
+n_e <- d[trt == 1, .N]
+n_c <- d[trt == 0, .N]
+n_win <- numeric(4)
+n_loss <- numeric(4)
+n_tie <- numeric(4)
+
+# create a grid to compute all comparisons (quicker than looping)
+setkey(d, id)
+d_all <- CJ(i = 1:100, j = 100 + (1:100))
+# death
+d_all[, death_i := d[i, death]]
+d_all[, death_j := d[j, death]]
+# note sign direction differs dependent on context of comparison
+d_all[death_i < death_j, death_res := 1]
+d_all[death_i > death_j, death_res := -1]
+d_all[death_i == death_j, death_res := 0]
+# jf
+d_all[, jf_i := d[i, jf]]
+d_all[, jf_j := d[j, jf]]
+d_all[jf_i > jf_j, jf_res := 1]
+d_all[jf_i < jf_j, jf_res := -1]
+d_all[jf_i == jf_j, jf_res := 0]
+# success
+d_all[, success_i := d[i, success]]
+d_all[, success_j := d[j, success]]
+d_all[success_i > success_j,  success_res := 1]
+d_all[success_i < success_j,  success_res := -1]
+d_all[success_i == success_j, success_res := 0]
+# success
+d_all[, qol_i := d[i, qol]]
+d_all[, qol_j := d[j, qol]]
+d_all[qol_i >  qol_j, qol_res := 1]
+d_all[qol_i <  qol_j, qol_res := -1]
+d_all[qol_i == qol_j, qol_res := 0]
+head(d_all)
+
+```
+
+GPC calculations:
+
+```{r}
+# ntb on death is as follows:
+ntb <- numeric(4)
+names(ntb) <- c("death", "jf", "success", "qol")
+d_res <- d_all[, .N, keyby = death_res]
+d_res[, pct := N / nrow(d_all)]
+
+ntb["death"] <- (d_res[death_res == 1, N] - d_res[death_res == -1, N]) /  nrow(d_all)
+
+# for the ties on death, compute jf:
+d_res <- d_all[death_res == 0, .N, keyby = jf_res]
+d_res[, pct := N / nrow(d_all)]
+ntb["jf"] <- (d_res[jf_res == 1, N] - d_res[jf_res == -1, N]) /  nrow(d_all)
+
+# for comparisons on all pairs, don't condition:
+# d_res <- d_all[, .N, keyby = jf_res]
+# d_res[, pct := N / nrow(d_all)]
+# d_res
+# (d_res[jf_res == 1, N] - d_res[jf_res == -1, N]) /  nrow(d_all)
+
+# for the ties on death and jf, compute success:
+d_res <- d_all[death_res == 0 & jf_res == 0, .N, keyby = success_res]
+d_res[, pct := N / nrow(d_all)]
+ntb["success"] <- (d_res[success_res == 1, N] - d_res[success_res == -1, N]) / nrow(d_all)
+
+# for the ties on death, jf and success, compute qol:
+d_res <- d_all[death_res == 0 & jf_res == 0 & success_res == 0, .N, keyby = qol_res]
+d_res[, pct := N / nrow(d_all)]
+ntb["qol"] <- (d_res[qol_res == 1, N] - d_res[qol_res == -1, N]) / nrow(d_all)
+
+```
+
+Note that for all endpoints, we use the total number of pairwise comparisons as the denominator and not the number of ties left over from the previous outcome.
+
+The resulting net treatment benefit reported on each outcome:
+
+```{r}
+ntb
+```
+
+Taking the cumulative sum, progresses from the effect of each component through to an overall effect:
+
+```{r}
+cumsum(ntb)
+```
+
+The NTB is absolute measure ranging from -1 to 1 with zero being no effect.
+It estimates the probability that a random unit on the expt arm will do better than a random unit on the control arm **minus** the probability that a random unit on the control arm will do better than a random unit on the expt arm.
+For example, if $Pr(E>C) = 0.7$, then $Pr(E<C) = 0.3$ and $NTB = 0.7 - 0.3 = 0.4$.
+
+You can compute the overall effect directly with the following:
+
+```{r}
+n_win <- d_all[death_res == 1, .N] + d_all[death_res == 0 & jf_res == 1, .N] +
+   + d_all[death_res == 0 & jf_res == 0 & success_res == 1, .N] +
+   + d_all[death_res == 0 & jf_res == 0 & success_res == 0 & qol_res == 1, .N]
+
+n_loss <- d_all[death_res == -1, .N] + d_all[death_res == 0 & jf_res == -1, .N] +
+   + d_all[death_res == 0 & jf_res == 0 & success_res == -1, .N] +
+   + d_all[death_res == 0 & jf_res == 0 & success_res == 0 & qol_res == -1, .N]
+
+# n_ties <- d_all[death_res == 0 & jf_res == 0 & success_res == 0, .N] 
+
+(n_win - n_loss) / nrow(d_all)
+
+```
+
+The NTB is known to be the inverse of the number needed to treat, i.e. 1/ number of pt you need to trt to avoid one bad outcome.
+For large samples, inference can again be conducted via bootstrap.
+R provides the `BuyseTest` package that allows for stratification (beyond the implicit treatment level stratification).
+
+```{r}
+
+ff1 <- trt ~ bin(death, operator = "<0") + bin(jf) + bin(success) + cont(qol)
+f1 <- BuyseTest(ff1, data = d, trace = 0)
+s_f1 <- summary(f1)
+```
+
+In the results, the totals, wins, loss and ties are presented as percentages rather than counts.
+For example, the total column effectively represents the proportion of pairs that carry over from one outcome to the next; for death there were 5660 pairs that carried over to joint function there were 3127 pairs that carried over to the treatment success outcome and so on.
+These can be visualised as:
+
+```{r}
+#| label: fig-gpc-res
+#| fig-cap: 'Contribution by each endpoint'
+#| fig-cap-location: margin
+#| fig-height: 5
+#| fig-width: 5
+
+d_fig <- data.table(s_f1)
+d_fig <- d_fig[, 1:5]
+names(d_fig) <- c(
+  "endpoint", "total", "wins", "losses", "tie"
+)
+d_fig <- melt(d_fig, id.vars = "endpoint")
+d_fig <- d_fig[variable != "total"]
+
+ggplot(d_fig, aes(x = endpoint, y = value, fill = variable)) +
+  geom_bar(stat='identity') +
+  scale_fill_discrete("") +
+  scale_y_continuous("Percentage") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+Inference can be conducted on all pairs for all outcomes by indicating that the hierarchical perspective is not required:
+
+```{r}
+
+f2 <- BuyseTest(ff1, hierarchical = FALSE, data = d, trace = 0)
+summary(f2)
+
+```
+
+
+
+# References
+
+::: {#refs}
+:::

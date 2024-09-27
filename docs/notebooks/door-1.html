@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="maj">
-<meta name="dcterms.date" content="2024-09-25">
+<meta name="dcterms.date" content="2024-09-27">
 
 <title>Desirability of Outcome Ranking (DOOR) – maj-biostat.github.io</title>
 <style>
@@ -22,7 +22,60 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -68,6 +121,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -118,11 +200,18 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#generalised-pairwise-comparisons" id="toc-generalised-pairwise-comparisons" class="nav-link active" data-scroll-target="#generalised-pairwise-comparisons">Generalised pairwise comparisons</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -143,14 +232,14 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 25, 2024</p>
+      <p class="date">September 27, 2024</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">September 25, 2024</p>
+      <p class="date-modified">September 27, 2024</p>
     </div>
   </div>
     
@@ -161,9 +250,1438 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>There are two approaches to a DOOR analysis. The first uses pairwises comparisons with the approach being similar to that described in <a href="../notebooks/mann-whitney-u.html">Mann-Whitney-U</a>.</p>
+<p>DOOR analyses are claimed to be more patient centric. Instead of constructing summary measures by group for each outcome, the DOOR approach combines endpoints at a patient level and then creates a summary measure of the composite view for each intervention.</p>
+<p>There are two approaches to a DOOR analysis, see <span class="citation" data-cites="Chamberlain2023">[<a href="#ref-Chamberlain2023" role="doc-biblioref">1</a>]</span>. The first approach uses the pairwise comparisons as introduced in <a href="../notebooks/mann-whitney-u.html">Mann-Whitney-U</a>. However, unlike the classical MWU, in the DOOR analysis, all the paired results are incorporated into the test statistic (this can also be done in MWU but wasn’t discussed in the earlier post). The other method used for the DOOR is a partial credit approach, but I do not really understand what that is about.</p>
+<p>As a result, the DOOR analysis gives you an estimate of the probability that a randomly selected patient in the experimental group will have a better ranking than a randomly selected patient in the control group. The calculation used for the aggregated pairwise comparisons is:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{Pr}(door) = \frac{ (n_{win} + 0.5 n_{tie}) } { n_e n_c }
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(n_{win}\)</span> is the number of times the units in the experimental group had better outcomes compared to the control group, <span class="math inline">\(n_{tie}\)</span> is the number of ties, <span class="math inline">\(n_e\)</span> is the number of units in the experimental group and <span class="math inline">\(n_c\)</span> the number of units in the control group.</p>
+<p>If there is no difference between the two arms, the probability will be close to 50%. Uncertainty intervals can be obtained via bootstrap or other means.</p>
+<div class="cell" data-tbl-pos="H">
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Rcpp</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>BuyseTest version 3.0.4</code></pre>
+</div>
+<div id="tbl-sec-door" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-pos="H">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sec-door-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Ranking criteria for desirability of outcome for PJI
+</figcaption>
+<div aria-describedby="tbl-sec-door-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="nlmiwszzyr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nlmiwszzyr table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#nlmiwszzyr thead, #nlmiwszzyr tbody, #nlmiwszzyr tfoot, #nlmiwszzyr tr, #nlmiwszzyr td, #nlmiwszzyr th {
+  border-style: none;
+}
+
+#nlmiwszzyr p {
+  margin: 0;
+  padding: 0;
+}
+
+#nlmiwszzyr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#nlmiwszzyr .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#nlmiwszzyr .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#nlmiwszzyr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#nlmiwszzyr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#nlmiwszzyr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#nlmiwszzyr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#nlmiwszzyr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#nlmiwszzyr .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#nlmiwszzyr .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#nlmiwszzyr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#nlmiwszzyr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#nlmiwszzyr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#nlmiwszzyr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#nlmiwszzyr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nlmiwszzyr .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#nlmiwszzyr .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#nlmiwszzyr .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#nlmiwszzyr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nlmiwszzyr .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#nlmiwszzyr .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nlmiwszzyr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#nlmiwszzyr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nlmiwszzyr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nlmiwszzyr .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nlmiwszzyr .gt_left {
+  text-align: left;
+}
+
+#nlmiwszzyr .gt_center {
+  text-align: center;
+}
+
+#nlmiwszzyr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#nlmiwszzyr .gt_font_normal {
+  font-weight: normal;
+}
+
+#nlmiwszzyr .gt_font_bold {
+  font-weight: bold;
+}
+
+#nlmiwszzyr .gt_font_italic {
+  font-style: italic;
+}
+
+#nlmiwszzyr .gt_super {
+  font-size: 65%;
+}
+
+#nlmiwszzyr .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#nlmiwszzyr .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#nlmiwszzyr .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#nlmiwszzyr .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#nlmiwszzyr .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#nlmiwszzyr .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#nlmiwszzyr .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#nlmiwszzyr .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#nlmiwszzyr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="Rank" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Rank</th>
+<th id="Alive" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Alive</th>
+<th id="Joint Function" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Joint Function</th>
+<th id="Trt Success" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Trt Success</th>
+<th id="QoL" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">QoL</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="rank">1</td>
+<td class="gt_row gt_left" headers="alive">Yes</td>
+<td class="gt_row gt_left" headers="jointfunc">Good</td>
+<td class="gt_row gt_left" headers="success">Yes</td>
+<td class="gt_row gt_left" headers="qol">Tiebreaker based on EQ5D5L</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="rank">2</td>
+<td class="gt_row gt_left" headers="alive">Yes</td>
+<td class="gt_row gt_left" headers="jointfunc">Good</td>
+<td class="gt_row gt_left" headers="success">No</td>
+<td class="gt_row gt_left" headers="qol">Tiebreaker based on EQ5D5L</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="rank">3</td>
+<td class="gt_row gt_left" headers="alive">Yes</td>
+<td class="gt_row gt_left" headers="jointfunc">Poor<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;"><sup>1</sup></span></td>
+<td class="gt_row gt_left" headers="success">Yes</td>
+<td class="gt_row gt_left" headers="qol">Tiebreaker based on EQ5D5L</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="rank">4</td>
+<td class="gt_row gt_left" headers="alive">Yes</td>
+<td class="gt_row gt_left" headers="jointfunc">Poor</td>
+<td class="gt_row gt_left" headers="success">No</td>
+<td class="gt_row gt_left" headers="qol">Tiebreaker based on EQ5D5L</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="rank">5</td>
+<td class="gt_row gt_left" headers="alive">No</td>
+<td class="gt_row gt_left" headers="jointfunc">-</td>
+<td class="gt_row gt_left" headers="success">-</td>
+<td class="gt_row gt_left" headers="qol">-</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="even">
+<td colspan="5" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;"><sup>1</sup></span>
+<p><em>Good</em> joint function is based on thresholds related to patient reported success. A successful outcome at 12-months will be defined for knee PJI with an Oxford Knee Score (OKS) at 12 months of &gt;36 or an improvement (delta) from baseline of &gt;9 and for hip PJI as a Oxford Hip Score (OHS) of &gt;38 or an improvement of &gt;12 (35).</p></td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Consider a DOOR schema and ranking specification for prosthetic joint infection as per <a href="#tbl-sec-door" class="quarto-xref">Table&nbsp;1</a>. Patients are assessed and assigned ranks based on how they align with the schema with the goal of differentiating the overall or global outcome of a patient state.</p>
+<p>Below 100 people per group are simulated based on some hypothetical pair of distributions for the schema. The door probability is computed along with its confidence interval (by bootstrapping):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>seed <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(seed)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>n_e <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>n_c <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>p_x_e <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.0</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>p_x_c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.1</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>x_e <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, n_e, <span class="at">replace =</span> T, p_x_e)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>x_c <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, n_c, <span class="at">replace =</span> T, p_x_c)  </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>n_win <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>n_tie <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_e){</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_c){</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(x_e[i] <span class="sc">&lt;</span> x_c[j]) n_win <span class="ot">&lt;-</span> n_win <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(x_e[i] <span class="sc">==</span> x_c[j]) n_tie <span class="ot">&lt;-</span> n_tie <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate for door</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>pr_door <span class="ot">&lt;-</span> (n_win <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> n_tie)<span class="sc">/</span>(n_e<span class="sc">*</span>n_c)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>boot_door <span class="ot">&lt;-</span> <span class="cf">function</span>(ix_e, ix_c){</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  x_e_new <span class="ot">&lt;-</span> x_e[ix_e]</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  x_c_new <span class="ot">&lt;-</span> x_c[ix_e]</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  n_win <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  n_tie <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_e){</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_c){</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(x_e_new[i] <span class="sc">&lt;</span> x_c_new[j]) n_win <span class="ot">&lt;-</span> n_win <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(x_e_new[i] <span class="sc">==</span> x_c_new[j]) n_tie <span class="ot">&lt;-</span> n_tie <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  (n_win <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> n_tie)<span class="sc">/</span>(n_e<span class="sc">*</span>n_c)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>n_boot <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>pr_door_rep <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_boot)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_boot){</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>  ix_e <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_e, <span class="at">size =</span> n_e, <span class="at">replace =</span> T)</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>  ix_c <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_c, <span class="at">size =</span> n_c, <span class="at">replace =</span> T)</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>  pr_door_rep[i] <span class="ot">&lt;-</span> <span class="fu">boot_door</span>(ix_e, ix_c)</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>door_ci <span class="ot">&lt;-</span> <span class="fu">quantile</span>(pr_door_rep, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="co"># c(pr_door, door_ci)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>From above, the estimate for the door probability is 0.70 with a (bootstrapped) 95% CI of 0.63, 0.77.</p>
+<p>The process is simple but the procedure itself does not readily admit to complex modelling. However, Follmann proposed using a logistic regression for the probability of superiority for each determinate pair of patients <span class="math inline">\(i\)</span>, <span class="math inline">\(j\)</span> and covariate vectors <span class="math inline">\(\vec{z}_{ij} = \vec{z}_i - \vec{z}_j\)</span> such that the parameters in the model correspond to the log-odds that a patient with <span class="math inline">\(\vec{z}_i\)</span> has an outcome that is better than a patient with <span class="math inline">\(\vec{z}_j\)</span> <span class="citation" data-cites="Follmann2002">[<a href="#ref-Follmann2002" role="doc-biblioref">2</a>]</span>. The approach is pretty convoluted and I am not so sure about its utility, but that might just be due to a lack of familirity.</p>
+<p>A shiny application for door analyses can be found at <a href="https://methods.bsc.gwu.edu/web/methods/door-professional-edition">DOOR</a> although it does not give any detail on the implementation of the methods used. Under the probability-based analysis tab, the overall door and then a decomposition based on each of the dichotomous door components is shown.</p>
+<p>Scraping the source data of the site, you can at least recreate some of the statistics. For example, the door probabilities for the ARLG CRACKLE-I demo data as detailed in the door probability-based analysis tab, are replicated below for discharge from hospital:</p>
+<div class="cell" data-tbl-pos="H">
+<div id="tbl-colistin" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-pos="H">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-colistin-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Colistin data from shiny application for DOOR
+</figcaption>
+<div aria-describedby="tbl-colistin-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="luekuvddqv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#luekuvddqv table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#luekuvddqv thead, #luekuvddqv tbody, #luekuvddqv tfoot, #luekuvddqv tr, #luekuvddqv td, #luekuvddqv th {
+  border-style: none;
+}
+
+#luekuvddqv p {
+  margin: 0;
+  padding: 0;
+}
+
+#luekuvddqv .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#luekuvddqv .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#luekuvddqv .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#luekuvddqv .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#luekuvddqv .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#luekuvddqv .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#luekuvddqv .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#luekuvddqv .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#luekuvddqv .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#luekuvddqv .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#luekuvddqv .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#luekuvddqv .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#luekuvddqv .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#luekuvddqv .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#luekuvddqv .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luekuvddqv .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#luekuvddqv .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#luekuvddqv .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#luekuvddqv .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luekuvddqv .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#luekuvddqv .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luekuvddqv .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#luekuvddqv .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luekuvddqv .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#luekuvddqv .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luekuvddqv .gt_left {
+  text-align: left;
+}
+
+#luekuvddqv .gt_center {
+  text-align: center;
+}
+
+#luekuvddqv .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#luekuvddqv .gt_font_normal {
+  font-weight: normal;
+}
+
+#luekuvddqv .gt_font_bold {
+  font-weight: bold;
+}
+
+#luekuvddqv .gt_font_italic {
+  font-style: italic;
+}
+
+#luekuvddqv .gt_super {
+  font-size: 65%;
+}
+
+#luekuvddqv .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#luekuvddqv .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#luekuvddqv .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#luekuvddqv .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#luekuvddqv .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#luekuvddqv .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#luekuvddqv .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#luekuvddqv .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#luekuvddqv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="trt" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">trt</th>
+<th id="door_num" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">door_num</th>
+<th id="door_txt" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">door_txt</th>
+<th id="N" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">N</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="trt">CAZ-AVB</td>
+<td class="gt_row gt_right" headers="door_num">1</td>
+<td class="gt_row gt_left" headers="door_txt">Discharged home</td>
+<td class="gt_row gt_right" headers="N">6</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="trt">CAZ-AVB</td>
+<td class="gt_row gt_right" headers="door_num">2</td>
+<td class="gt_row gt_left" headers="door_txt">Alive in hosp, discharged not to home, no renal failure</td>
+<td class="gt_row gt_right" headers="N">17</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="trt">CAZ-AVB</td>
+<td class="gt_row gt_right" headers="door_num">3</td>
+<td class="gt_row gt_left" headers="door_txt">Alive in hosp, discharged not to home, renal failure</td>
+<td class="gt_row gt_right" headers="N">1</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="trt">CAZ-AVB</td>
+<td class="gt_row gt_right" headers="door_num">4</td>
+<td class="gt_row gt_left" headers="door_txt">Hospital death</td>
+<td class="gt_row gt_right" headers="N">2</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="trt">Colistin</td>
+<td class="gt_row gt_right" headers="door_num">1</td>
+<td class="gt_row gt_left" headers="door_txt">Discharged home</td>
+<td class="gt_row gt_right" headers="N">4</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="trt">Colistin</td>
+<td class="gt_row gt_right" headers="door_num">2</td>
+<td class="gt_row gt_left" headers="door_txt">Alive in hosp, discharged not to home, no renal failure</td>
+<td class="gt_row gt_right" headers="N">25</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="trt">Colistin</td>
+<td class="gt_row gt_right" headers="door_num">3</td>
+<td class="gt_row gt_left" headers="door_txt">Alive in hosp, discharged not to home, renal failure</td>
+<td class="gt_row gt_right" headers="N">5</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="trt">Colistin</td>
+<td class="gt_row gt_right" headers="door_num">4</td>
+<td class="gt_row gt_left" headers="door_txt">Hospital death</td>
+<td class="gt_row gt_right" headers="N">12</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>n_e <span class="ot">&lt;-</span> d[trt <span class="sc">==</span> <span class="st">"CAZ-AVB"</span>, .N]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>n_c <span class="ot">&lt;-</span> d[trt <span class="sc">==</span> <span class="st">"Colistin"</span>, .N]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>n_win <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>n_tie <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_e){</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_c){</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(d[trt <span class="sc">==</span> <span class="st">"CAZ-AVB"</span>][i, discharge_num] <span class="sc">&lt;</span> </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       d[trt <span class="sc">==</span> <span class="st">"Colistin"</span>][j, discharge_num]) n_win <span class="ot">&lt;-</span> n_win <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(d[trt <span class="sc">==</span> <span class="st">"CAZ-AVB"</span>][i, discharge_num] <span class="sc">==</span> </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>       d[trt <span class="sc">==</span> <span class="st">"Colistin"</span>][j, discharge_num]) n_tie <span class="ot">&lt;-</span> n_tie <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>pr_door_colistin <span class="ot">&lt;-</span> (n_win <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> n_tie)<span class="sc">/</span>(n_e<span class="sc">*</span>n_c)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>boot_door <span class="ot">&lt;-</span> <span class="cf">function</span>(ix_e, ix_c){</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  x_e_new <span class="ot">&lt;-</span> d[trt <span class="sc">==</span> <span class="st">"CAZ-AVB"</span>][ix_e, discharge_num]</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  x_c_new <span class="ot">&lt;-</span> d[trt <span class="sc">==</span> <span class="st">"Colistin"</span>][ix_c, discharge_num]</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  n_win <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  n_tie <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_e){</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_c){</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(x_e_new[i] <span class="sc">&lt;</span> x_c_new[j]) n_win <span class="ot">&lt;-</span> n_win <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(x_e_new[i] <span class="sc">==</span> x_c_new[j]) n_tie <span class="ot">&lt;-</span> n_tie <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  (n_win <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> n_tie)<span class="sc">/</span>(n_e<span class="sc">*</span>n_c)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>n_boot <span class="ot">&lt;-</span> <span class="fl">1e3</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>pr_door_rep <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_boot)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_boot){</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  ix_e <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_e, <span class="at">size =</span> n_e, <span class="at">replace =</span> T)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>  ix_c <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_c, <span class="at">size =</span> n_c, <span class="at">replace =</span> T)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>  pr_door_rep[i] <span class="ot">&lt;-</span> <span class="fu">boot_door</span>(ix_e, ix_c)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>pr_door_colistin_ci <span class="ot">&lt;-</span> <span class="fu">quantile</span>(pr_door_rep, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Giving 0.57 and 95% CI of 0.49, 0.66.</p>
+<p>Similarly, for renal failure:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>d[, .N, keyby <span class="ot">=</span> .(trt, renal_num, renal_txt)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Key: &lt;trt, renal_num, renal_txt&gt;
+        trt renal_num renal_txt     N
+     &lt;char&gt;     &lt;int&gt;    &lt;char&gt; &lt;int&gt;
+1:  CAZ-AVB         0        No    25
+2:  CAZ-AVB         1       Yes     1
+3: Colistin         0        No    39
+4: Colistin         1       Yes     7</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>n_win <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n_tie <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_e){</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_c){</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(d[trt <span class="sc">==</span> <span class="st">"CAZ-AVB"</span>][i, renal_num] <span class="sc">&lt;</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>       d[trt <span class="sc">==</span> <span class="st">"Colistin"</span>][j, renal_num]) n_win <span class="ot">&lt;-</span> n_win <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(d[trt <span class="sc">==</span> <span class="st">"CAZ-AVB"</span>][i, renal_num] <span class="sc">==</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>       d[trt <span class="sc">==</span> <span class="st">"Colistin"</span>][j, renal_num]) n_tie <span class="ot">&lt;-</span> n_tie <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>pr_door_colistin <span class="ot">&lt;-</span> (n_win <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> n_tie)<span class="sc">/</span>(n_e<span class="sc">*</span>n_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>which gives 0.56 aligning with the shiny app results.</p>
+<section id="generalised-pairwise-comparisons" class="level1 page-columns page-full">
+<h1>Generalised pairwise comparisons</h1>
+<p>GPC is a related method and frankly it seems a bit better thought out than DOOR, but I am not sure that it is as popular <span class="citation" data-cites="Buyse2010">[<a href="#ref-Buyse2010" role="doc-biblioref">3</a>]</span>. The outcomes of interest are first ranked in terms of importance and the pairwise comparison is run progressively on each outcome for all pairs. For the ties under each outcome, the procedure moves on to the outcome that has the next highest priority and so on.</p>
+<p>While GPC can be used to produce a range of summary measures, the original paper used net treatment benefit (NTB).</p>
+<p><span class="math display">\[
+\begin{aligned}
+NTB = \frac{ (n_{win} - n_{loss}) } { n_{win} + n_{loss} + n_{tie} }
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(n_{win} + n_{loss} + n_{tie}\)</span> is typically equal to the total number of pairwise comparisons.</p>
+<p>Unlike the DOOR approach, GPC allows for component level contribution and event level correlation. In contrast to the Win Ratio, the net treatment benefit incorporates ties.</p>
+<p>As an example, consider a situation where we have outcomes, as above, for death, joint function, treatment success and QoL. The procedure first runs pairwise comparisons for all units on death and the number of wins, draws and losses recorded, demonstration below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(seed)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">data.table</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span>(<span class="dv">2</span><span class="sc">*</span>N),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># expt is 1</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">trt =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">0</span>, <span class="at">each =</span> N)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>d[, death <span class="sc">:</span><span class="er">=</span> <span class="fu">rbinom</span>(.N, <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.4</span> <span class="sc">-</span> <span class="fl">0.2</span> <span class="sc">*</span> trt)]</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>d[, jf <span class="sc">:</span><span class="er">=</span> <span class="fu">rbinom</span>(.N, <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.6</span> <span class="sc">-</span> <span class="dv">0</span> <span class="sc">*</span> trt)]</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>d[, success <span class="sc">:</span><span class="er">=</span> <span class="fu">rbinom</span>(.N, <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.65</span> <span class="sc">+</span> <span class="fl">0.15</span> <span class="sc">*</span> trt)]</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>d[, qol <span class="sc">:</span><span class="er">=</span> <span class="fu">rnorm</span>(.N, <span class="dv">0</span> <span class="sc">+</span> <span class="fl">0.4</span> <span class="sc">*</span> trt, <span class="dv">1</span>)]</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>n_e <span class="ot">&lt;-</span> d[trt <span class="sc">==</span> <span class="dv">1</span>, .N]</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>n_c <span class="ot">&lt;-</span> d[trt <span class="sc">==</span> <span class="dv">0</span>, .N]</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>n_win <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">4</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>n_loss <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">4</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>n_tie <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">4</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># create a grid to compute all comparisons (quicker than looping)</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="fu">setkey</span>(d, id)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>d_all <span class="ot">&lt;-</span> <span class="fu">CJ</span>(<span class="at">i =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="at">j =</span> <span class="dv">100</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>))</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co"># death</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>d_all[, death_i <span class="sc">:</span><span class="er">=</span> d[i, death]]</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>d_all[, death_j <span class="sc">:</span><span class="er">=</span> d[j, death]]</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co"># note sign direction differs dependent on context of comparison</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>d_all[death_i <span class="sc">&lt;</span> death_j, death_res <span class="sc">:</span><span class="er">=</span> <span class="dv">1</span>]</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>d_all[death_i <span class="sc">&gt;</span> death_j, death_res <span class="sc">:</span><span class="er">=</span> <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>d_all[death_i <span class="sc">==</span> death_j, death_res <span class="sc">:</span><span class="er">=</span> <span class="dv">0</span>]</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co"># jf</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>d_all[, jf_i <span class="sc">:</span><span class="er">=</span> d[i, jf]]</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>d_all[, jf_j <span class="sc">:</span><span class="er">=</span> d[j, jf]]</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>d_all[jf_i <span class="sc">&gt;</span> jf_j, jf_res <span class="sc">:</span><span class="er">=</span> <span class="dv">1</span>]</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>d_all[jf_i <span class="sc">&lt;</span> jf_j, jf_res <span class="sc">:</span><span class="er">=</span> <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>d_all[jf_i <span class="sc">==</span> jf_j, jf_res <span class="sc">:</span><span class="er">=</span> <span class="dv">0</span>]</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co"># success</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>d_all[, success_i <span class="sc">:</span><span class="er">=</span> d[i, success]]</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>d_all[, success_j <span class="sc">:</span><span class="er">=</span> d[j, success]]</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>d_all[success_i <span class="sc">&gt;</span> success_j,  success_res <span class="sc">:</span><span class="er">=</span> <span class="dv">1</span>]</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>d_all[success_i <span class="sc">&lt;</span> success_j,  success_res <span class="sc">:</span><span class="er">=</span> <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>d_all[success_i <span class="sc">==</span> success_j, success_res <span class="sc">:</span><span class="er">=</span> <span class="dv">0</span>]</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co"># success</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>d_all[, qol_i <span class="sc">:</span><span class="er">=</span> d[i, qol]]</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>d_all[, qol_j <span class="sc">:</span><span class="er">=</span> d[j, qol]]</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>d_all[qol_i <span class="sc">&gt;</span>  qol_j, qol_res <span class="sc">:</span><span class="er">=</span> <span class="dv">1</span>]</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>d_all[qol_i <span class="sc">&lt;</span>  qol_j, qol_res <span class="sc">:</span><span class="er">=</span> <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>d_all[qol_i <span class="sc">==</span> qol_j, qol_res <span class="sc">:</span><span class="er">=</span> <span class="dv">0</span>]</span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(d_all)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Key: &lt;i, j&gt;
+       i     j death_i death_j death_res  jf_i  jf_j jf_res success_i success_j
+   &lt;int&gt; &lt;num&gt;   &lt;int&gt;   &lt;int&gt;     &lt;num&gt; &lt;int&gt; &lt;int&gt;  &lt;num&gt;     &lt;int&gt;     &lt;int&gt;
+1:     1   101       0       1         1     1     0      1         1         1
+2:     1   102       0       0         0     1     1      0         1         0
+3:     1   103       0       0         0     1     1      0         1         0
+4:     1   104       0       1         1     1     1      0         1         0
+5:     1   105       0       1         1     1     1      0         1         1
+6:     1   106       0       0         0     1     0      1         1         0
+   success_res    qol_i      qol_j qol_res
+         &lt;num&gt;    &lt;num&gt;      &lt;num&gt;   &lt;num&gt;
+1:           0 1.293674  1.0744410       1
+2:           1 1.293674  1.8956548      -1
+3:           1 1.293674 -0.6029973       1
+4:           1 1.293674 -0.3908678       1
+5:           0 1.293674 -0.4162220       1
+6:           1 1.293674 -0.3756574       1</code></pre>
+</div>
+</div>
+<p>GPC calculations:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ntb on death is as follows:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ntb <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">4</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ntb) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"death"</span>, <span class="st">"jf"</span>, <span class="st">"success"</span>, <span class="st">"qol"</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>d_res <span class="ot">&lt;-</span> d_all[, .N, keyby <span class="ot">=</span> death_res]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>d_res[, pct <span class="sc">:</span><span class="er">=</span> N <span class="sc">/</span> <span class="fu">nrow</span>(d_all)]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>ntb[<span class="st">"death"</span>] <span class="ot">&lt;-</span> (d_res[death_res <span class="sc">==</span> <span class="dv">1</span>, N] <span class="sc">-</span> d_res[death_res <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, N]) <span class="sc">/</span>  <span class="fu">nrow</span>(d_all)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># for the ties on death, compute jf:</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>d_res <span class="ot">&lt;-</span> d_all[death_res <span class="sc">==</span> <span class="dv">0</span>, .N, keyby <span class="ot">=</span> jf_res]</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>d_res[, pct <span class="sc">:</span><span class="er">=</span> N <span class="sc">/</span> <span class="fu">nrow</span>(d_all)]</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>ntb[<span class="st">"jf"</span>] <span class="ot">&lt;-</span> (d_res[jf_res <span class="sc">==</span> <span class="dv">1</span>, N] <span class="sc">-</span> d_res[jf_res <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, N]) <span class="sc">/</span>  <span class="fu">nrow</span>(d_all)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># for comparisons on all pairs, don't condition:</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co"># d_res &lt;- d_all[, .N, keyby = jf_res]</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co"># d_res[, pct := N / nrow(d_all)]</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co"># d_res</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># (d_res[jf_res == 1, N] - d_res[jf_res == -1, N]) /  nrow(d_all)</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co"># for the ties on death and jf, compute success:</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>d_res <span class="ot">&lt;-</span> d_all[death_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> jf_res <span class="sc">==</span> <span class="dv">0</span>, .N, keyby <span class="ot">=</span> success_res]</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>d_res[, pct <span class="sc">:</span><span class="er">=</span> N <span class="sc">/</span> <span class="fu">nrow</span>(d_all)]</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>ntb[<span class="st">"success"</span>] <span class="ot">&lt;-</span> (d_res[success_res <span class="sc">==</span> <span class="dv">1</span>, N] <span class="sc">-</span> d_res[success_res <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, N]) <span class="sc">/</span> <span class="fu">nrow</span>(d_all)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co"># for the ties on death, jf and success, compute qol:</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>d_res <span class="ot">&lt;-</span> d_all[death_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> jf_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> success_res <span class="sc">==</span> <span class="dv">0</span>, .N, keyby <span class="ot">=</span> qol_res]</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>d_res[, pct <span class="sc">:</span><span class="er">=</span> N <span class="sc">/</span> <span class="fu">nrow</span>(d_all)]</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>ntb[<span class="st">"qol"</span>] <span class="ot">&lt;-</span> (d_res[qol_res <span class="sc">==</span> <span class="dv">1</span>, N] <span class="sc">-</span> d_res[qol_res <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, N]) <span class="sc">/</span> <span class="fu">nrow</span>(d_all)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that for all endpoints, we use the total number of pairwise comparisons as the denominator and not the number of ties left over from the previous outcome.</p>
+<p>The resulting net treatment benefit reported on each outcome:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ntb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  death      jf success     qol 
+ 0.2300  0.0527  0.0574  0.0455 </code></pre>
+</div>
+</div>
+<p>Taking the cumulative sum, progresses from the effect of each component through to an overall effect:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cumsum</span>(ntb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  death      jf success     qol 
+ 0.2300  0.2827  0.3401  0.3856 </code></pre>
+</div>
+</div>
+<p>The NTB is absolute measure ranging from -1 to 1 with zero being no effect. It estimates the probability that a random unit on the expt arm will do better than a random unit on the control arm <strong>minus</strong> the probability that a random unit on the control arm will do better than a random unit on the expt arm. For example, if <span class="math inline">\(Pr(E&gt;C) = 0.7\)</span>, then <span class="math inline">\(Pr(E&lt;C) = 0.3\)</span> and <span class="math inline">\(NTB = 0.7 - 0.3 = 0.4\)</span>.</p>
+<p>You can compute the overall effect directly with the following:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>n_win <span class="ot">&lt;-</span> d_all[death_res <span class="sc">==</span> <span class="dv">1</span>, .N] <span class="sc">+</span> d_all[death_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> jf_res <span class="sc">==</span> <span class="dv">1</span>, .N] <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>   <span class="sc">+</span> d_all[death_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> jf_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> success_res <span class="sc">==</span> <span class="dv">1</span>, .N] <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>   <span class="sc">+</span> d_all[death_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> jf_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> success_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> qol_res <span class="sc">==</span> <span class="dv">1</span>, .N]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>n_loss <span class="ot">&lt;-</span> d_all[death_res <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, .N] <span class="sc">+</span> d_all[death_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> jf_res <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, .N] <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>   <span class="sc">+</span> d_all[death_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> jf_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> success_res <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, .N] <span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>   <span class="sc">+</span> d_all[death_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> jf_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> success_res <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> qol_res <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, .N]</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># n_ties &lt;- d_all[death_res == 0 &amp; jf_res == 0 &amp; success_res == 0, .N] </span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>(n_win <span class="sc">-</span> n_loss) <span class="sc">/</span> <span class="fu">nrow</span>(d_all)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3856</code></pre>
+</div>
+</div>
+<p>The NTB is known to be the inverse of the number needed to treat, i.e.&nbsp;1/ number of pt you need to trt to avoid one bad outcome. For large samples, inference can again be conducted via bootstrap. R provides the <code>BuyseTest</code> package that allows for stratification (beyond the implicit treatment level stratification).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ff1 <span class="ot">&lt;-</span> trt <span class="sc">~</span> <span class="fu">bin</span>(death, <span class="at">operator =</span> <span class="st">"&lt;0"</span>) <span class="sc">+</span> <span class="fu">bin</span>(jf) <span class="sc">+</span> <span class="fu">bin</span>(success) <span class="sc">+</span> <span class="fu">cont</span>(qol)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>f1 <span class="ot">&lt;-</span> <span class="fu">BuyseTest</span>(ff1, <span class="at">data =</span> d, <span class="at">trace =</span> <span class="dv">0</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>s_f1 <span class="ot">&lt;-</span> <span class="fu">summary</span>(f1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       Generalized pairwise comparisons with 4 prioritized endpoints
+
+ - statistic       : net treatment benefit  (delta: endpoint specific, Delta: global) 
+ - null hypothesis : Delta == 0 
+ - confidence level: 0.95 
+ - inference       : H-projection of order 1 after atanh transformation 
+ - treatment groups: 1 (treatment) vs. 0 (control) 
+ - neutral pairs   : re-analyzed using lower priority endpoints
+ - results
+ endpoint total(%) favorable(%) unfavorable(%) neutral(%) uninf(%)  delta
+    death   100.00        33.20          10.20      56.60        0 0.2300
+       jf    56.60        15.30          10.03      31.27        0 0.0527
+  success    31.27         9.86           4.12      17.29        0 0.0574
+      qol    17.29        10.92           6.37       0.00        0 0.0455
+  Delta CI [2.5% ; 97.5%]    p.value    
+ 0.2300    [0.106;0.3469] 0.00032703 ***
+ 0.2827   [0.1355;0.4177] 0.00022230 ***
+ 0.3401   [0.1882;0.4761] 2.2250e-05 ***
+ 0.3856     [0.2326;0.52] 2.6463e-06 ***</code></pre>
+</div>
+</div>
+<p>In the results, the totals, wins, loss and ties are presented as percentages rather than counts. For example, the total column effectively represents the proportion of pairs that carry over from one outcome to the next; for death there were 5660 pairs that carried over to joint function there were 3127 pairs that carried over to the treatment success outcome and so on. These can be visualised as:</p>
+<div class="cell page-columns page-full">
+<div class="sourceCode cell-code" id="cb19" data-cap-location="margin"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>d_fig <span class="ot">&lt;-</span> <span class="fu">data.table</span>(s_f1)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>d_fig <span class="ot">&lt;-</span> d_fig[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d_fig) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"endpoint"</span>, <span class="st">"total"</span>, <span class="st">"wins"</span>, <span class="st">"losses"</span>, <span class="st">"tie"</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>d_fig <span class="ot">&lt;-</span> <span class="fu">melt</span>(d_fig, <span class="at">id.vars =</span> <span class="st">"endpoint"</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>d_fig <span class="ot">&lt;-</span> d_fig[variable <span class="sc">!=</span> <span class="st">"total"</span>]</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(d_fig, <span class="fu">aes</span>(<span class="at">x =</span> endpoint, <span class="at">y =</span> value, <span class="at">fill =</span> variable)) <span class="sc">+</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">'identity'</span>) <span class="sc">+</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Percentage"</span>) <span class="sc">+</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display page-columns page-full">
+<div id="fig-gpc-res" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full" data-cap-location="margin">
+<figure class="quarto-float quarto-float-fig figure page-columns page-full">
+<div aria-describedby="fig-gpc-res-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="door-1_files/figure-html/fig-gpc-res-1.png" class="img-fluid figure-img" width="480">
+</div>
+<figcaption class="quarto-float-caption-margin quarto-float-caption quarto-float-fig margin-caption" id="fig-gpc-res-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Contribution by each endpoint
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Inference can be conducted on all pairs for all outcomes by indicating that the hierarchical perspective is not required:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fu">BuyseTest</span>(ff1, <span class="at">hierarchical =</span> <span class="cn">FALSE</span>, <span class="at">data =</span> d, <span class="at">trace =</span> <span class="dv">0</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       Generalized pairwise comparisons with 4 endpoints
+
+ - statistic       : net treatment benefit  (delta: endpoint specific, Delta: global) 
+ - null hypothesis : Delta == 0 
+ - confidence level: 0.95 
+ - inference       : H-projection of order 1 after atanh transformation 
+ - treatment groups: 1 (treatment) vs. 0 (control) 
+ - results
+ endpoint weight total(%) favorable(%) unfavorable(%) neutral(%) uninf(%)
+    death   0.25      100        33.20          10.20      56.60        0
+       jf   0.25      100        26.64          17.64      55.72        0
+  success   0.25      100        30.80          13.80      55.40        0
+      qol   0.25      100        64.02          35.98       0.00        0
+  delta  Delta CI [2.5% ; 97.5%]    p.value    
+ 0.2300 0.0575   [0.0272;0.0877] 0.00020121 ***
+ 0.0900 0.0800    [0.037;0.1227] 0.00026848 ***
+ 0.1700 0.1225   [0.0699;0.1744] 5.4724e-06 ***
+ 0.2804 0.1926    [0.1296;0.254] 3.3839e-09 ***</code></pre>
+</div>
+</div>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-Chamberlain2023" class="csl-entry" role="listitem">
+1. Chamberlain J. <a href="https://doi.org/10.1212/WNL.0000000000207684">Desirability of outcome ranking for status epilepticus</a>. Research Methods in Neurology. 2023;101.
+</div>
+<div id="ref-Follmann2002" class="csl-entry" role="listitem">
+2. Follmann D. <a href="https://doi.org/10.1002/sim.1272">Regression analysis based on pairwise ordering of patients’ clinical histories</a>. Statistics in Medicine. 2002;21.
+</div>
+<div id="ref-Buyse2010" class="csl-entry" role="listitem">
+3. Buyse M. <a href="https://doi.org/10.1002/sim.3923">Generalized pairwise comparisons of prioritized outcomes in the two-sample problem</a>. Statistics in Medicine. 2010;29.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
