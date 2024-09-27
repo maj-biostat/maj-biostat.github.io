@@ -1,7 +1,7 @@
 ---
 title: "Random walk priors"
 author: "maj"
-date: today
+date: "2024-09-18"
 date-modified: last-modified
 bibliography: ../etc/refs.bib
 csl: ../etc/biomed-central.csl
