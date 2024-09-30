@@ -1,0 +1,83 @@
+---
+title: "Probabilistic Index Models"
+author: "maj"
+date: "2024-09-30"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+---
+
+
+The probabilistic index (PI), also known as the probability of superiority, refers to the probability that the outcome of a randomly selected subject in the treatment group exceeds the outcome of another randomly selected subject on the control group @DeSchryver2018.
+Thus a PI of 50% indicates that a patient on the experimental treatment is as likely to be better or worse as compared with a patient on the control treatment.
+
+The PI is the metric associated with the Mann-Whitney-U test (aka Wilcoxon-Mann-Whitney).
+When modelled under a regression framework with conditioning on the covariate values of both subjects, we have a probabilistic index model (PIM).
+
+In notational terms, if we let $y$ denote a univariate outcome and $\vec{x}$ a vector of covariates for a unit, then the PI is given by $\text{Pr}(y_i < y_j | \vec{x_i}, \vec{x_j})$ where $i$ and $j$ denote distinct units.
+
+Two things are clear from this definition:
+
+1. The PI does not provide information on the magnitude of the difference between two populations.
+2. The measure is always comparing two different subjects, it does **not** give the probability that a single patient will benefit from a given treatment as compared with the conventional treatment.
+
+In a two-sample setting we can use the MWU to compute the probabilistic index.
+However, when our treatment is continuous or we wish to condition on a set of covariates then it is desirable to embed the PI into a regression model.
+The approach is to model the conditional PI directly as a function of covariates:
+
+$$
+\begin{aligned}
+\text{Pr}(Y_i < Y_j | X_i, X_j) = m(X_i, X_j, \beta)
+\end{aligned}
+$$
+
+where $m(.)$ is some user-specified function and $(Y_i, X_i)$ are iid and $X_i$, $X_j$ and $\beta$ are vector quantities.
+It is convenient to choose $m$ as:
+
+$$
+\begin{aligned}
+m(X_i, X_j, \beta) = g^{-1}[(X_j - X_i)^\top \beta] 
+\end{aligned}
+$$
+
+To interpret the regression coefficient, consider two subjects $i$ and $j$ with covariate patterns $X^\top = (Z_1, Z_2)$ with $\beta^\top = (\beta_1, \beta_2)$ (for a bivariate case).
+Say, subject $i$ has covariate values $(z_1, z_2)$ and subject $j$ has values $(z_1 + 1, z_2)$ so that both have the same value for $Z_2$ but where $Z_1$ differs by one unit.
+It follows that:
+
+$$
+\begin{aligned}
+\text{Pr}(Y_i < Y_j | Z_{1i} = z_1, Z_{1j} = z_1 + 1, Z_{2i} = Z_{2j}) = g^{-1}{\beta_1}
+\end{aligned}
+$$
+
+so that $g^{-1}{\beta_1}$ gives the probability that a randomly selected subject with covariate value $z_1$ for $Z_1$ will have a lower outcome as compared with a randomly selected subject with a covariate value that is higher by one and where $Z_2$ is the same for both subjects.
+
+::: {.callout-note}
+Notice the absence of an intercept in these models.
+This means that when the covariate patterns are the same, the probability that $Y_i$ is less than $Y_j$ is 0.5 and vice versa.
+:::
+
+As might be clear, the above can be handled via a logistic regression applied to the transformed binary outcome $I_{ij} = I(Y_i < Y_j)$ and predictors $X_{ij} = X_j - X_i$.
+From this, the MLE give consistent estimates for $\beta$, @Thas2012.
+However, despite the fact that $(Y_i, X_i)$ are mutually independent, the transformed data $I_{ij}$ and $X_{ij}$ are not. 
+This is obviously the case if we consider $I_{ij} = I(Y_i < Y_j)$ and $I_{ik} = I(Y_i < Y_k)$ since both share $Y_i$ making them no longer independent.
+Moreover, the $I_{ij}$ have a correlation structure that is different from the typical block correlation structure in multi-level data.
+Thas introduced a sandwich estimator for the standard errors (frequentist setting) implemented in the R package `pim`, @Thas2012 and @Meys2017.
+However, a bootstrap approach could also be used - simply take $B$ bootstrap samples (with replacement) of size $n$ and then repeat whatever estimation process was used.
+
+::: {.callout-note}
+The above specification can be modified to deal with ties by modifying the transformed outcome to $I(Y_i < Y_j) + 0.5I(Y_i = Y_j)$.
+:::
+
+
+
+
+
+
+
+
+
+# References
+
+::: {#refs}
+:::

@@ -26,6 +26,7 @@ $$
 $$
 
 where $n_{win}$ is the number of times the units in the experimental group had better outcomes compared to the control group, $n_{tie}$ is the number of ties, $n_e$ is the number of units in the experimental group and $n_c$ the number of units in the control group.
+This measure is also referred to as the probabilistic index @DeSchryver2018 or probability of superiority, which will be cover in a separate post.
 
 If there is no difference between the two arms, the probability will be close to 50%.
 Uncertainty intervals can be obtained via bootstrap or other means.
@@ -145,7 +146,8 @@ From above, the estimate for the door probability is `r sprintf("%.2f", pr_door)
 
 The process is simple but the procedure itself does not readily admit to complex modelling.
 However, Follmann proposed using a logistic regression for the probability of superiority for each determinate pair of patients $i$, $j$ and covariate vectors $\vec{z}_{ij} = \vec{z}_i - \vec{z}_j$ such that the parameters in the model correspond to the log-odds that a patient with $\vec{z}_i$ has an outcome that is better than a patient with $\vec{z}_j$ @Follmann2002.
-The approach is pretty convoluted and I am not so sure about its utility, but that might just be due to a lack of familirity.
+The presentation from Follmann is pretty convoluted and I lost patience with it. 
+The exposition of probabilistic index models by De Schryver, which is analogous, if not equivalent, is much clearer and will be discussed separately, [Probabilistic Index Models](probabilistic-index.qmd).
 
 A shiny application for door analyses can be found at [DOOR](https://methods.bsc.gwu.edu/web/methods/door-professional-edition) although it does not give any detail on the implementation of the methods used.
 Under the probability-based analysis tab, the overall door and then a decomposition based on each of the dichotomous door components is shown.
