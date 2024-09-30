@@ -4,7 +4,9 @@ author: "maj"
 date: "2024-09-27"
 date-modified: last-modified
 bibliography: ../etc/refs.bib
-csl: ../etc/biomed-central.csl
+csl: ../etc/biomed-central.csl  
+  - nonparametric
+  - ordinal
 ---
 
 
