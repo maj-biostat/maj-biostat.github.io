@@ -4,7 +4,8 @@ author: "maj"
 date: "2024-09-25"
 date-modified: last-modified
 bibliography: ../etc/refs.bib
-csl: ../etc/biomed-central.cslcategories:
+csl: ../etc/biomed-central.csl
+categories:
   - stan
   - bayes
 ---
