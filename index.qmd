@@ -4,7 +4,7 @@ listing:
     - "notebooks/*.qmd"
     - "!notebooks/about.qmd"
   type: table
-  sort: "date"
+  sort: "date desc"
   max-items: 100
   categories: true
   date-format: "dddd D MMM YYYY"
