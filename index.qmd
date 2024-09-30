@@ -4,8 +4,9 @@ listing:
     - "notebooks/*.qmd"
     - "!notebooks/about.qmd"
   type: table
+  sort: "date"
   max-items: 100
-  date-format: iso
+  date-format: "dddd D MMM YYYY"
   fields: [image, date, title, reading-time]
 date: today
 date-modified: last-modified
