@@ -4,6 +4,7 @@
     "items": [
       "/notebooks/door-1.html",
       "/notebooks/mann-whitney-u.html",
+      "/notebooks/probabilistic-index.html",
       "/notebooks/random-walk-prior.html",
       "/notebooks/robust-errors.html",
       "/notebooks/custom-distribution-stan.html"
