@@ -373,7 +373,7 @@ Chain 1 finished in 0.2 seconds.</code></pre>
 <pre><code># A tibble: 1 × 10
   variable  mean median     sd    mad    q5   q95  rhat ess_bulk ess_tail
   &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 a        0.339  0.340 0.0213 0.0224 0.302 0.371  1.00     378.     495.</code></pre>
+1 a        0.341  0.341 0.0215 0.0220 0.306 0.376  1.00     357.     503.</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">data.table</span>(f1<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"a"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>))</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(post<span class="sc">$</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
