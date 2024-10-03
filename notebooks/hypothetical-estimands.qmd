@@ -1,0 +1,59 @@
+---
+title: "Strategies for handling Intercurrent Events - hypothetical strategy"
+author: "maj"
+date: "2024-10-02"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - estimand
+---
+
+
+**Note - this is WIP - Unfinished**
+
+The ICH E9(R1) addendum on estimands and sensitivity analysis in clinical trials (estimand framework) advocates for an explicit definition of the causal effect of interest is advocated.
+The central goal is to measure how the outcome of an intervention compares to the outcome that would have happened to the same units under a different intervention.
+As we never see the unit level outcomes under all interventions, clinical trials employ randomisation as the structural mechanism to enable these effects to be identified.
+
+The causal aspects are thus linked with randomised assignment rather than received treatment.
+It is, however, assumed that units will follow the assigned treatment and therefore, in the ideal case, the causal relationship can be extended to the actual taking of treatment. 
+
+Intercurrent event (unit level events that occur after randomisation that alter the interpretation or existence of the outcome) can compromise the causal effects and thus need to be considered in the estimand definitions.
+The specification of the treatment regimen via the estimand definition is critical in understanding what will ultimately constitute an ICE.
+
+The components of an estimand are: treatment regimen, population, outcome, intercurrent event handling and summary measure. 
+In English, these correspond to
+
++ treatment regimen := what is the trial comparing?
++ population := what people/condition are we trying to help?
++ outcome := what is being measured?
++ intercurrent event handling := how do we intend to handle treatment related events that disrupt the existence or interpretation of the outcome?
++ summary measure := what statistical measure is going to be used?
+
+
+# Per protocol
+
+A traditional per-protocol analysis aims at offering a specific perspective on the trial results; the implicit goal is usually that of evaluating the effect of treatment in those that adhere to the protocol. 
+However, the usual approach simply subsets the trial data to those units that have adhered and performs the primary analysis (unchanged) on that part of the data.
+This is insufficient to define a causal effect.
+
+# Hypothetical strategy
+
+A hypothetical strategy for dealing with ICEs considers a scientific question under a counterfactual condition to what actually happened.
+
+For example, perhaps rescue medication was ethically necessary for a patient, but we are interested in trying to simulate what the outcome would have been in absence of the rescue medication.
+The hypothetical perspective may be relevant even when rescue medication is permitted under the treatment regimen (experimental drug +/- rescue vs control +/- rescue) in order that we can evaluate the results under the hypothetical scenario where our regimen was experimental drug vs control (both without rescue).
+
+# Estimators for what would have happened in absence of ICE
+
+Data after an ICE can be excluded from the analysis and then outcomes dealt with via maximum likelihood (in a longitudinal setting) or multiple imputation (if necessary assumptions are met).
+In other words, when you have repeat measures, you can run a likelihood-based repeat measures analysis fit to the data that was observed up until the rescue medication was taken or the assigned treatment was discontinued.
+When you don't repeat measure data, the above doesn't apply and all you can do is remove the observed outcome for the patient that took the rescue medication and then model based on that data, again either by ML or MI.
+
+
+
+
+# References
+
+

@@ -9,19 +9,21 @@ categories:
   - per-protocol
 ---
 
-In RCTs, traditional per-protocol analyses exclude those patients that are not completers and that deviate in some unacceptable way from the protocol.
-Such an approach can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened.
+In RCTs, a traditional per-protocol analyses will exclude those patients that are not completers and that deviate in some unacceptable way from the protocol and then run the primary analysis unchanged.
+This can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened.
 
-The following provides an example via a hypothetical anntihypertensive drug trial.
-We compare a new antihypertensive (A) to a standard treatment (B) for lowering blood pressure in patients with existing hypertension.
+The following provides an example of the issue.
+
+Compare a new antihypertensive (A) to a standard treatment (B) for lowering blood pressure in patients with existing hypertension in an RCT.
 At 6-months patients are assessed to be either still hypertensive (0) or no longer hypertensive (1).
 One thousands patients are randomised, 500 to each arm.
 
 It is common for trials to show differential adherence by study group.
-For this example, assume that A causes more side effects than B and at 3 months, 20% of patients stop taking A due to side effects and 4% stop taking B for a side effect intercurrent event, which we interpret here as a protocol deviation (although in reality who knows whether this would actually be consider to be a protocol deviation).
-Additionally assume that those who experience side effects (and therefore dropout) tend to have more severe hypertension and would have shown less improvement in blood pressure status irrespective of the treatment they received.
+Here, assume that A causes more side effects than B and at 3 months, 20% of patients stop taking A due to side effects and 4% stop taking B for a side effect intercurrent event.
+We interpret this as a protocol deviation (although who knows whether this would actually be consider to be a protocol deviation in reality).
+Additionally, assume that the patients who experience side effects (and therefore would dropout of the traditional PP analysis) tend to have more severe hypertension and would have shown less improvement in blood pressure status irrespective of the treatment they received.
 
-The traditional per-protocol analysis exclude those that deviate from the protocol and would therefore have around 400 patients in A and 480 patients in B.
+The traditional per-protocol analysis excludes those that deviate from the protocol and we would therefore have around 400 patients in A and 480 patients in B.
 
 Finally assume that the true percentage that are no longer hypertensive at 6 months is 40% and 20% in group A and B respectively.
 
@@ -29,7 +31,6 @@ Below is a simulation of the assumed data generation process.
 
 ```{r}
 library(data.table)
-library(broom)
 library(ggplot2)
 library(parallel)
 
@@ -87,9 +88,10 @@ m_res <- do.call(rbind, mclapply(1:1e4, FUN = function(i){
 }, mc.cores = 6))
 ```
 
-The plot below shows the results, specifically, the distribution of the estimated treatment effect (risk difference) which is known to have a true value of 0.2 in favour of the new drug (A).
+@fig-res-1 shows the results.
+Specifically, the distribution of the estimated treatment effect (risk difference) which is known to have a true value of 0.2 in favour of the new drug (A).
 
-Under the ITT analysis (where we ignore the fact that the ICE occurred and simply proceed to analyse all the data) the long-run expected value for the MLE estimate of the treatment effect aligns with the true value of 0.2.
+Under the ITT analysis (where we ignore the fact that the ICE occurred and simply proceed to analyse all the data, irrespective of whether the ICE occurred or not) the long-run expected value for the MLE estimate of the treatment effect aligns with the true value of 0.2.
 
 However, in the traditional PP analysis, we drop those patients for whom the protocol deviation applies.
 We fit the same model as was used in the ITT analysis to the remaining data. 
@@ -103,8 +105,8 @@ The final plot shows the results from a revised approach to the per-protocol ana
 4. repeat 3 for the patients assuming that all patients are assigned to the standard treatment (B)
 5. compute the treatment effect (risk difference) as the difference between the means of the predicted values each transformed back to the risk scale
 
-This final approach is aligned with a G-computation perspective and similar to the results from that would be produced from an inverse probability of censoring weighting scheme.
-In both cases, we are essentially, producing a re-weighted estimate of the effect.
+This final approach is aligned with a G-computation perspective and gives results similar to those that would be produced from an inverse probability of censoring weighting scheme.
+In both cases, we are effectively, producing a re-weighted estimate of the effect, but going about it in slightly different ways.
 
 Under this revised per-protocol approach, we once again produce an estimate of the treatment effect that has a expected value close to the known true value of 0.2
 
@@ -113,6 +115,7 @@ Under this revised per-protocol approach, we once again produce an estimate of t
 #| fig-cap: 'Distribution of effect estimates under ITT, traditional per-protocol and g-computation under the present of ICE'
 #| fig-cap-location: margin
 #| fig-height: 6
+#| fig-width: 5
 
 d_fig <- data.table(m_res)
 names(d_fig) <- c("itt", "pp_1", "pp_2")
@@ -135,10 +138,16 @@ ggplot(d_fig, aes(x = value, group = variable, col = variable)) +
   facet_wrap(~variable, ncol  = 1)
 ```
 
-The difference between the two per-protocol approaches can be emphasised by looking at the distribution of the percentage differences between the ITT effect and the PP effect.
+The difference between the two per-protocol approaches can be emphasised by looking at the distribution of the percentage differences between the ITT effect and the PP effects as shown in @fig-res-2.
 For the traditional approach, the treatment effect is, on average, about 5% higher than it should be whereas under the revised approach, the PP approach aligns fairly well with the ITT estimate (with both being aligned with the true value).
 
 ```{r}
+#| label: fig-res-2
+#| fig-cap: 'Distribution of percentage change from the ITT estimate - traditional per-protocol and g-computation'
+#| fig-cap-location: margin
+#| fig-height: 6
+#| fig-width: 5
+
 d_fig <- data.table(m_res)
 names(d_fig) <- c("itt", "pp_1", "pp_2")
 d_fig[, pct_diff_1 := 100 * (pp_1 - itt)/itt]
@@ -147,12 +156,12 @@ d_fig[, pct_diff_2 := 100 * (pp_2 - itt)/itt]
 d_fig <- d_fig[, .(pct_diff_1, pct_diff_2)]
 d_fig <- melt(d_fig, measure.vars = names(d_fig))
 
-d_fig[variable == "pct_diff_1", variable := "Pct diff (traditional PP vs ITT)"]
-d_fig[variable == "pct_diff_2", variable := "Pct diff (g-computation PP vs ITT)"]
+d_fig[variable == "pct_diff_1", variable := "% change (traditional PP vs ITT)"]
+d_fig[variable == "pct_diff_2", variable := "% change (g-computation PP vs ITT)"]
 
 d_fig[, variable := factor(variable, levels = c(
-  "Pct diff (traditional PP vs ITT)", 
-  "Pct diff (g-computation PP vs ITT)"
+  "% change (traditional PP vs ITT)", 
+  "% change (g-computation PP vs ITT)"
 ))]
 
 
