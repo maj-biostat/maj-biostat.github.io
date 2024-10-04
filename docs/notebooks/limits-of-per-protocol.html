@@ -187,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">October 3, 2024</p>
+      <p class="date-modified">October 4, 2024</p>
     </div>
   </div>
     
@@ -198,8 +198,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>In RCTs, a traditional per-protocol analyses will exclude those patients that are not completers and that deviate in some unacceptable way from the protocol and then run the primary analysis unchanged. This can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened.</p>
-<p>The following provides an example of the issue.</p>
+<p>Patients in RCTs that discontinue before the endpoint often have poorer prognosis than those who continue treatment. Additionally, discontinuation is more common in the treatments that create more side effects or have less clear benefit.</p>
+<p>The traditional per-protocol analyses will exclude those patients that are not completers and that deviate in some unacceptable way from the protocol (e.g.&nbsp;early discontinuation of treatment) and then run the primary analysis unchanged. That is, the comparison groups are defined in part by post randomisation events that are influenced by treatment group status and other factors. This can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened, <span class="citation" data-cites="Greenland2008">[<a href="#ref-Greenland2008" role="doc-biblioref"><strong>Greenland2008?</strong></a>]</span>. The following example illustrates this.</p>
 <p>Compare a new antihypertensive (A) to a standard treatment (B) for lowering blood pressure in patients with existing hypertension in an RCT. At 6-months patients are assessed to be either still hypertensive (0) or no longer hypertensive (1). One thousands patients are randomised, 500 to each arm.</p>
 <p>It is common for trials to show differential adherence by study group. Here, assume that A causes more side effects than B and at 3 months, 20% of patients stop taking A due to side effects and 4% stop taking B for a side effect intercurrent event. We interpret this as a protocol deviation (although who knows whether this would actually be consider to be a protocol deviation in reality). Additionally, assume that the patients who experience side effects (and therefore would dropout of the traditional PP analysis) tend to have more severe hypertension and would have shown less improvement in blood pressure status irrespective of the treatment they received.</p>
 <p>The traditional per-protocol analysis excludes those that deviate from the protocol and we would therefore have around 400 patients in A and 480 patients in B.</p>
@@ -273,7 +273,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>compute the treatment effect (risk difference) as the difference between the means of the predicted values each transformed back to the risk scale</li>
 </ol>
 <p>This final approach is aligned with a G-computation perspective and gives results similar to those that would be produced from an inverse probability of censoring weighting scheme. In both cases, we are effectively, producing a re-weighted estimate of the effect, but going about it in slightly different ways.</p>
-<p>Under this revised per-protocol approach, we once again produce an estimate of the treatment effect that has a expected value close to the known true value of 0.2</p>
+<p>Under this revised per-protocol approach, we once again produce an estimate of the treatment effect that has a expected value close to the known true value of 0.2. Clearly, this is a very much simplified and synthetic example, but it is only intended to give an introduction.</p>
 <div class="cell page-columns page-full">
 <div class="sourceCode cell-code" id="cb3" data-cap-location="margin"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>d_fig <span class="ot">&lt;-</span> <span class="fu">data.table</span>(m_res)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d_fig) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"itt"</span>, <span class="st">"pp_1"</span>, <span class="st">"pp_2"</span>)</span>
