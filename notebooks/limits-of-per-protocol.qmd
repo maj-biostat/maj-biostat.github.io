@@ -9,10 +9,15 @@ categories:
   - per-protocol
 ---
 
-In RCTs, a traditional per-protocol analyses will exclude those patients that are not completers and that deviate in some unacceptable way from the protocol and then run the primary analysis unchanged.
-This can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened.
 
-The following provides an example of the issue.
+
+Patients in RCTs that discontinue before the endpoint often have poorer prognosis than those who continue treatment.
+Additionally, discontinuation is more common in the treatments that create more side effects or have less clear benefit.
+
+The traditional per-protocol analyses will exclude those patients that are not completers and that deviate in some unacceptable way from the protocol (e.g. early discontinuation of treatment) and then run the primary analysis unchanged.
+That is, the comparison groups are defined in part by post randomisation events that are influenced by treatment group status and other factors.
+This can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened, @Greenland2008.
+The following example illustrates this.
 
 Compare a new antihypertensive (A) to a standard treatment (B) for lowering blood pressure in patients with existing hypertension in an RCT.
 At 6-months patients are assessed to be either still hypertensive (0) or no longer hypertensive (1).
@@ -108,7 +113,8 @@ The final plot shows the results from a revised approach to the per-protocol ana
 This final approach is aligned with a G-computation perspective and gives results similar to those that would be produced from an inverse probability of censoring weighting scheme.
 In both cases, we are effectively, producing a re-weighted estimate of the effect, but going about it in slightly different ways.
 
-Under this revised per-protocol approach, we once again produce an estimate of the treatment effect that has a expected value close to the known true value of 0.2
+Under this revised per-protocol approach, we once again produce an estimate of the treatment effect that has a expected value close to the known true value of 0.2.
+Clearly, this is a very much simplified and synthetic example, but it is only intended to give an introduction.
 
 ```{r}
 #| label: fig-res-1
