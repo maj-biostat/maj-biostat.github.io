@@ -1,0 +1,394 @@
+---
+title: "Multinomial regression"
+author: "maj"
+date: "2024-10-04"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - regression
+  - bayesian
+  - multinomial
+---
+
+# Multinomial distribution
+
+The multinomial distribution is a generalisation of the binomial distribution, @Blitzstein2019.
+The binomial counts the successes in a fixed number of trials each classed as success or failure.
+The multinomial distribution keeps track of trials whose outcomes have multiple categories, e.g. agree, neutral, disagree.
+
+We have $N$ objects, each is independently placed into one of $K$ categories.
+An object is placed in category $k$ with probability $p_k$ where $\sum_{k=1}^K p_k = 1$ and $p_k \ge 0$ for all $k$.
+If we let $Y_1$ be the count of category 1 objects, $Y_2$ be the count for category 2 etc so that $Y_1 + \dots + Y_K = N$ then $\mathbf{Y} = (Y_1, \dots, Y_K)$ is said to have a multinomial distribution with parameters $N$ and $\mathbf{p} = (p_1, \dots, p_K)$.
+This can be written as $\mathbf{Y} \sim \text{Mult}_K(N, \mathbf{p})$ where the $\mathbf{Y}$ is referred to as a *random vector* as it is a vector of random variables.
+
+If $\mathbf{Y} \sim \text{Mult}_K(N, \mathbf{p})$ then the joint PMF is:
+
+$$
+\begin{aligned}
+\text{Pr}(Y_1 = y_1, \dots, Y_K = y_K) &= \frac{N!}{y_1!y_2!\dots y_K!} p_1^{y_1}p_2^{y_2}\dots  p_K^{y_K} \\
+&= \begin{pmatrix} 
+N \\
+y_1, \dots, y_K
+\end{pmatrix} \prod_{k=1}^K p_k^{y_k}
+\end{aligned}
+$$
+
+The marginal distribution of a multinomial are all binomial with $Y_k \sim Bin(N, p_k)$.
+
+Lumping categories together will form multinomial distribution with the revised $K^\prime$ representing the new (smaller) set of categories and both counts and probabilities for the lumped groups being additive.
+
+# Multinomial regression 
+
+Multinomial regression is commonly known as multi-logit or multicategory logit or softmax or categorical regression, @Agresti2019.
+
+In a logistic regression, we pick either of the two outcome states and then produce a single linear predictor for the log-odds.
+In a categorical regression, there are multiple linear predictors.
+Typically, the form of the linear predictors is kept the same and the parameters differ for each equation.
+For example, assuming a single continuous predictor variable, $x$, we might have:
+
+$$
+\begin{aligned}
+\lambda_k = \beta_{0, k} + \beta_{1,k} x
+\end{aligned}
+$$
+
+then convert the $\lambda_k$ from each linear predictor to a simplex using the softmax function
+
+$$
+\begin{aligned}
+\mathbf{p} = \frac{\exp(\lambda_k)}{\sum_{i=1}^K \exp(\lambda_i)}
+\end{aligned}
+$$
+
+which is then used in the multinomial likelihood.
+This clearly implies the existence of $K$ linear predictors, but there is an inherent indeterminacy in these equations because a constant $C_0$ can be added to every $\beta_{0, k}$ and a constant $C_1$ can be added to every $\beta_{1, k}$ and the softmax function will produce the same set of probabilities.
+
+The standard way to address this is by introducing a constraint that selects one of the categories as a pivot and then other categories are modeled relative to the pivot, @McElreath2020.
+In other words, there are still $K$ linear predictors, but one of them is fixed to have a zero value.
+Thus, the linear predictor has the form:
+
+$$
+\begin{aligned}
+\log \left( \frac{p_k}{p_r}  \right) = \beta_{0, k} + \beta_{1,k} x
+\end{aligned}
+$$
+
+where $p_k$ is the probability of the $k^{\text{th}}$ category and $p_r$ is the probability of the reference category^[Note that if we have three categories and assign category 3 as the reference then even though our logits are in terms of $\log(p_1/p_3)$ and $\log(p_2/p_3)$, we can still compute a logit for $\log(p_1/p_2)$ by subtracting the logit for $\log(p_2/p_3)$ from that for $\log(p_1/p_3)$.].
+That is, the log-odds (logit) of category $k$ relative to $r$ and so each logit is associated with different effects.
+The direct interpretation of the parameters is therefore always conditional on the reference category.
+For example, given  $\log(p_k/p_r)$, a positive coefficient for $\beta_{1,k}$ indicates that the log odds of being in category $k$ versus category $r$ increases for increasing values of $x$.
+
+In a Bayesian context, the 'fix to zero' isn't strictly required, but some level of constraint will strengthen identifiability.
+Alternative approaches include (1) using informative priors (2) using sum to zero constraints (3) QR decomposition.
+
+
+# Analyses
+
+## Setup
+
+Assume that for a city, it is well known that the dominant modes of travel (to work) are walk/bike, public transport and car with a distribution provided in @tbl-mb.
+Note that these are mutually exclusive and exhaustive of the possible modes of transport.
+Now say we want to investigate ways to move people away from cars.
+Interventions may span from city wide information on the benefits of using public transport, to financial discounts to restrictions on parking or taxes.
+Assume we want to evaluate whether an information mail-out versus financial discounts on public transport achieves greater transition to public transport.
+
+```{r}
+#| echo: FALSE
+#| label: tbl-mb
+#| tbl-pos: H
+#| tbl-cap: "Distribution of dominant mode of transport used to get to work"
+
+library(gt)
+library(data.table)
+suppressPackageStartupMessages(library(cmdstanr))
+
+d_tbl <- data.table(
+  mode = c("Walk/bike","Public transport", "Car"),
+  p = c(0.07, 0.33, 0.6)
+)
+
+gt_tbl <- gt(d_tbl) |>
+  cols_align(
+    align = "left",
+    columns = everything()
+  ) |>
+  cols_width(
+    mode ~ pct(25),
+    p ~ pct(10)
+  )  |>
+  cols_label(
+    mode = "Mode of transport",
+    p = "Proportion"
+  ) |>
+  tab_options(table.font.size = "80%") |> 
+  tab_options(table.width = px(500))
+
+gt_tbl
+```
+
+```{r}
+get_data <- function(
+    N = 250,
+    p0 = c(0.07, 0.33, 0.6),
+    p1 = c(0.10, 0.50, 0.4)){
+  
+  d <- data.table(id = 1:N)
+  d[, trt := rep(0:1, each = N/2)]
+  
+  d[trt == 0, y := sample(seq_along(p0), .N, replace = T, prob = p0)]
+  d[trt == 1, y := sample(seq_along(p1), .N, replace = T, prob = p1)]
+  
+  d
+}
+```
+
+We take a random sample of adult working residents from the city.
+The sample is randomised 1:1 to a monthly email lasting for 3-months that details the benefit of using public transport versus a 3-month discount for the all public transport networks within the city.
+At 3-months, the sample cohort are surveyed to determine their dominant mode of transport in the last month.
+
+## Contingency table
+
+One approach to the analysis is via a contingency table posing the research hypothesis *Do dominant modes of transport differ under the two interventions?* 
+The Chi-squared test of independence is run on the observed counts of each cell as follows:
+
+$$
+\begin{aligned}
+X^2 &= \sum_{i=1}^r \sum_{j=1}^c \frac{(O_{ij} - e_{ij})^2}{e_{ij}}
+\end{aligned}
+$$
+
+where the expected counts are based on the row and column totals (i.e. assuming independence across groups):
+
+$$
+\begin{aligned}
+e_{ij} = \frac{O_{i.} O_{.j}}{O_{..}}
+\end{aligned}
+$$
+
+where $O_{i.}$ denotes the row totals, $O_{.j}$ the column totals and $O_{..}$ denotes the grand total.
+
+If the null hypothesis is true then the observed and the expected frequencies will be similar to one another and $\chi^2$ will be small.
+If $\chi^2$ is too large then the null would be rejected suggesting that the treatment and dominant modes of travel are not independent.
+Specifically, we would reject the null if the test statistic was found to be greater than or equal to a $\chi^2$ distribution that has $(r-1)(c-1)$ degrees of freedom, i.e. reject null if $X^2 \ge \chi^2_{(r-1)(c-1);\alpha}$ where $\alpha$ is the significance level.
+
+A sketch of the approach is shown below.
+
+```{r}
+
+set.seed(1)
+d <- get_data()
+
+# observed
+m_obs <- as.matrix(dcast(d[, .N, keyby = .(trt, y)],
+                      trt ~ y, value.var = "N"))
+
+tot_cols <- colSums(m_obs[, 2:4])
+tot_rows <- rowSums(m_obs[, 2:4])
+
+# expected
+m_e <- rbind(
+  tot_cols  * tot_rows[1] / sum(tot_rows),
+  tot_cols  * tot_rows[2] / sum(tot_rows)
+)
+
+# chisqured statistic vs critical value
+
+v_stats <- c(
+  chisq_obs = sum(  ((m_obs[, -1] - m_e)^2)/m_e ) ,
+  chisq_crit = qchisq(0.95, 2 * 1)
+)
+
+round(c(
+  v_stats, 
+  p_value = pchisq(v_stats[1], 2 * 1, lower.tail = F)), 3)
+
+
+```
+
+Since the observed test statistic is greater than the critical value, we would reject the null in this case.
+The above can be automatically with the built-in function:
+
+```{r}
+res <- chisq.test(m_obs[, -1])
+res
+```
+
+## Multi-logit regression
+
+To implement the multi-logit regression a long format is usually adopted so that we have each unit $i$ has an outcome $Y_i$ equal to one of the possible categories.
+
+A simple sum-to-zero implementation is shown below.
+
+```{r}
+#| label: stan-model-1
+#| code-summary: "Simple sum-to-zero implementation of multi-logit model"
+#| class-output: stan
+#| echo: false
+
+cat(readLines("stan/multi-logit-01.stan"), sep = "\n")
+```
+
+And a fixed pivot implementation is
+
+```{r}
+#| label: stan-model-2
+#| code-summary: "Fixed pivot model implementation of multi-logit model"
+#| class-output: stan
+#| echo: false
+
+
+cat(readLines("stan/multi-logit-02.stan"), sep = "\n")
+```
+
+Fit both models to the data
+
+```{r, results='hold'}
+m1 <- cmdstanr::cmdstan_model("stan/multi-logit-01.stan")
+m2 <- cmdstanr::cmdstan_model("stan/multi-logit-02.stan")
+
+ld <- list(
+  N = nrow(d),
+  K = length(unique(d$y)),
+  y = d$y,
+  D = 2,
+  x = cbind(1, d$trt)
+)
+
+f1 <- m1$sample(data = ld, chains = 1, iter_sampling = 1000, refresh = 0)
+f2 <- m2$sample(data = ld, chains = 1, iter_sampling = 1000, refresh = 0)
+```
+
+Both approaches faithfully recover the empirical proportions for the two treatment groups as shown in @tbl-model-res-1.
+The pivot model gives the most direct path to interpreting the model parameters.
+However, note that the models are structurally different and cannot be considered completely equivalent since different prior weights enter the models.
+
+```{r}
+#| echo: FALSE
+#| label: tbl-model-res-1
+#| tbl-pos: H
+#| tbl-cap: "Observed and modeled distribution for mode of transport"
+
+
+d_tbl <- d[, .(.N), keyby = .(trt, y)]
+d_tbl[, tot := sum(N), keyby = trt]
+d_tbl[, p := N/tot]
+
+smry_f1 <- data.table(f1$summary(variables = "p", posterior::default_summary_measures()[1]))
+smry_f1[variable %like% "p\\[.,1]", trt := 0]
+smry_f1[variable %like% "p\\[.,2]", trt := 1]
+smry_f1[, y := gsub("p[", "", variable, fixed = T)]
+smry_f1[, y := as.numeric(gsub(",.\\]", "", y))]
+setnames(smry_f1, "mean", "mu_f1")
+smry_f2 <- data.table(f2$summary(variables = "p", posterior::default_summary_measures()[1]))
+smry_f2[variable %like% "p\\[.,1]", trt := 0]
+smry_f2[variable %like% "p\\[.,2]", trt := 1]
+smry_f2[, y := gsub("p[", "", variable, fixed = T)]
+smry_f2[, y := as.numeric(gsub(",.\\]", "", y))]
+setnames(smry_f2, "mean", "mu_f2")
+
+d_tbl <- merge(d_tbl, smry_f1[, .(mu_f1, trt, y)], by = c("trt", "y"))
+d_tbl <- merge(d_tbl, smry_f2[, .(mu_f2, trt, y)], by = c("trt", "y"))
+
+gt_tbl <- gt(d_tbl) |>
+  cols_align(
+    align = "left",
+    columns = everything()
+  ) |>
+  fmt_number(
+    columns = c("mu_f1", "mu_f2"),
+    decimals = 3
+  ) |>
+  tab_options(table.font.size = "80%") |> 
+  tab_options(table.width = px(500))
+
+gt_tbl
+```
+
+The parameter estimates from the linear predictors from the two models are summarised below.
+The terms (treatment effects) of interest are those associated with the second model `f2`, specifically, `b[2,1]` and `b[2,2]`.
+These suggesting that (1) units in the treatment group are more likely to have walking/bike than car as their dominant mode of transport and (2) units in the treatment group are more likely to have public transport than car as their dominant mode of transport.
+
+```{r}
+f1$summary(variables = "b")
+f2$summary(variables = "b")
+```
+
+These results are consistent with the results from the contingency table analysis in that they suggest the public transport discount intervention may increase the likelihood of people taking this form of transport to work.
+
+Unlike the contingency analysis, the the multi-logit approach offers the usual regression benefit of being able to adjust for covariates that may be relevant.
+
+
+## Poisson regression
+
+Multinomial logit models can also be fit using an equivalent log-linear model and a series of Poisson likelihoods.
+This is mathematically equivalent to the multinomial and computationally the Poisson approach can be easier, see McElreath2020 p365.
+
+An implementation is shown below
+
+```{r}
+#| label: stan-model-3
+#| code-summary: "Poisson equivalent to multi-logit model"
+#| class-output: stan
+#| echo: false
+
+
+cat(readLines("stan/poisson-01.stan"), sep = "\n")
+```
+
+In order to fit the model, it is necessary to first create an indicator variable for the occurrence of each category.
+
+```{r}
+# need to create a binary indicator for each category:
+d[, y1 := ifelse(y == 1, 1, 0)]
+d[, y2 := ifelse(y == 2, 1, 0)]
+d[, y3 := ifelse(y == 3, 1, 0)]
+
+m3 <- cmdstanr::cmdstan_model("stan/poisson-01.stan")
+
+ld <- list(
+  N = nrow(d),
+  K = length(unique(d$y)),
+  y1 = d$y1, 
+  y2 = d$y2,
+  y3 = d$y3,
+  x = d$trt
+)
+
+f3 <- m3$sample(data = ld, chains = 1, iter_sampling = 1000, refresh = 0)
+f3$summary(variables = "b")
+```
+
+The combined set of results are shown below, again the empirical proportions for each group are captured by the poisson implementation of the model.
+
+```{r}
+#| echo: FALSE
+#| label: tbl-model-res-2
+#| tbl-pos: H
+#| tbl-cap: "Observed and modeled distribution for mode of transport (multi-logit and poisson)"
+
+
+smry_f3 <- data.table(f3$summary(variables = "p", posterior::default_summary_measures()[1]))
+smry_f3[variable %like% "p\\[.,1]", trt := 0]
+smry_f3[variable %like% "p\\[.,2]", trt := 1]
+smry_f3[, y := gsub("p[", "", variable, fixed = T)]
+smry_f3[, y := as.numeric(gsub(",.\\]", "", y))]
+setnames(smry_f3, "mean", "mu_f3")
+
+d_tbl <- merge(d_tbl, smry_f3[, .(mu_f3, trt, y)], by = c("trt", "y"))
+
+gt_tbl <- gt(d_tbl) |>
+  cols_align(
+    align = "left",
+    columns = everything()
+  ) |>
+  fmt_number(
+    columns = c("mu_f1", "mu_f2", "mu_f3"),
+    decimals = 3
+  ) |>
+  tab_options(table.font.size = "80%") |> 
+  tab_options(table.width = px(500))
+
+gt_tbl
+```
+
