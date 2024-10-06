@@ -392,3 +392,8 @@ gt_tbl <- gt(d_tbl) |>
 gt_tbl
 ```
 
+
+## Extensions
+
+One of the natural extensions of multinomial regression is the use of cluster level effects that are correlated across categories.
+For more detail, see @Koster2017.
