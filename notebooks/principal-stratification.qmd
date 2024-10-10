@@ -107,6 +107,7 @@ For each unit there exists $(Y_i(1), Y_i(0), D_i(1), D_i(0), \mathbf{X_i}, Z_i)$
 Therefore, strata membership, $S_i = (D_i(0), D_i(1))$, is unobserved.
 
 To proceed, we need a model for the strata membership $S$ and the outcome $Y$.
+For example, the $S$ model can take the form of a multinomial model of some form and the outcome might be a GLM.
 The likelihood decomposes into an S-model (a principal strata model given the covariates) and a Y-model (an outcome model given the stratum, covariates and treatment).
 This yields the full likelihood:
 
