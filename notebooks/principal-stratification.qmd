@@ -57,6 +57,7 @@ Centrally, a PS has the goal of characterising treatment effect heterogeneity ac
 
 library(gt)
 library(data.table)
+library(ggplot2)
 suppressPackageStartupMessages(library(cmdstanr))
 
 d_tbl <- CJ(
@@ -312,7 +313,32 @@ f1 <- m1$sample(data = ld, chains = 1, iter_sampling = 1000, refresh = 0,
                 adapt_delta = 0.9)
 ```
 
-We can compute the posterior expected mean for each arm and each strata as follows:
+
+We can visualise the posterior for strata membership as shown in @fig-strata-1.
+
+```{r}
+#| label: fig-strata-1
+#| fig-cap: 'Posterior proportions for strata membership'
+#| fig-cap-location: margin
+#| fig-height: 5
+#| fig-width: 5
+
+
+d_p1 <- data.table(f1$draws(variables = "strata_prob", format = "matrix"))
+names(d_p1) <- paste0(1:ncol(d_p1))
+d_fig <- melt(d_p1, measure.vars = names(d_p1), variable.name = "strata")
+d_fig[strata == "1", strata := "n (0,0)"]
+d_fig[strata == "2", strata := "c (0,1)"]
+d_fig[strata == "3", strata := "a (1,1)"]
+
+ggplot(d_fig, aes(x = value, group = strata, col = strata)) +
+  geom_density() +
+  scale_color_discrete("Strata") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+And calculate the posterior expected mean for each arm and each strata as follows:
 
 ```{r}
 
