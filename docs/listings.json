@@ -3,6 +3,7 @@
     "listing": "/index.html",
     "items": [
       "/notebooks/multinomial-regression.html",
+      "/notebooks/principal-stratification.html",
       "/notebooks/limits-of-per-protocol.html",
       "/notebooks/hypothetical-estimands.html",
       "/notebooks/probabilistic-index.html",
