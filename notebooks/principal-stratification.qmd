@@ -108,8 +108,8 @@ Therefore, strata membership, $S_i = (D_i(0), D_i(1))$, is unobserved.
 
 To proceed, we need a model for the strata membership $S$ and the outcome $Y$.
 For example, the $S$ model can take the form of a multinomial model of some form and the outcome might be a GLM.
-The likelihood decomposes into an S-model (a principal strata model given the covariates) and a Y-model (an outcome model given the stratum, covariates and treatment).
-This yields the full likelihood:
+The full likelihood decomposes into an S-model (a principal strata model given the covariates) and a Y-model (an outcome model given the stratum, covariates and treatment).
+This yields:
 
 $$
 \begin{aligned}
@@ -126,7 +126,7 @@ l(\theta) &\propto \prod_{i:Z_i=0,D_i=0} (\pi_{i,c}f_{i,c0} + \pi_{i,n}f_{i,n0})
 \end{aligned}
 $$
 
-where $f_{i,sz} = \text{Pr}(Y_i | S_i = s, Z_i, \mathbf{X}_i, \theta)$ and $\pi_{i,s} = \text{Pr}(S_i = s | \mathbf{X}_i, \theta)$ and where the $c,n,a,d$ denote the compliers, never-takeres, defiers, compliers.
+where $f_{i,sz} = \text{Pr}(Y_i | S_i = s, Z_i, \mathbf{X}_i, \theta)$ and $\pi_{i,s} = \text{Pr}(S_i = s | \mathbf{X}_i, \theta)$ and where the $c,n,a,d$ denote the compliers, never-takeres, always-takers and defiers (for the noncompliance case considered here).
 
 For any given strata, we can write the PCE based on the iterated expectations:
 
