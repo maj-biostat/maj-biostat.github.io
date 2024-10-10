@@ -8,7 +8,7 @@ listing:
   max-items: 100
   categories: true
   date-format: "dddd D MMM YYYY"
-  fields: [image, date, title, reading-time]
+  fields: [date, title, reading-time]
 date: today
 date-modified: last-modified
 ---
