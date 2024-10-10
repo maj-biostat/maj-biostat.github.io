@@ -310,7 +310,7 @@ Figure&nbsp;1: Observations by site
 </div>
 </div>
 </div>
-<p>Overall, the observed proportion resistant to antibiotics is 0.525. Various ways exist to estimate the uncertainty.</p>
+<p>Overall, the observed proportion resistant to antibiotics is 0.539. Various ways exist to estimate the uncertainty.</p>
 <p>The wald estimate for the uncertainty interval is calculated as:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># wald (normal approximation)</span></span>
@@ -326,7 +326,7 @@ Figure&nbsp;1: Observations by site
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(f1, <span class="at">type =</span> <span class="st">"response"</span>)[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        1 
-0.5246377 </code></pre>
+0.5387714 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get naive standard errors</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>s_f1 <span class="ot">&lt;-</span> <span class="fu">summary</span>(f1)<span class="sc">$</span>coef</span>
@@ -361,25 +361,25 @@ Figure&nbsp;1: Observations by site
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sprintf</span>(<span class="st">"%.4f (%.4f, %.4f)"</span>, p_obs, p_0_lb, p_0_ub)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0.5246 (0.4942, 0.5551)"</code></pre>
+<pre><code>[1] "0.5388 (0.5078, 0.5698)"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model based adjusting for site.</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sprintf</span>(<span class="st">"%.4f (%.4f, %.4f)"</span>, p_obs, p_1_lb, p_1_ub)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0.5246 (0.4942, 0.5549)"</code></pre>
+<pre><code>[1] "0.5388 (0.5077, 0.5696)"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjusted - account for heterogeneity due to site (we did not </span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># adjust for site) and repeat measure for pt</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sprintf</span>(<span class="st">"%.4f (%.4f, %.4f)"</span>, p_obs, p_2_lb, p_2_ub)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0.5246 (0.3982, 0.6480)"</code></pre>
+<pre><code>[1] "0.5388 (0.4604, 0.6153)"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Finally a random effects model</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">avg_predictions</span>(f2, <span class="at">re.form =</span> <span class="cn">NA</span>, <span class="at">type =</span> <span class="st">"link"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
- Estimate Std. Error    z Pr(&gt;|z|)   S   2.5 % 97.5 %
-    0.311      0.198 1.57    0.116 3.1 -0.0767  0.699
+ Estimate Std. Error   z Pr(&gt;|z|)   S  2.5 % 97.5 %
+     0.39       0.26 1.5    0.133 2.9 -0.119  0.899
 
 Columns: estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
 Type:  link </code></pre>
@@ -387,8 +387,8 @@ Type:  link </code></pre>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">avg_predictions</span>(f2, <span class="at">re.form =</span> <span class="cn">NA</span>, <span class="at">type =</span> <span class="st">"response"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
- Estimate Std. Error  z Pr(&gt;|z|)     S 2.5 % 97.5 %
-    0.577     0.0483 12   &lt;0.001 107.0 0.482  0.672
+ Estimate Std. Error    z Pr(&gt;|z|)    S 2.5 % 97.5 %
+    0.596     0.0625 9.54   &lt;0.001 69.3 0.474  0.719
 
 Columns: estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
 Type:  response </code></pre>
@@ -398,7 +398,7 @@ Type:  response </code></pre>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Step 2: average</span></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(<span class="fu">mean</span>(pred))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5771169</code></pre>
+<pre><code>[1] 0.5963627</code></pre>
 </div>
 </div>
 <section id="references" class="level1">
