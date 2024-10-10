@@ -24,6 +24,8 @@ This could arise if, say, the units that do not comply when assigned to treatmen
 
 The ideas for principal stratification were popularised in the paper by Frangakis and Rubin @Frangakis2002.
 They generalised the instrument variable approach.
+Other references include @Page2015, @Mercatanti2017, @Liu2024, @Hirano2000.
+
 The key concept is that principal strata can be conceptualised and these are not affected by treatment assignment.
 That is, the units can be group in terms of joint potential outcomes for $D$ and membership in any stratum only reflects a subjects characteristics, which are defined pre-treatment.
 Within stratum comparisons are thus well defined causal effects.
