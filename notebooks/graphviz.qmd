@@ -1,0 +1,100 @@
+---
+title: "CONSORT using graphviz"
+author: "maj"
+date: "2024-10-21"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - visaulisation
+---
+
+Graphviz (short for Graph Visualization Software) is a package of open-source tools initiated by AT&T Labs Research for drawing graphs specified in DOT language scripts.
+Three main kinds of objects appear in the DOT language: graphs, nodes, edges.
+The outer most (main) graph can be directed (`digraph`) or undirected (`graph`).
+Within the main graph, a subgraph defines a subset of nodes and edges.
+
+The following provides some basic reference examples, mostly taken from @Gansner2015.
+
+# Initial Examples
+
+The specification of a simple graph is shown in @fig-1.
+Nodes are created when the name appears.
+Edges are created when nodes are joined by the edge operator `->`.
+
+Unlike other types of quarto blocks, it is necessary to enter the control elements in the form `//| echo: true` rather than the usual `#| echo: FALSE`.
+
+```{dot, echo = T}
+//| echo: true
+//| label: fig-1
+//| fig-cap: 'Example dot graph'
+
+
+digraph G {
+  main -> parse -> execute;
+  main -> init;
+  main -> cleanup;
+  execute -> make_string;
+  execute -> printf
+  init -> make_string;
+  main -> printf;
+  execute -> compare;
+}
+```
+
+
+Nodes and edges can be given attributes to control their representation and placement.
+The size of the graph can be controlled with the `size` operator. 
+If the drawing is too large, it is scaled uniformly as necessary to fit.
+
+```{dot, echo = T}
+//| echo: true
+//| label: fig-2
+//| fig-cap: 'Example dot graph with attributes and comments'
+
+
+digraph G {
+  size ="4,4";
+  main [shape=box];   /* this is a comment */
+  main -> parse [weight=8];
+  parse -> execute;
+  main -> init [style=dotted];
+  main -> cleanup;
+  execute -> { make_string; printf}
+  init -> make_string;
+  edge [color=red];   // so is this
+  main -> printf [style=bold,label="100 times"];
+  make_string [label="make a\nstring"];
+  node [shape=box,style=filled,color=".7 .3 1.0"];
+  execute -> compare;
+}
+```
+
+# Attributes
+
+Some common **node shapes** available include `box`, `circle`, `record` and `plaintext`.
+A complete list can be found at [www.graphviz.org/doc/info/shapes.html].
+The modifier `fixedsize=true` ensures that the node's actual size is aligned with `width` and `height`.
+Linework can be doubled up using `peripheries=2` and orientation directed with `orientation` measured in degrees.
+
+While the default name of a node is its name, this can be modified with the `label` attribute.
+
+```{dot}
+//| echo: true
+//| label: fig-3
+//| fig-cap: 'Example of dot graph with nested attributes and comments'
+
+
+digraph structs {
+node [shape=record];
+  size ="3,3";
+  struct1 [shape=record,label="<f0> left|<f1> mid\ dle|<f2> right"];
+  struct2 [shape=record,label="<f0> one|<f1> two"];
+  struct3 [shape=record,label="hello\nworld |{ b |{c|<here> d|e}| f}| g | h"];
+  struct1 -> struct2;
+  struct1 -> struct3;
+}
+
+```
+
+To specify the minimum distance between two adjacent nodes, use `nodesep` and to set the minimum vertical space use `ranksep`.
