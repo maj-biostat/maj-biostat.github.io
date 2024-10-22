@@ -56,7 +56,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -187,7 +206,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">October 4, 2024</p>
+      <p class="date-modified">October 21, 2024</p>
     </div>
   </div>
     
@@ -199,7 +218,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Patients in RCTs that discontinue before the endpoint often have poorer prognosis than those who continue treatment. Additionally, discontinuation is more common in the treatments that create more side effects or have less clear benefit.</p>
-<p>The traditional per-protocol analyses will exclude those patients that are not completers and that deviate in some unacceptable way from the protocol (e.g.&nbsp;early discontinuation of treatment) and then run the primary analysis unchanged. That is, the comparison groups are defined in part by post randomisation events that are influenced by treatment group status and other factors. This can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened, <span class="citation" data-cites="Greenland2008">[<a href="#ref-Greenland2008" role="doc-biblioref"><strong>Greenland2008?</strong></a>]</span>. The following example illustrates this.</p>
+<p>The traditional per-protocol analyses will exclude those patients that are not completers and that deviate in some unacceptable way from the protocol (e.g.&nbsp;early discontinuation of treatment) and then run the primary analysis unchanged. That is, the comparison groups are defined in part by post randomisation events that are influenced by treatment group status and other factors. This can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened, <span class="citation" data-cites="Greenland2007">[<a href="#ref-Greenland2007" role="doc-biblioref">1</a>]</span>. The following example illustrates this.</p>
 <p>Compare a new antihypertensive (A) to a standard treatment (B) for lowering blood pressure in patients with existing hypertension in an RCT. At 6-months patients are assessed to be either still hypertensive (0) or no longer hypertensive (1). One thousands patients are randomised, 500 to each arm.</p>
 <p>It is common for trials to show differential adherence by study group. Here, assume that A causes more side effects than B and at 3 months, 20% of patients stop taking A due to side effects and 4% stop taking B for a side effect intercurrent event. We interpret this as a protocol deviation (although who knows whether this would actually be consider to be a protocol deviation in reality). Additionally, assume that the patients who experience side effects (and therefore would dropout of the traditional PP analysis) tend to have more severe hypertension and would have shown less improvement in blood pressure status irrespective of the treatment they received.</p>
 <p>The traditional per-protocol analysis excludes those that deviate from the protocol and we would therefore have around 400 patients in A and 480 patients in B.</p>
@@ -351,7 +370,12 @@ Figure&nbsp;2: Distribution of percentage change from the ITT estimate - traditi
 
 
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-Greenland2007" class="csl-entry" role="listitem">
+1. Greenland S. <a href="https://doi.org/10.1177/1740774507087703">Estimating effects from randomized trials with discontinuations: The need for intent-to-treat design and g-estimation</a>. Clinical Trials. 2008;5:5–13.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

@@ -3,6 +3,7 @@ listing:
   contents:
     - "notebooks/*.qmd"
     - "!notebooks/about.qmd"
+    - "!notebooks/absolute-v-relative.qmd"
   type: table
   sort: "date desc"
   max-items: 100

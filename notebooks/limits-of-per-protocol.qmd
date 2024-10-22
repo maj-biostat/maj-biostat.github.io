@@ -16,7 +16,7 @@ Additionally, discontinuation is more common in the treatments that create more 
 
 The traditional per-protocol analyses will exclude those patients that are not completers and that deviate in some unacceptable way from the protocol (e.g. early discontinuation of treatment) and then run the primary analysis unchanged.
 That is, the comparison groups are defined in part by post randomisation events that are influenced by treatment group status and other factors.
-This can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened, @Greenland2008.
+This can be problematic in that it violates the randomisation principle, the treatment groups can become unbalanced in either known or unknown covariates, selection bias can arise, effect estimates may be biased and external validity threatened, @Greenland2007.
 The following example illustrates this.
 
 Compare a new antihypertensive (A) to a standard treatment (B) for lowering blood pressure in patients with existing hypertension in an RCT.

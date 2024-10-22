@@ -16,6 +16,11 @@ Within the main graph, a subgraph defines a subset of nodes and edges.
 
 The following provides some basic reference examples, mostly taken from @Gansner2015.
 
+```{r}
+library(DiagrammeR)
+```
+
+
 # Initial Examples
 
 The specification of a simple graph is shown in @fig-1.
@@ -70,6 +75,8 @@ digraph G {
 }
 ```
 
+
+
 # Attributes
 
 Some common **node shapes** available include `box`, `circle`, `record` and `plaintext`.
@@ -84,10 +91,9 @@ While the default name of a node is its name, this can be modified with the `lab
 //| label: fig-3
 //| fig-cap: 'Example of dot graph with nested attributes and comments'
 
-
 digraph structs {
-node [shape=record];
-  size ="3,3";
+  size ="2,2"; ratio=fill;
+node [shape=record,fontsize=5];
   struct1 [shape=record,label="<f0> left|<f1> mid\ dle|<f2> right"];
   struct2 [shape=record,label="<f0> one|<f1> two"];
   struct3 [shape=record,label="hello\nworld |{ b |{c|<here> d|e}| f}| g | h"];
@@ -98,3 +104,75 @@ node [shape=record];
 ```
 
 To specify the minimum distance between two adjacent nodes, use `nodesep` and to set the minimum vertical space use `ranksep`.
+
+# R Integration
+
+There are a number of ways to incorporate DOT within R. 
+One approach is to use the [DiagrammeR](https://rich-iannone.github.io/DiagrammeR/articles/graphviz-mermaid.html) package, specifically the `grViz()` function.
+This allows you to encode the graph using DOT notation but also pass in arguments as defined in R.
+@fig-r-integration provides a simple example.
+
+```{r}
+#| echo: TRUE
+#| label: fig-r-integration
+#| fig-cap: 'Example of dot graph that uses arguments defined in R'
+#| fig-pos: H
+
+N <- 24
+N_A <- 12
+N_A_excl <- 2
+N_A_analy <- 10
+N_B <- 12
+N_B_analy <- 12
+
+fig <- grViz("digraph consort {
+
+  node [fontname = Helvetica, shape = box, width = 1];
+  
+  enrolled [label = 'Enrolled \n(n = @@1)'];  
+  allocA [label = 'Assigned A \n(n = @@2)'];
+  allocB [label = 'Assigned B \n(n = @@3)'];
+  
+  { rank = same; allocA allocB } 
+  
+  exclA[label = 'Excl A \n(n = @@6)'];
+  
+  analyA [label = 'Incl in analysis \n(n = @@4)'];
+  analyB [label = 'Incl in analysis \n(n = @@5)'];
+  
+  { rank = same; analyA analyB } 
+  
+  blank1[label = '', width = 0.01, height = 0.01];
+
+  blank2[label = '', width = 0.01, height = 0.01];
+  blank3[label = '', width = 0.01, height = 0.01];
+  blank4[label = '', width = 0.01, height = 0.01];
+  /* all have same vertical position */
+  { rank = same; blank2 blank3 blank4 }
+
+  blank2 -> blank3 [arrowhead=none, minlen = 5];
+  blank3 -> blank4 [arrowhead=none, minlen = 5];
+  
+  blank5[label = '', width = 0.01, height = 0.01]; 
+  { rank = same; blank5 exclA } 
+
+  enrolled -> blank1[dir = none];
+  blank1 -> blank3[arrowhead=none];
+  blank2 -> allocA;
+  blank4 -> allocB;
+  allocA -> blank5[arrowhead=none];
+  blank5 -> exclA;
+  blank5 -> analyA;
+  allocB -> analyB;
+  
+}
+
+  [1]: N
+  [2]: N_A
+  [3]: N_B
+  [4]: N_A_analy
+  [5]: N_B_analy
+  [6]: N_A_excl
+")
+fig
+```

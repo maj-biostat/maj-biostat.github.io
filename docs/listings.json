@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/notebooks/graphviz.html",
       "/notebooks/principal-stratification.html",
       "/notebooks/multinomial-regression.html",
       "/notebooks/limits-of-per-protocol.html",
