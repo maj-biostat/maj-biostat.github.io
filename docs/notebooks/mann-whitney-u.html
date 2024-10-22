@@ -466,12 +466,12 @@ U_2 &amp;= \sum_{i = 1}^{n_1} \sum_{j = 1}^{n_2} \delta_{2}(i,j) \quad \text{whe
 <span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prop.table</span>(u_e_alt)</span>
 <span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        [,1]    [,2]   [,3]    [,4]    [,5]    [,6]    [,7]    [,8]    [,9]
-[1,] 0.02262 0.02492 0.0567 0.10944 0.12254 0.15272 0.17963 0.14567 0.08674
-[2,] 0.02206 0.02494 0.0584 0.10858 0.12561 0.15254 0.17826 0.14497 0.08469
+<pre><code>        [,1]    [,2]    [,3]    [,4]    [,5]    [,6]    [,7]    [,8]    [,9]
+[1,] 0.02169 0.02537 0.05754 0.10784 0.12386 0.15270 0.17866 0.14731 0.08582
+[2,] 0.02158 0.02540 0.05706 0.10861 0.12500 0.15292 0.17936 0.14424 0.08600
        [,10]
-[1,] 0.09902
-[2,] 0.09995</code></pre>
+[1,] 0.09921
+[2,] 0.09983</code></pre>
 </div>
 </div>
 <p>For small <span class="math inline">\(n\)</span> we can approximate a discrete version of the posterior for <span class="math inline">\(\Omega_e\)</span> using the above and assuming a uniform prior. In brief, the procedure is as follows:</p>
@@ -543,7 +543,7 @@ Pr(\Omega_k | U_e) = \frac{Pr(U_e | \Omega_k) Pr(\Omega_k)}{\sum_{k\in K} Pr(U_e
 <span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a><span class="co"># compute posterior</span></span>
 <span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>d_res[, pr_omega_u_e <span class="sc">:</span><span class="er">=</span> (pr_u_e <span class="sc">*</span> pr_omega)<span class="sc">/</span> <span class="fu">sum</span>(d_res<span class="sc">$</span>pr_omega <span class="sc">*</span> d_res<span class="sc">$</span>pr_u_e)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>From the results of the simulation, the posterior can be visualised and quantities such as <span class="math inline">\(Pr(\Omega &gt; 0.5)\)</span> can be computed as simple summaries. For example, <span class="math inline">\(Pr(\Omega &gt; 0.5)\)</span> = 0.7648385.</p>
+<p>From the results of the simulation, the posterior can be visualised and quantities such as <span class="math inline">\(Pr(\Omega &gt; 0.5)\)</span> can be computed as simple summaries. For example, <span class="math inline">\(Pr(\Omega &gt; 0.5)\)</span> = 0.7648603.</p>
 <div class="cell page-columns page-full">
 <div class="sourceCode cell-code" id="cb15" data-cap-location="margin"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(d_res, <span class="fu">aes</span>(<span class="at">x =</span> omega_k, pr_omega_u_e)) <span class="sc">+</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
