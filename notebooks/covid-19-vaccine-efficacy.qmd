@@ -5,6 +5,7 @@ date: "2024-11-13"
 date-modified: last-modified
 bibliography: ../etc/refs.bib
 csl: ../etc/biomed-central.csl
+embed-resources: true
 categories:
   - bayes
   - vaccines
@@ -23,7 +24,7 @@ $$
 VE = 1\left(1 - \frac{\pi_v}{\pi_p} \right)
 $$
 
-where $\pi_v$, $\pi_p$ are the probabilities of infection under the vaccine and placebo (i.e. the risk of infection without infection), generally expressed as a percentage.
+where $\pi_v$, $\pi_p$ are the probabilities of infection under the vaccine and placebo (i.e. the risk of infection without vaccination), generally expressed as a percentage.
 
 The lower the risk of infection on receipt of the vaccine relative to the risk of infection under placebo, the higher the VE with VE capped at 100%, $\lim_{\pi_v \to 0} VE = 1$.
 
@@ -111,7 +112,7 @@ d_VE <- data.table(par = "VE", prior = VE_pri, posterior = VE)
 #| label: fig-theta
 #| fig-cap: 'Prior and posterior density on case proportion'
 #| fig.height: 4.5
-#| fig.width: 4.5
+#| fig.width: 6
 #| fig-pos: H
 
 d_fig <- melt(d_theta, measure.vars = c("prior", "posterior"))
@@ -133,7 +134,7 @@ ggplot(d_fig, aes(x = value, group = variable)) +
 #| label: fig-ve
 #| fig-cap: 'Prior and posterior density on VE'
 #| fig.height: 4.5
-#| fig.width: 4.5
+#| fig.width: 6
 #| fig-pos: H
 
 d_fig <- melt(d_VE, measure.vars = c("prior", "posterior"))
@@ -179,10 +180,6 @@ gt(d_VE[, .(
   
 ```
 
-
-
-
-# References
 
 <!-- ::: {#refs} -->
 <!-- ::: -->
