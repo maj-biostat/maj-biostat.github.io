@@ -1,0 +1,188 @@
+---
+title: "COVID-19 Analyses"
+author: "maj"
+date: "2024-11-13"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - bayes
+  - vaccines
+---
+
+```{r}
+library(data.table)
+library(ggplot2)
+library(gt)
+```
+
+
+Vaccine efficacy is defined as:
+
+$$
+VE = 1\left(1 - \frac{\pi_v}{\pi_p} \right)
+$$
+
+where $\pi_v$, $\pi_p$ are the probabilities of infection under the vaccine and placebo (i.e. the risk of infection without infection), generally expressed as a percentage.
+
+The lower the risk of infection on receipt of the vaccine relative to the risk of infection under placebo, the higher the VE with VE capped at 100%, $\lim_{\pi_v \to 0} VE = 1$.
+
+If we can reasonably assume that $p_v \le p_c$ (implying the risk of infection is going to be lower on receipt of the vaccine than on placebo) then the lower bound of VE will be constrained to zero.
+However, when we cannot make this assumption and $p_v > p_c$ then VE may become negative.
+
+The VE is given various representations via the risk-ratio, incidence rate ratio and hazard ratio, specifically:
+
+$$
+\begin{aligned}
+VE &= 1 - RR = 1 - \frac{c_v/N_v}{c_p/N_p} \\
+VE &= 1 - IRR = 1 - \frac{c_v/T_v}{c_p/T_p}  \\
+VE &= 1 - HR = 1 - \frac{\lambda_v}{\lambda_p}
+\end{aligned}
+$$
+
+If we take the second representation and set $r = T_v/T_p$ as the ratio of person-time, then a few manipulations give us:
+
+$$
+\frac{c_v}{c_p} = r (1 - VE)
+$$
+
+from which we can form a *case proportion*  - the proportion of the total cases in the vaccinated group:
+
+$$
+\begin{aligned}
+\theta &= \frac{r (1 - VE)}{1 + r(1 - VE)} \\
+  &= \frac{  \frac{c_v}{c_p}   }{    \frac{c_v}{c_p} + 1 } \\
+  &= \frac{  \frac{c_v}{c_p}   }{    \frac{c_v}{c_p} + \frac{c_p}{c_p} } \\
+  &= \frac{  c_v   }{   c_v + c_p  } 
+\end{aligned}
+$$
+
+which is a proportion between 0 and 1, and thus might plausibly admit to a beta distributional assumption.
+
+Some more manipulations gives a reparameterisation of VE:
+
+$$
+\begin{aligned}
+\frac{1 + r(1 - VE)}{r (1 - VE)} &= \frac{1}{\theta} \\
+\frac{1}{r (1 - VE)} + 1 &= \frac{1}{\theta} \\
+                         &= \frac{1-\theta}{\theta}\\
+r (1 - VE)   &=  \frac{\theta}{1-\theta} \\
+1 - VE &= \frac{\theta}{r(1-\theta)} \\
+VE - 1 &= - \frac{\theta}{r(1-\theta)} \\
+       &=   \frac{\theta}{r(\theta-1)} \\
+VE  &= 1 + \frac{\theta}{r(\theta-1)} 
+\end{aligned}
+$$
+
+and therefore we can do inference on $\theta$ and derive VE from that.
+
+According to [this](https://www.nejm.org/doi/full/10.1056/NEJMoa2034577) paper by Polack, there were 8 cases in the vaccine group and 162 in the placebo group used in the Pfizer vaccine efficacy analysis.
+Additionally, the follow up times were 2.214 and 2.222 in 1000 person-years in the vaccine and placebo groups respectively.
+
+Therefore, we can compute the posterior on the case proportion as $\theta \sim \text{Beta}(8 + 0.700102, 162 + 1)$ and derive VE.
+By simulation:
+
+```{r}
+N_ptcl <- 1e6
+
+# person time followup ratio
+r <- 2.214 / 2.222
+
+# prior
+theta_pri <- rbeta(N_ptcl, 0.700102, 1)
+mu_theta_pri <- 0.700102 / (1 + 0.700102)
+VE_pri <- 1 + theta_pri / (1 * (theta_pri - 1))
+
+# posterior
+theta <- rbeta(N_ptcl, 8 + 0.700102, 162 + 1)
+VE <- 1 + theta / (r * (theta - 1))
+
+
+# results
+d_theta <- data.table(par = "theta", prior = theta_pri, posterior = theta)
+d_VE <- data.table(par = "VE", prior = VE_pri, posterior = VE)
+
+```
+
+@fig-theta shows the prior and posterior on the case proportion, @fig-ve shows the implied VE and @tbl-post-smry gives a summary of the posterior on the VE parameter.
+
+```{r}
+#| echo: FALSE
+#| label: fig-theta
+#| fig-cap: 'Prior and posterior density on case proportion'
+#| fig.height: 4.5
+#| fig.width: 4.5
+#| fig-pos: H
+
+d_fig <- melt(d_theta, measure.vars = c("prior", "posterior"))
+
+ggplot(d_fig, aes(x = value, group = variable)) + 
+  geom_density() + 
+  scale_x_continuous("theta", limits = c(0, 1),
+                     breaks = seq(0, 1, by = 0.2)) +
+  scale_color_discrete("") +
+  facet_wrap(~variable, scales = "free") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+
+
+```{r}
+#| echo: FALSE
+#| label: fig-ve
+#| fig-cap: 'Prior and posterior density on VE'
+#| fig.height: 4.5
+#| fig.width: 4.5
+#| fig-pos: H
+
+d_fig <- melt(d_VE, measure.vars = c("prior", "posterior"))
+d_fig <- rbind(
+  d_fig[variable == "prior" & value > -5],
+  d_fig[variable == "posterior"]
+  
+)
+
+ggplot(d_fig, aes(x = value, group = variable)) + 
+  geom_density() + 
+  scale_x_continuous("VE") +
+  scale_color_discrete("") +
+  facet_wrap(~variable, scales = "free") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+#| echo: FALSE
+#| label: tbl-post-smry
+#| tbl-pos: H
+#| tbl-cap: "Summary of posterior on VE"
+#| results: asis
+
+
+gt(d_VE[, .(
+  par = "VE",
+  mu = mean(posterior),
+  pct_025 = quantile(posterior, prob = 0.025),
+  pct_975 = quantile(posterior, prob = 0.975)
+)], rowname_col = "par") |>
+  fmt_number(decimals = 3) |>
+  cols_label(
+      mu = "mean",
+      pct_025 = "2.5%",
+      pct_975 = "97.5%",
+    ) |>
+  tab_spanner(
+    label = "Posterior (mean, 95% CrI)",
+    columns = c(mu, pct_025, pct_975)
+  )
+  
+```
+
+
+
+
+# References
+
+<!-- ::: {#refs} -->
+<!-- ::: -->
