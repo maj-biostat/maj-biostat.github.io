@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-11-20">
+<meta name="author" content="maj">
+<meta name="dcterms.date" content="2024-11-13">
 
-<title>maj-biostat.github.io</title>
+<title>Survival analysis – maj-biostat.github.io</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,24 +25,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-fc6d358c97f25a8ea829b86655043430.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-f3fb504896f8330e4610c1a7987504ff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-fc6d358c97f25a8ea829b86655043430.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-f3fb504896f8330e4610c1a7987504ff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,35 +67,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -128,7 +98,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -138,7 +108,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">maj-biostat.github.io</span>
     </a>
   </div>
@@ -149,11 +119,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -178,31 +148,61 @@ window.Quarto = {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(13)</span></div><div class="category" data-category="YmF5ZXM=">bayes <span class="quarto-category-count">(3)</span></div><div class="category" data-category="YmF5ZXNpYW4=">bayesian <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Y2F1c2FsLWluZmVyZW5jZQ==">causal-inference <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZGlzY3JldGUgcGFyYW1ldGVycw==">discrete parameters <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZXN0aW1hbmQ=">estimand <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bXVsdGlub21pYWw=">multinomial <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bm9ucGFyYW1ldHJpYw==">nonparametric <span class="quarto-category-count">(3)</span></div><div class="category" data-category="b3JkaW5hbA==">ordinal <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cGVyLXByb3RvY29s">per-protocol <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cmVncmVzc2lvbg==">regression <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3Rhbg==">stan <span class="quarto-category-count">(3)</span></div><div class="category" data-category="dmFjY2luZXM=">vaccines <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dmlzYXVsaXNhdGlvbg==">visaulisation <span class="quarto-category-count">(1)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#mathematical-framework" id="toc-mathematical-framework" class="nav-link active" data-scroll-target="#mathematical-framework">Mathematical framework</a></li>
+  <li><a href="#censoring" id="toc-censoring" class="nav-link" data-scroll-target="#censoring">Censoring</a>
+  <ul class="collapse">
+  <li><a href="#right-left-interval" id="toc-right-left-interval" class="nav-link" data-scroll-target="#right-left-interval">Right, left, interval</a></li>
+  <li><a href="#type-i-type-ii" id="toc-type-i-type-ii" class="nav-link" data-scroll-target="#type-i-type-ii">Type-I, Type-II</a></li>
+  </ul></li>
+  <li><a href="#truncation" id="toc-truncation" class="nav-link" data-scroll-target="#truncation">Truncation</a></li>
+  <li><a href="#likelihood" id="toc-likelihood" class="nav-link" data-scroll-target="#likelihood">Likelihood</a></li>
+  <li><a href="#regression-analysis" id="toc-regression-analysis" class="nav-link" data-scroll-target="#regression-analysis">Regression analysis</a>
+  <ul class="collapse">
+  <li><a href="#aft" id="toc-aft" class="nav-link" data-scroll-target="#aft">AFT</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-</div>
+<h1 class="title">Survival analysis</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">stan</div>
+    <div class="quarto-category">bayes</div>
+    <div class="quarto-category">survival</div>
+  </div>
+  </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>maj </p>
+          </div>
+  </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 20, 2024</p>
+      <p class="date">November 13, 2024</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 20, 2024</p>
+      <p class="date-modified">November 14, 2024</p>
     </div>
   </div>
     
@@ -213,197 +213,121 @@ window.Quarto = {
 </header>
 
 
+<ul>
+<li>survival basics</li>
+<li>proportional hazards model</li>
+<li>data generation under exponential</li>
+<li>censoring types</li>
+<li>visualisation</li>
+<li>summary statistics</li>
+<li>model</li>
+<li>goodness of fit post pred</li>
+<li>model summaries</li>
+<li>marginalisation</li>
+<li></li>
+</ul>
+<section id="mathematical-framework" class="level1">
+<h1>Mathematical framework</h1>
+<p>Define <span class="math inline">\(X\)</span> as a non-negative, continuous random variable on the interval <span class="math inline">\([0, \infty)\)</span> representing the time to a terminal event, e.g.&nbsp;death of an individual. In survival analysis, in addition to the pdf and cdf associated with <span class="math inline">\(X\)</span>, we consider the survival and hazard functions.</p>
+<p>The survival function is the probability that the event will occur beyond time <span class="math inline">\(x\)</span>:</p>
+<p><span class="math display">\[
+S(x) = 1 - F(x) = \text{Pr}(X \ge x) = \int_x^\infty f(s) ds
+\]</span></p>
+<p>it is usually the primary object of interest and takes on a prediction role along with giving access to the idea of median survival times.</p>
+<p>The hazard function (sometimes referred to as an incidence rate or intensity) is:</p>
+<p><span class="math display">\[
+\begin{aligned}
+h(x) &amp;= \lim_{\delta\to\infty} \frac{\text{Pr}(x\le X &lt; x + \delta | X \ge x)}{\delta} \\
+  &amp;= \frac{f(x)}{1 - F(x)} = \frac{f(x)}{S(x)}
+\end{aligned}
+\]</span></p>
+<p>The hazard function characterises the instantaneous risk of the event of interest given survival to <span class="math inline">\(x\)</span>. The hazard informs the cumulative hazard:</p>
+<p><span class="math display">\[
+\begin{aligned}
+H(x) &amp;= \int_0^x h(s) ds
+\end{aligned}
+\]</span></p>
+<p>Relations exist between the various definitions, e.g.</p>
+<p><span class="math display">\[
+\begin{aligned}
+H(x) &amp;= \int_0^x  \frac{f(s)}{1 - F(s)} ds = -\log(S(x))
+\end{aligned}
+\]</span></p>
+<p>and therefore</p>
+<p><span class="math display">\[
+S(x) = \exp(-H(x))
+\]</span></p>
+<p>Parameteric assumptions may be made about the time to event data, of which the LogNormal, Exponential, Weibull and Gamma are popular choices.</p>
+</section>
+<section id="censoring" class="level1">
+<h1>Censoring</h1>
+<p>Survival data are commonly censored (a less commonly considered feature is truncation). This is the main reason that survival analysis is a dealt with as a separate topic. If you just use the length of followup as is, then this will introduces bias into your inference. Censoring is not good, ideally you want to observe every unit.</p>
+<p>For censoring, the subject is known, but we only know that the event will occur at some point in the future, or the event has occurred and we just don’t know when it happened.</p>
+<p>We routinely assume that censoring is independent of the event of interest, i.e.&nbsp;the censoring is uninformative. However, if a particular subset of the subjects are both more likely to be censored and also have the event of interest, then the censoring might become informative. Most models make the assumption of uninformative censoring by virtue of the manner in which the likelihood is constructed.</p>
+<section id="right-left-interval" class="level2">
+<h2 class="anchored" data-anchor-id="right-left-interval">Right, left, interval</h2>
+<p>Right censoring is where we know that the subject has not yet had the event at the time we stop followup either because the study ends or something else happens that stops us from observing the event.</p>
+<p>Left censoring is where the subject has had the event prior to the start of the followup, e.g.&nbsp;we know someone is HIV positive, but we do not know when the disease was contracted. Medical studies often begin the clock at time of diagnosis, but it would be better (for infectious diseases) to start at time of infection. Unfortunately, time of infection isn’t usually known and is therefore left censored.</p>
+<p>Interval censoring is where we only know that event occurred between two known time points, e.g.&nbsp;where followup for an event occurs on a six-month cycle.</p>
+<p>On top of these, there are the concepts of type-i and type-ii censoring.</p>
+</section>
+<section id="type-i-type-ii" class="level2">
+<h2 class="anchored" data-anchor-id="type-i-type-ii">Type-I, Type-II</h2>
+<p>In <strong>type-i</strong>, the study ends at a predetermined time and all subjects that haven’t had the event are censored.</p>
+<p>For example, say we plug in <span class="math inline">\(n\)</span> bulbs at the start of the study and observe them for some period of time <span class="math inline">\(c\)</span> noting when each bulb blows.</p>
+<p>Let <span class="math inline">\(T_i\)</span> be the true life of bulb <span class="math inline">\(i\)</span>. We only observe <span class="math inline">\(T_i\)</span> if <span class="math inline">\(T_i &lt; c\)</span> otherwise <span class="math inline">\(T_i\)</span> is right censored. We therefore observe the combination <span class="math inline">\((U_i, \delta_i)\)</span> where <span class="math inline">\(U_i = \text{min}(T_i, c)\)</span> is the observed part of <span class="math inline">\(T_i\)</span> and <span class="math inline">\(\delta_i = \mathbb{I}(T_i \le c)\)</span> is the censoring indicator.</p>
+<p>Thus, under type-i, the data is a random number <span class="math inline">\(r\)</span> of uncensored lifetimes, all being less than <span class="math inline">\(c\)</span> and <span class="math inline">\(n-r\)</span> censored observations at time <span class="math inline">\(c\)</span>.</p>
+<p>A variant of type-i censoring is <strong>random censoring</strong>. Here the censoring time <span class="math inline">\(c\)</span> is now dependent on subject <span class="math inline">\(i\)</span>.</p>
+<p>In <strong>type-ii</strong>, the study continues until a pre-determined number of events occurs.</p>
+<p>For example, we plug in the <span class="math inline">\(n\)</span> bulbs and wait until <span class="math inline">\(r\)</span> fail. Now we have <span class="math inline">\(r\)</span> uncensored lifetimes and <span class="math inline">\(n-r\)</span> censored. Now <span class="math inline">\(r\)</span> is constant and what we are observing are the first <span class="math inline">\(r\)</span> order statistics.</p>
+</section>
+</section>
+<section id="truncation" class="level1">
+<h1>Truncation</h1>
+<p>In contrast to censoring, where the subject is known to exist but with incomplete data, truncation excludes subjects entirely. Truncation dictates whether subjects are included in a study based on whether an event occurs.</p>
+<p>Left truncation (otherwise known as delayed entry) is where observation of the subject doesn’t occur until a certain time and if the event occurred before this time, then the subject would not enter the study.</p>
+<p>For example, if we analysed length of employment based on the current employees of a firm then we have excluded all those employees that left the firm prior to the study. For all we know, the current employees may just be the ones that stay a long time and the ones that left before our study were only employed for a brief period of time.</p>
+<p>Right truncation is where the subject is only included when an event occurs. The standard situation that leads to right truncation is one where when you enroll participants into a study only after an initiating event (such as infection) and end when an event of interest occurs. The initiating events are often latent and the population only becomes ‘visible’ when another event occurs.</p>
+<p>For example, we might be interested in the incubation period of AIDS (time from HIV infection to development of AIDS). The population is selected based on the individuals that develop AIDS within the study period. More details on right truncation can be found <a href="https://cran.r-project.org/web/packages/coxrt/vignettes/coxrt-vignette.html">here</a>.</p>
+</section>
+<section id="likelihood" class="level1">
+<h1>Likelihood</h1>
+<p>Define the complete data as a time-part and censoring part <span class="math inline">\(D  \equiv (y, \delta)\)</span> where <span class="math inline">\(y\)</span> are the event times and <span class="math inline">\(\delta\)</span> the censoring indicators. For each event time, we assume that <span class="math inline">\(f_i(t | \theta)\)</span> is known except for the parameters, similarly with <span class="math inline">\(S\)</span> and <span class="math inline">\(h\)</span>. The likelihood is the product of the densities for the observed times and the probabilities for the censoring times:</p>
+<p><span class="math display">\[
+\begin{aligned}
+L(\theta | D) \propto \prod_{i=1}^n [f_i(y_i | \theta)]^{\delta_i}[S_i(y_i|\theta)]^{1 - \delta_i}
+\end{aligned}
+\]</span></p>
+<p>Given the relation <span class="math inline">\(h(x) = \frac{f(x)}{S(x)}\)</span> the above can be written as</p>
+<p><span class="math display">\[
+\begin{aligned}
+L(\theta | D) \propto \prod_{i=1}^n [h_i(y_i | \theta)]^{\delta_i}[S_i(y_i|\theta)]
+\end{aligned}
+\]</span></p>
+</section>
+<section id="regression-analysis" class="level1">
+<h1>Regression analysis</h1>
+<p>Accelerated failure time and proportional hazards models are two forms of survival analysis used when we have predictor information associated with each individual.</p>
+<section id="aft" class="level2">
+<h2 class="anchored" data-anchor-id="aft">AFT</h2>
+<p>The AFT is a log-linear regression model:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\log(T_i) &amp;= x_i^' \beta + \sigma \epsilon_i \\
+\epsilon &amp;\sim F_\epsilon(.)
+\end{aligned}
+\]</span></p>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<!-- ::: {#refs} -->
+<!-- ::: -->
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
-<div class="listing-actions-group">
-   <div class="input-group input-group-sm quarto-listing-sort">
-     <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
-     <select id="listing-listing-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-listing'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
-       <option value="" disabled="" selected="" hidden="">Order By</option>
-       <option value="index" data-direction="asc">Default</option>
-         <option value="listing-date-sort" data-direction="asc">
-          Date - Oldest
-        </option>
-         <option value="listing-date-sort" data-direction="desc">
-          Date - Newest
-        </option>
-         <option value="listing-title-sort" data-direction="asc">
-          Title
-        </option>
-     </select>
-  </div>
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
-    </div>
-</div>
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-<th>
-<a class="sort" data-sort="listing-date-sort" onclick="if (this.classList.contains('sort-asc')) { this.classList.add('sort-desc'); this.classList.remove('sort-asc') } else { this.classList.add('sort-asc'); this.classList.remove('sort-desc')} return false;">Date</a>
-</th>
-<th>
-<a class="sort" data-sort="listing-title-sort" onclick="if (this.classList.contains('sort-asc')) { this.classList.add('sort-desc'); this.classList.remove('sort-asc') } else { this.classList.add('sort-asc'); this.classList.remove('sort-desc')} return false;">Title</a>
-</th>
-<th>
-Reading Time
-</th>
-</tr>
-</thead>
-<tbody class="list">
-<tr data-index="0" data-categories="c3RhbixkaXNjcmV0ZSBwYXJhbWV0ZXJz" data-listing-date-sort="1732032000000" data-listing-file-modified-sort="1732065737851" data-listing-date-modified-sort="1732065737000" data-listing-reading-time-sort="5" data-listing-word-count-sort="884" data-listing-title-sort="Discrete parameters in stan" data-listing-filename-sort="discrete-parameters-stan.qmd">
-<td>
-<span class="listing-date">Wednesday 20 Nov 2024</span>
-</td>
-<td>
-<a href="./notebooks/discrete-parameters-stan.html" class="title listing-title">Discrete parameters in stan</a>
-</td>
-<td>
-<span class="listing-reading-time">5 min</span>
-</td>
-</tr>
-<tr data-index="1" data-categories="YmF5ZXMsdmFjY2luZXM=" data-listing-date-sort="1731427200000" data-listing-file-modified-sort="1731667091969" data-listing-date-modified-sort="1731667091000" data-listing-reading-time-sort="5" data-listing-word-count-sort="801" data-listing-title-sort="COVID-19 Analyses" data-listing-filename-sort="covid-19-vaccine-efficacy.qmd">
-<td>
-<span class="listing-date">Wednesday 13 Nov 2024</span>
-</td>
-<td>
-<a href="./notebooks/covid-19-vaccine-efficacy.html" class="title listing-title">COVID-19 Analyses</a>
-</td>
-<td>
-<span class="listing-reading-time">5 min</span>
-</td>
-</tr>
-<tr data-index="2" data-categories="dmlzYXVsaXNhdGlvbg==" data-listing-date-sort="1729440000000" data-listing-file-modified-sort="1729567725264" data-listing-date-modified-sort="1729567725000" data-listing-reading-time-sort="4" data-listing-word-count-sort="752" data-listing-title-sort="CONSORT using graphviz" data-listing-filename-sort="graphviz.qmd">
-<td>
-<span class="listing-date">Monday 21 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/graphviz.html" class="title listing-title">CONSORT using graphviz</a>
-</td>
-<td>
-<span class="listing-reading-time">4 min</span>
-</td>
-</tr>
-<tr data-index="3" data-categories="Y2F1c2FsLWluZmVyZW5jZSxiYXllc2lhbg==" data-listing-date-sort="1728489600000" data-listing-file-modified-sort="1728543442197" data-listing-date-modified-sort="1728543442000" data-listing-reading-time-sort="15" data-listing-word-count-sort="2818" data-listing-title-sort="Principal Stratification" data-listing-filename-sort="principal-stratification.qmd">
-<td>
-<span class="listing-date">Thursday 10 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/principal-stratification.html" class="title listing-title">Principal Stratification</a>
-</td>
-<td>
-<span class="listing-reading-time">15 min</span>
-</td>
-</tr>
-<tr data-index="4" data-categories="cmVncmVzc2lvbixiYXllc2lhbixtdWx0aW5vbWlhbA==" data-listing-date-sort="1727971200000" data-listing-file-modified-sort="1728187903113" data-listing-date-modified-sort="1728187903000" data-listing-reading-time-sort="10" data-listing-word-count-sort="2000" data-listing-title-sort="Multinomial regression" data-listing-filename-sort="multinomial-regression.qmd">
-<td>
-<span class="listing-date">Friday 4 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/multinomial-regression.html" class="title listing-title">Multinomial regression</a>
-</td>
-<td>
-<span class="listing-reading-time">10 min</span>
-</td>
-</tr>
-<tr data-index="5" data-categories="cGVyLXByb3RvY29s" data-listing-date-sort="1727884800000" data-listing-file-modified-sort="1729497127777" data-listing-date-modified-sort="1729497127000" data-listing-reading-time-sort="7" data-listing-word-count-sort="1293" data-listing-title-sort="Limitations of per-protocol analyses" data-listing-filename-sort="limits-of-per-protocol.qmd">
-<td>
-<span class="listing-date">Thursday 3 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/limits-of-per-protocol.html" class="title listing-title">Limitations of per-protocol analyses</a>
-</td>
-<td>
-<span class="listing-reading-time">7 min</span>
-</td>
-</tr>
-<tr data-index="6" data-categories="ZXN0aW1hbmQ=" data-listing-date-sort="1727798400000" data-listing-file-modified-sort="1727930093296" data-listing-date-modified-sort="1727930093000" data-listing-reading-time-sort="3" data-listing-word-count-sort="530" data-listing-title-sort="Strategies for handling Intercurrent Events - hypothetical strategy" data-listing-filename-sort="hypothetical-estimands.qmd">
-<td>
-<span class="listing-date">Wednesday 2 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/hypothetical-estimands.html" class="title listing-title">Strategies for handling Intercurrent Events - hypothetical strategy</a>
-</td>
-<td>
-<span class="listing-reading-time">3 min</span>
-</td>
-</tr>
-<tr data-index="7" data-categories="bm9ucGFyYW1ldHJpYw==" data-listing-date-sort="1727625600000" data-listing-file-modified-sort="1727700486826" data-listing-date-modified-sort="1727700486000" data-listing-reading-time-sort="4" data-listing-word-count-sort="608" data-listing-title-sort="Probabilistic Index Models" data-listing-filename-sort="probabilistic-index.qmd">
-<td>
-<span class="listing-date">Monday 30 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/probabilistic-index.html" class="title listing-title">Probabilistic Index Models</a>
-</td>
-<td>
-<span class="listing-reading-time">4 min</span>
-</td>
-</tr>
-<tr data-index="8" data-categories="bm9ucGFyYW1ldHJpYyxvcmRpbmFs" data-listing-date-sort="1727366400000" data-listing-file-modified-sort="1727700673296" data-listing-date-modified-sort="1727700673000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2363" data-listing-title-sort="Desirability of Outcome Ranking (DOOR)" data-listing-filename-sort="door-1.qmd">
-<td>
-<span class="listing-date">Friday 27 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/door-1.html" class="title listing-title">Desirability of Outcome Ranking (DOOR)</a>
-</td>
-<td>
-<span class="listing-reading-time">12 min</span>
-</td>
-</tr>
-<tr data-index="9" data-listing-date-sort="1727193600000" data-listing-file-modified-sort="1727700533614" data-listing-date-modified-sort="1727700533000" data-listing-reading-time-sort="4" data-listing-word-count-sort="789" data-listing-title-sort="Robust errors for estimating proportion" data-listing-filename-sort="robust-errors.qmd">
-<td>
-<span class="listing-date">Wednesday 25 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/robust-errors.html" class="title listing-title">Robust errors for estimating proportion</a>
-</td>
-<td>
-<span class="listing-reading-time">4 min</span>
-</td>
-</tr>
-<tr data-index="10" data-categories="bm9ucGFyYW1ldHJpYw==" data-listing-date-sort="1727193600000" data-listing-file-modified-sort="1727700497556" data-listing-date-modified-sort="1727700497000" data-listing-reading-time-sort="14" data-listing-word-count-sort="2664" data-listing-title-sort="Mann-Whitney U" data-listing-filename-sort="mann-whitney-u.qmd">
-<td>
-<span class="listing-date">Wednesday 25 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/mann-whitney-u.html" class="title listing-title">Mann-Whitney U</a>
-</td>
-<td>
-<span class="listing-reading-time">14 min</span>
-</td>
-</tr>
-<tr data-index="11" data-categories="c3RhbixiYXllcw==" data-listing-date-sort="1727193600000" data-listing-file-modified-sort="1727700576905" data-listing-date-modified-sort="1727700576000" data-listing-reading-time-sort="2" data-listing-word-count-sort="361" data-listing-title-sort="User-defined Probability Distributions in Stan" data-listing-filename-sort="custom-distribution-stan.qmd">
-<td>
-<span class="listing-date">Wednesday 25 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/custom-distribution-stan.html" class="title listing-title">User-defined Probability Distributions in Stan</a>
-</td>
-<td>
-<span class="listing-reading-time">2 min</span>
-</td>
-</tr>
-<tr data-index="12" data-categories="c3RhbixiYXllcw==" data-listing-date-sort="1726588800000" data-listing-file-modified-sort="1727700506839" data-listing-date-modified-sort="1727700506000" data-listing-reading-time-sort="3" data-listing-word-count-sort="508" data-listing-title-sort="Random walk priors" data-listing-filename-sort="random-walk-prior.qmd">
-<td>
-<span class="listing-date">Wednesday 18 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/random-walk-prior.html" class="title listing-title">Random walk priors</a>
-</td>
-<td>
-<span class="listing-reading-time">3 min</span>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

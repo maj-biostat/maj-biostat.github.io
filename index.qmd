@@ -1,7 +1,19 @@
 ---
 listing:
   contents:
-    - "notebooks/*.qmd"
+    - "notebooks/random-walk-prior.qmd"
+    - "notebooks/robust-errors.qmd"
+    - "notebooks/mann-whitney-u.qmd"
+    - "notebooks/custom-distribution-stan.qmd"
+    - "notebooks/door-1.qmd"
+    - "notebooks/probabilistic-index.qmd"
+    - "notebooks/hypothetical-estimands.qmd"
+    - "notebooks/limits-of-per-protocol.qmd"
+    - "notebooks/multinomial-regression.qmd"
+    - "notebooks/principal-stratification.qmd"
+    - "notebooks/graphviz.qmd"
+    - "notebooks/covid-19-vaccine-efficacy.qmd"
+    - "notebooks/discrete-parameters-stan.qmd"
     - "!notebooks/about.qmd"
     - "!notebooks/absolute-v-relative.qmd"
   type: table

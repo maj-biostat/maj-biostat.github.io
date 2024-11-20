@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="maj">
 <meta name="dcterms.date" content="2024-11-20">
 
-<title>maj-biostat.github.io</title>
+<title>About – maj-biostat.github.io</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +22,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -31,8 +66,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -68,65 +101,7 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -149,11 +124,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link active" href="./about.html" aria-current="page"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -178,19 +153,32 @@ window.Quarto = {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(13)</span></div><div class="category" data-category="YmF5ZXM=">bayes <span class="quarto-category-count">(3)</span></div><div class="category" data-category="YmF5ZXNpYW4=">bayesian <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Y2F1c2FsLWluZmVyZW5jZQ==">causal-inference <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZGlzY3JldGUgcGFyYW1ldGVycw==">discrete parameters <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZXN0aW1hbmQ=">estimand <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bXVsdGlub21pYWw=">multinomial <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bm9ucGFyYW1ldHJpYw==">nonparametric <span class="quarto-category-count">(3)</span></div><div class="category" data-category="b3JkaW5hbA==">ordinal <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cGVyLXByb3RvY29s">per-protocol <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cmVncmVzc2lvbg==">regression <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3Rhbg==">stan <span class="quarto-category-count">(3)</span></div><div class="category" data-category="dmFjY2luZXM=">vaccines <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dmlzYXVsaXNhdGlvbg==">visaulisation <span class="quarto-category-count">(1)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#repository-status" id="toc-repository-status" class="nav-link active" data-scroll-target="#repository-status">Repository status</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
+<h1 class="title">About</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>maj </p>
+          </div>
+  </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
@@ -202,7 +190,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 20, 2024</p>
+      <p class="date-modified">September 18, 2024</p>
     </div>
   </div>
     
@@ -213,197 +201,41 @@ window.Quarto = {
 </header>
 
 
+<p>Biostatistician working mostly in the area of Bayesian adaptive clinical trials using R and stan. The site contains various posts/reminders on topics that are relevant to my day-to-day work.</p>
+<section id="repository-status" class="level2">
+<h2 class="anchored" data-anchor-id="repository-status">Repository status</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(git2r)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>repo <span class="ot">&lt;-</span> git2r<span class="sc">::</span><span class="fu">repository</span>(<span class="at">path =</span> <span class="st">"."</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(repo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Local:    main /Users/mark/Documents/project/website/src/maj-biostat.github.io
+Remote:   main @ origin (https://github.com/maj-biostat/maj-biostat.github.io)
+Head:     [d2f3cb7] 2024-11-20: update site
 
+Branches:         1
+Tags:             0
+Commits:         51
+Contributors:     2
+Stashes:          0
+Ignored files:    2
+Untracked files: 35
+Unstaged files:  50
+Staged files:     0
 
-
-
-<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
-<div class="listing-actions-group">
-   <div class="input-group input-group-sm quarto-listing-sort">
-     <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
-     <select id="listing-listing-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-listing'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
-       <option value="" disabled="" selected="" hidden="">Order By</option>
-       <option value="index" data-direction="asc">Default</option>
-         <option value="listing-date-sort" data-direction="asc">
-          Date - Oldest
-        </option>
-         <option value="listing-date-sort" data-direction="desc">
-          Date - Newest
-        </option>
-         <option value="listing-title-sort" data-direction="asc">
-          Title
-        </option>
-     </select>
-  </div>
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
-    </div>
+Latest commits:
+[d2f3cb7] 2024-11-20: update site
+[2c3256d] 2024-11-20: Update site
+[8c65120] 2024-11-20: Post on discrete parameters in stan
+[18e5bda] 2024-11-15: Minor edit
+[836f6a6] 2024-11-15: Covid 19 draft</code></pre>
 </div>
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-<th>
-<a class="sort" data-sort="listing-date-sort" onclick="if (this.classList.contains('sort-asc')) { this.classList.add('sort-desc'); this.classList.remove('sort-asc') } else { this.classList.add('sort-asc'); this.classList.remove('sort-desc')} return false;">Date</a>
-</th>
-<th>
-<a class="sort" data-sort="listing-title-sort" onclick="if (this.classList.contains('sort-asc')) { this.classList.add('sort-desc'); this.classList.remove('sort-asc') } else { this.classList.add('sort-asc'); this.classList.remove('sort-desc')} return false;">Title</a>
-</th>
-<th>
-Reading Time
-</th>
-</tr>
-</thead>
-<tbody class="list">
-<tr data-index="0" data-categories="c3RhbixkaXNjcmV0ZSBwYXJhbWV0ZXJz" data-listing-date-sort="1732032000000" data-listing-file-modified-sort="1732065737851" data-listing-date-modified-sort="1732065737000" data-listing-reading-time-sort="5" data-listing-word-count-sort="884" data-listing-title-sort="Discrete parameters in stan" data-listing-filename-sort="discrete-parameters-stan.qmd">
-<td>
-<span class="listing-date">Wednesday 20 Nov 2024</span>
-</td>
-<td>
-<a href="./notebooks/discrete-parameters-stan.html" class="title listing-title">Discrete parameters in stan</a>
-</td>
-<td>
-<span class="listing-reading-time">5 min</span>
-</td>
-</tr>
-<tr data-index="1" data-categories="YmF5ZXMsdmFjY2luZXM=" data-listing-date-sort="1731427200000" data-listing-file-modified-sort="1731667091969" data-listing-date-modified-sort="1731667091000" data-listing-reading-time-sort="5" data-listing-word-count-sort="801" data-listing-title-sort="COVID-19 Analyses" data-listing-filename-sort="covid-19-vaccine-efficacy.qmd">
-<td>
-<span class="listing-date">Wednesday 13 Nov 2024</span>
-</td>
-<td>
-<a href="./notebooks/covid-19-vaccine-efficacy.html" class="title listing-title">COVID-19 Analyses</a>
-</td>
-<td>
-<span class="listing-reading-time">5 min</span>
-</td>
-</tr>
-<tr data-index="2" data-categories="dmlzYXVsaXNhdGlvbg==" data-listing-date-sort="1729440000000" data-listing-file-modified-sort="1729567725264" data-listing-date-modified-sort="1729567725000" data-listing-reading-time-sort="4" data-listing-word-count-sort="752" data-listing-title-sort="CONSORT using graphviz" data-listing-filename-sort="graphviz.qmd">
-<td>
-<span class="listing-date">Monday 21 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/graphviz.html" class="title listing-title">CONSORT using graphviz</a>
-</td>
-<td>
-<span class="listing-reading-time">4 min</span>
-</td>
-</tr>
-<tr data-index="3" data-categories="Y2F1c2FsLWluZmVyZW5jZSxiYXllc2lhbg==" data-listing-date-sort="1728489600000" data-listing-file-modified-sort="1728543442197" data-listing-date-modified-sort="1728543442000" data-listing-reading-time-sort="15" data-listing-word-count-sort="2818" data-listing-title-sort="Principal Stratification" data-listing-filename-sort="principal-stratification.qmd">
-<td>
-<span class="listing-date">Thursday 10 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/principal-stratification.html" class="title listing-title">Principal Stratification</a>
-</td>
-<td>
-<span class="listing-reading-time">15 min</span>
-</td>
-</tr>
-<tr data-index="4" data-categories="cmVncmVzc2lvbixiYXllc2lhbixtdWx0aW5vbWlhbA==" data-listing-date-sort="1727971200000" data-listing-file-modified-sort="1728187903113" data-listing-date-modified-sort="1728187903000" data-listing-reading-time-sort="10" data-listing-word-count-sort="2000" data-listing-title-sort="Multinomial regression" data-listing-filename-sort="multinomial-regression.qmd">
-<td>
-<span class="listing-date">Friday 4 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/multinomial-regression.html" class="title listing-title">Multinomial regression</a>
-</td>
-<td>
-<span class="listing-reading-time">10 min</span>
-</td>
-</tr>
-<tr data-index="5" data-categories="cGVyLXByb3RvY29s" data-listing-date-sort="1727884800000" data-listing-file-modified-sort="1729497127777" data-listing-date-modified-sort="1729497127000" data-listing-reading-time-sort="7" data-listing-word-count-sort="1293" data-listing-title-sort="Limitations of per-protocol analyses" data-listing-filename-sort="limits-of-per-protocol.qmd">
-<td>
-<span class="listing-date">Thursday 3 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/limits-of-per-protocol.html" class="title listing-title">Limitations of per-protocol analyses</a>
-</td>
-<td>
-<span class="listing-reading-time">7 min</span>
-</td>
-</tr>
-<tr data-index="6" data-categories="ZXN0aW1hbmQ=" data-listing-date-sort="1727798400000" data-listing-file-modified-sort="1727930093296" data-listing-date-modified-sort="1727930093000" data-listing-reading-time-sort="3" data-listing-word-count-sort="530" data-listing-title-sort="Strategies for handling Intercurrent Events - hypothetical strategy" data-listing-filename-sort="hypothetical-estimands.qmd">
-<td>
-<span class="listing-date">Wednesday 2 Oct 2024</span>
-</td>
-<td>
-<a href="./notebooks/hypothetical-estimands.html" class="title listing-title">Strategies for handling Intercurrent Events - hypothetical strategy</a>
-</td>
-<td>
-<span class="listing-reading-time">3 min</span>
-</td>
-</tr>
-<tr data-index="7" data-categories="bm9ucGFyYW1ldHJpYw==" data-listing-date-sort="1727625600000" data-listing-file-modified-sort="1727700486826" data-listing-date-modified-sort="1727700486000" data-listing-reading-time-sort="4" data-listing-word-count-sort="608" data-listing-title-sort="Probabilistic Index Models" data-listing-filename-sort="probabilistic-index.qmd">
-<td>
-<span class="listing-date">Monday 30 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/probabilistic-index.html" class="title listing-title">Probabilistic Index Models</a>
-</td>
-<td>
-<span class="listing-reading-time">4 min</span>
-</td>
-</tr>
-<tr data-index="8" data-categories="bm9ucGFyYW1ldHJpYyxvcmRpbmFs" data-listing-date-sort="1727366400000" data-listing-file-modified-sort="1727700673296" data-listing-date-modified-sort="1727700673000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2363" data-listing-title-sort="Desirability of Outcome Ranking (DOOR)" data-listing-filename-sort="door-1.qmd">
-<td>
-<span class="listing-date">Friday 27 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/door-1.html" class="title listing-title">Desirability of Outcome Ranking (DOOR)</a>
-</td>
-<td>
-<span class="listing-reading-time">12 min</span>
-</td>
-</tr>
-<tr data-index="9" data-listing-date-sort="1727193600000" data-listing-file-modified-sort="1727700533614" data-listing-date-modified-sort="1727700533000" data-listing-reading-time-sort="4" data-listing-word-count-sort="789" data-listing-title-sort="Robust errors for estimating proportion" data-listing-filename-sort="robust-errors.qmd">
-<td>
-<span class="listing-date">Wednesday 25 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/robust-errors.html" class="title listing-title">Robust errors for estimating proportion</a>
-</td>
-<td>
-<span class="listing-reading-time">4 min</span>
-</td>
-</tr>
-<tr data-index="10" data-categories="bm9ucGFyYW1ldHJpYw==" data-listing-date-sort="1727193600000" data-listing-file-modified-sort="1727700497556" data-listing-date-modified-sort="1727700497000" data-listing-reading-time-sort="14" data-listing-word-count-sort="2664" data-listing-title-sort="Mann-Whitney U" data-listing-filename-sort="mann-whitney-u.qmd">
-<td>
-<span class="listing-date">Wednesday 25 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/mann-whitney-u.html" class="title listing-title">Mann-Whitney U</a>
-</td>
-<td>
-<span class="listing-reading-time">14 min</span>
-</td>
-</tr>
-<tr data-index="11" data-categories="c3RhbixiYXllcw==" data-listing-date-sort="1727193600000" data-listing-file-modified-sort="1727700576905" data-listing-date-modified-sort="1727700576000" data-listing-reading-time-sort="2" data-listing-word-count-sort="361" data-listing-title-sort="User-defined Probability Distributions in Stan" data-listing-filename-sort="custom-distribution-stan.qmd">
-<td>
-<span class="listing-date">Wednesday 25 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/custom-distribution-stan.html" class="title listing-title">User-defined Probability Distributions in Stan</a>
-</td>
-<td>
-<span class="listing-reading-time">2 min</span>
-</td>
-</tr>
-<tr data-index="12" data-categories="c3RhbixiYXllcw==" data-listing-date-sort="1726588800000" data-listing-file-modified-sort="1727700506839" data-listing-date-modified-sort="1727700506000" data-listing-reading-time-sort="3" data-listing-word-count-sort="508" data-listing-title-sort="Random walk priors" data-listing-filename-sort="random-walk-prior.qmd">
-<td>
-<span class="listing-date">Wednesday 18 Sep 2024</span>
-</td>
-<td>
-<a href="./notebooks/random-walk-prior.html" class="title listing-title">Random walk priors</a>
-</td>
-<td>
-<span class="listing-reading-time">3 min</span>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="listing-no-matching d-none">
-No matching items
 </div>
-</div></main> <!-- /main -->
+
+
+</section>
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

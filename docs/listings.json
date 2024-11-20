@@ -1,0 +1,20 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/notebooks/discrete-parameters-stan.html",
+      "/notebooks/covid-19-vaccine-efficacy.html",
+      "/notebooks/graphviz.html",
+      "/notebooks/principal-stratification.html",
+      "/notebooks/multinomial-regression.html",
+      "/notebooks/limits-of-per-protocol.html",
+      "/notebooks/hypothetical-estimands.html",
+      "/notebooks/probabilistic-index.html",
+      "/notebooks/door-1.html",
+      "/notebooks/robust-errors.html",
+      "/notebooks/mann-whitney-u.html",
+      "/notebooks/custom-distribution-stan.html",
+      "/notebooks/random-walk-prior.html"
+    ]
+  }
+]
