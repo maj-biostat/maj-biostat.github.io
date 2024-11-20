@@ -1,0 +1,199 @@
+---
+title: "Discrete parameters in stan"
+author: "maj"
+date: "2024-11-20"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - stan
+  - discrete parameters
+---
+
+```{r}
+library(cmdstanr)
+library(data.table)
+library(ggplot2)
+```
+
+
+Hamiltonian Monte Carlo can most directly estimate parameters for which the uncertainty is represented by continuous random variables.
+However, sometimes interested in discrete parameters.
+
+Given that HMC run on log-probabilities, then as long as we can increment the log-probability associated with our model, we can code up discrete parameters.
+This typically requires us to marginalise out the discrete parameter(s) of interest and then increment to the log-density by that marginal density.
+
+Ben Lamberts example:
+
+Consider a series of experiments where get someone to flip a coin $n$ times, using the same coin across all the experiments.
+Accordingly, the probability of heads remains constant $\text{Pr}(X = \text{heads}) = \theta$.
+In each experiment we count the number of heads giving us data $X_k$ for experiment $k$ yielding $(X_1, X_2, \dots X_K)$.
+Both $\theta$ and $n$ are unknown to us, $\theta$ is continuous, but $n$ is discrete and so not directly amenible to inference in stan.
+
+Assume the following data is observed for $X_k = (2, 4, 3, 3, 3, 3, 3, 3, 4, 4)$ for $K = 10$ experiments and that we will adopt independent priors on $\theta$ and $n$, namely:
+
+$$
+\begin{aligned}
+n &\sim \text{Discrete-Unif}(5, 8) \\
+\theta &\sim \text{Unif}(0, 1)
+\end{aligned}
+$$
+
+To proceed we first write down the joint posterior of $\theta$ and $n$, i.e. $\text{Pr}(\theta, n | X)$ and then work towards marginalising out $n$.
+Once we have an expression that excludes the problematic $n$ (at least for stan) then we can get stan to use that expression to conduct the sampling we want it to do.
+
+$$
+\begin{aligned}
+\text{Pr}(\theta | X) &= \sum_{n=5}^8 \text{Pr}(\theta, n | X)
+\end{aligned}
+$$
+
+Stan runs on the log probability so what we actually have is:
+
+$$
+\begin{aligned}
+\log(\text{Pr}(\theta | X)) &= \log \left(\sum_{n=5}^8 \text{Pr}(\theta, n | X) \right) \\
+ &= \log \left(\sum_{n=5}^8 \exp( \log( \text{Pr}(\theta, n | X))) \right) \\
+\end{aligned}
+$$
+
+where the second line is to ensure we are dealing with log probabilities for both terms.
+
+The log-sum-exp operation (implemented in stan) gives us what we need in a mathematically stable way.
+
+$$
+\begin{aligned}
+\log(\text{Pr}(\theta | X)) &= \text{log\_sum\_exp}_{n=5}^8 \left(  \text{Pr}(\theta, n | X) \right)
+\end{aligned}
+$$
+
+The problem we now face is that we do not have $\text{Pr}(\theta, n | X)$ but we can use Bayes rule to determine what it is:
+
+$$
+\begin{aligned}
+\text{Pr}(\theta, n | X) &\propto \text{Pr}(X | \theta, n) \text{Pr}(\theta, n) \\
+&= \text{Pr}(X | \theta, n) \text{Pr}(n)\text{Pr}(\theta)
+\end{aligned}
+$$
+
+where the second line comes from the fact that we use independent priors.
+Taking logs, we get:
+
+$$
+\begin{aligned}
+\log(\text{Pr}(\theta, n | X)) &\propto \log(\text{Pr}(X | \theta, n)) +  \log(\text{Pr}(n)) + \log(\text{Pr}(\theta)) \\
+\end{aligned}
+$$
+
+The first term on the RHS is the likelihood for which we use the binomial distribution. 
+The second term is the log of the discrete uniform distribution that we defined earlier.
+For a given $n \in \{ 5,6,7,8 \}$ this is $\log(1/4)$.
+Finally, the third term is standard uniform.
+However, given that the third term does not contain $n$, we do not actually need to include it in the expression for the joint distribution (although we do still include it in the model block).
+
+The above allows us to estimate models with discrete parameters by marginalising them out of the joint density.
+But, what if we want to do inference on the discrete parameters?
+
+The answer to this is to write down the unnormalised density of $n$ conditional on $X$ and estimate via MCMC:
+
+$$
+\begin{aligned}
+q(n | x) \approx \frac{1}{B} \sum_{i = 1}^B q(n, \theta_i | X)
+\end{aligned}
+$$
+
+where $B$ is the number of MCMC samples and $\theta_i$ are the posterior samples.
+Essentially, this is averaging over $\theta_i$.
+
+To get the normalised version, we need to form a simplex (sum of elements is 1 and elements are non-negative and less than 1) across the four possible values for $n$ giving probabilities for $n = 5$, $n = 6$, $n = 7$ and $n = 8$.
+We can obtain this from:
+
+$$
+\begin{aligned}
+p(n | x) &\approx \frac{q(n|X)}{\sum_{n = 5}^8 q(n, | X)} \\
+ &= \frac{\exp( \log( q(n | x) ) )}{ \exp( \text{log\_sum\_exp} (\log( q(n | X))) )}
+\end{aligned}
+$$
+
+and in stan, we would write this as:
+
+$$
+\begin{aligned}
+p(n | x) = \exp\left[  \log(q(n | X)) - \text{log\_sum\_exp}(\log( q(n | X)) ) \right]
+\end{aligned}
+$$
+
+An implementation for the above discussion is shown below:
+
+```{r}
+#| class-output: stan
+#| echo: false
+
+cat(readLines("stan/discrete-param-1.stan"), sep = "\n")
+```
+
+Running the model with the assumed data gives us our parameter estimates for both $\theta$ and $n$.
+
+```{r, eval = T}
+m1 <- cmdstanr::cmdstan_model("stan/discrete-param-1.stan")
+
+ld <- list(
+  K = 10, X = c(2, 4, 3, 3, 3, 3, 3, 3, 4, 4)
+)
+
+f1 <- m1$sample(
+    ld, iter_warmup = 1000, iter_sampling = 1000,
+    parallel_chains = 4, chains = 4, refresh = 0, show_exceptions = F,
+    max_treedepth = 10)
+
+f1$summary()
+
+```
+
+In the above, the data were created in an arbitrary fashion.
+The model can be revised slightly to assume any $n$ and then we can simualate data more formally and see what we recover.
+
+
+```{r}
+#| class-output: stan
+#| echo: false
+
+cat(readLines("stan/discrete-param-2.stan"), sep = "\n")
+```
+
+```{r, eval = T}
+m2 <- cmdstanr::cmdstan_model("stan/discrete-param-2.stan")
+
+
+set.seed(1)
+theta <- 0.1
+n <- 7
+# 1000 experiments!!!
+K <- 1e3
+# K experiments, each with n = 7 and theta = 0.4 produces 
+# the data for X
+X <- rbinom(K, n, theta)
+# range(X)
+
+ld <- list(
+  K = K, X = X, P = 5, n = c(5, 6, 7, 8, 9)
+)
+
+f2 <- m2$sample(
+    ld, iter_warmup = 1000, iter_sampling = 1000,
+    parallel_chains = 2, chains = 2, refresh = 0, show_exceptions = F,
+    max_treedepth = 10)
+
+
+# p_n_X is giving you the probability of n given 
+# the observations contained in our data X
+f2$summary()
+
+```
+
+
+
+
+
+<!-- ::: {#refs} -->
+<!-- ::: -->
