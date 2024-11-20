@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.32">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -90,10 +90,10 @@ div.csl-indent {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-fc6d358c97f25a8ea829b86655043430.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-f3fb504896f8330e4610c1a7987504ff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -148,12 +148,12 @@ div.csl-indent {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="../index.qmd"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../about.html"> 
-<span class="menu-text">About</span></a>
+  <li class="nav-item compact">
+    <a class="nav-link" href="../about.qmd"> 
+<span class="menu-text"></span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -665,8 +665,8 @@ Figure&nbsp;3: Example of dot graph with nested attributes and comments
 <div id="fig-r-integration" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-r-integration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-20f5faa0532dc0538795" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-20f5faa0532dc0538795">{"x":{"diagram":"digraph consort {\n\n  node [fontname = Helvetica, shape = box, width = 1];\n  \n  enrolled [label = \"Enrolled \n(n = 24)\"];  \n  allocA [label = \"Assigned A \n(n = 12)\"];\n  allocB [label = \"Assigned B \n(n = 12)\"];\n  \n  { rank = same; allocA allocB } \n  \n  exclA[label = \"Excl A \n(n = 2)\"];\n  \n  analyA [label = \"Incl in analysis \n(n = 10)\"];\n  analyB [label = \"Incl in analysis \n(n = 12)\"];\n  \n  { rank = same; analyA analyB } \n  \n  blank1[label = \"\", width = 0.01, height = 0.01];\n\n  blank2[label = \"\", width = 0.01, height = 0.01];\n  blank3[label = \"\", width = 0.01, height = 0.01];\n  blank4[label = \"\", width = 0.01, height = 0.01];\n  /* all have same vertical position */\n  { rank = same; blank2 blank3 blank4 }\n\n  blank2 -> blank3 [arrowhead=none, minlen = 5];\n  blank3 -> blank4 [arrowhead=none, minlen = 5];\n  \n  blank5[label = \"\", width = 0.01, height = 0.01]; \n  { rank = same; blank5 exclA } \n\n  enrolled -> blank1[dir = none];\n  blank1 -> blank3[arrowhead=none];\n  blank2 -> allocA;\n  blank4 -> allocB;\n  allocA -> blank5[arrowhead=none];\n  blank5 -> exclA;\n  blank5 -> analyA;\n  allocB -> analyB;\n  \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-18254dc573964f8b05ef" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-18254dc573964f8b05ef">{"x":{"diagram":"digraph consort {\n\n  node [fontname = Helvetica, shape = box, width = 1];\n  \n  enrolled [label = \"Enrolled \n(n = 24)\"];  \n  allocA [label = \"Assigned A \n(n = 12)\"];\n  allocB [label = \"Assigned B \n(n = 12)\"];\n  \n  { rank = same; allocA allocB } \n  \n  exclA[label = \"Excl A \n(n = 2)\"];\n  \n  analyA [label = \"Incl in analysis \n(n = 10)\"];\n  analyB [label = \"Incl in analysis \n(n = 12)\"];\n  \n  { rank = same; analyA analyB } \n  \n  blank1[label = \"\", width = 0.01, height = 0.01];\n\n  blank2[label = \"\", width = 0.01, height = 0.01];\n  blank3[label = \"\", width = 0.01, height = 0.01];\n  blank4[label = \"\", width = 0.01, height = 0.01];\n  /* all have same vertical position */\n  { rank = same; blank2 blank3 blank4 }\n\n  blank2 -> blank3 [arrowhead=none, minlen = 5];\n  blank3 -> blank4 [arrowhead=none, minlen = 5];\n  \n  blank5[label = \"\", width = 0.01, height = 0.01]; \n  { rank = same; blank5 exclA } \n\n  enrolled -> blank1[dir = none];\n  blank1 -> blank3[arrowhead=none];\n  blank2 -> allocA;\n  blank4 -> allocB;\n  allocA -> blank5[arrowhead=none];\n  blank5 -> exclA;\n  blank5 -> analyA;\n  allocB -> analyB;\n  \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-r-integration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;4: Example of dot graph that uses arguments defined in R

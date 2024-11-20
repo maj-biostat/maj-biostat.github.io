@@ -18,19 +18,22 @@ library(ggplot2)
 
 
 Hamiltonian Monte Carlo can most directly estimate parameters for which the uncertainty is represented by continuous random variables.
-However, sometimes interested in discrete parameters.
+However, sometimes we are interested in discrete parameters.
 
-Given that HMC run on log-probabilities, then as long as we can increment the log-probability associated with our model, we can code up discrete parameters.
-This typically requires us to marginalise out the discrete parameter(s) of interest and then increment to the log-density by that marginal density.
+HMC runs on log-probabilities.
+So, as long as we can still increment the log-probability associated with our model (whatever the model is), we can code up discrete parameters.
 
-Ben Lamberts example:
+This typically requires us to marginalise out the discrete parameter(s) and then increment the log-density by that marginal density.
 
-Consider a series of experiments where get someone to flip a coin $n$ times, using the same coin across all the experiments.
+Ben Lambert has an example:
+
+Consider a series of $K$ experiments where get someone flips a coin $n$ times.
+The use the same coin across all the experiments.
 Accordingly, the probability of heads remains constant $\text{Pr}(X = \text{heads}) = \theta$.
 In each experiment we count the number of heads giving us data $X_k$ for experiment $k$ yielding $(X_1, X_2, \dots X_K)$.
-Both $\theta$ and $n$ are unknown to us, $\theta$ is continuous, but $n$ is discrete and so not directly amenible to inference in stan.
+Both $\theta$ and $n$ are unknown to us, $\theta$ is continuous, but $n$ is discrete and so not directly amenable to inference in stan.
 
-Assume the following data is observed for $X_k = (2, 4, 3, 3, 3, 3, 3, 3, 4, 4)$ for $K = 10$ experiments and that we will adopt independent priors on $\theta$ and $n$, namely:
+Assume the following data were observed $X_k = (2, 4, 3, 3, 3, 3, 3, 3, 4, 4)$ for $K = 10$ experiments and that we will adopt independent priors on $\theta$ and $n$, namely:
 
 $$
 \begin{aligned}
@@ -39,7 +42,7 @@ n &\sim \text{Discrete-Unif}(5, 8) \\
 \end{aligned}
 $$
 
-To proceed we first write down the joint posterior of $\theta$ and $n$, i.e. $\text{Pr}(\theta, n | X)$ and then work towards marginalising out $n$.
+To proceed we first have to write down the joint posterior of $\theta$ and $n$, i.e. $\text{Pr}(\theta, n | X)$ and then work towards marginalising out $n$.
 Once we have an expression that excludes the problematic $n$ (at least for stan) then we can get stan to use that expression to conduct the sampling we want it to do.
 
 $$
