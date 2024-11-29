@@ -27,6 +27,7 @@ $$
 where $\pi_v$, $\pi_p$ are the probabilities of infection under the vaccine and placebo (i.e. the risk of infection without vaccination), generally expressed as a percentage.
 
 The lower the risk of infection on receipt of the vaccine relative to the risk of infection under placebo, the higher the VE with VE capped at 100%, $\lim_{\pi_v \to 0} VE = 1$.
+For the FDA to approve a vaccine, the VE must be at least 0.3 (30%).
 
 If we can reasonably assume that $\pi_v \le \pi_p$ (implying the risk of infection is going to be lower on receipt of the vaccine than on placebo) then the lower bound of VE will be constrained to zero.
 However, when we cannot make this assumption and $\pi_v > \pi_p$ then VE may become negative.
@@ -108,6 +109,9 @@ d_VE <- data.table(par = "VE", prior = VE_pri, posterior = VE)
 ```
 
 @fig-theta shows the prior and posterior on the case proportion, @fig-ve shows the implied VE and @tbl-post-smry gives a summary of the posterior on the VE parameter.
+
+The prior on $\theta$, the case proportion, implies a prior probability that VE is greater than 0.3 equal to `r sprintf("%.1f", mean(d_VE$prior > 0.3))`.
+However, the posterior probability that VE is greater than 0.3 is `r sprintf("%.1f", mean(d_VE$posterior > 0.3))`. 
 
 ```{r}
 #| echo: FALSE
