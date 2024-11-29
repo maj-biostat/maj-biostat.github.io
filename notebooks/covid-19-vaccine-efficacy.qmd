@@ -110,8 +110,8 @@ d_VE <- data.table(par = "VE", prior = VE_pri, posterior = VE)
 
 @fig-theta shows the prior and posterior on the case proportion, @fig-ve shows the implied VE and @tbl-post-smry gives a summary of the posterior on the VE parameter.
 
-The prior on $\theta$, the case proportion, implies a prior probability that VE is greater than 0.3 equal to `r sprintf("%.1f", mean(d_VE$prior > 0.3))`.
-However, the posterior probability that VE is greater than 0.3 is `r sprintf("%.1f", mean(d_VE$posterior > 0.3))`. 
+The prior on $\theta$, the case proportion, implies a prior probability that VE is greater than 0.3 equal to `r sprintf("%.2f", mean(d_VE$prior > 0.3))`.
+However, the posterior probability that VE is greater than 0.3 is `r sprintf("%.2f", mean(d_VE$posterior > 0.3))`. 
 
 ```{r}
 #| echo: FALSE
