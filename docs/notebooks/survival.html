@@ -160,9 +160,13 @@ window.Quarto = {
   </ul></li>
   <li><a href="#truncation" id="toc-truncation" class="nav-link" data-scroll-target="#truncation">Truncation</a></li>
   <li><a href="#likelihood" id="toc-likelihood" class="nav-link" data-scroll-target="#likelihood">Likelihood</a></li>
+  <li><a href="#log-location-scale-models" id="toc-log-location-scale-models" class="nav-link" data-scroll-target="#log-location-scale-models">Log-location-scale models</a></li>
   <li><a href="#regression-analysis" id="toc-regression-analysis" class="nav-link" data-scroll-target="#regression-analysis">Regression analysis</a>
   <ul class="collapse">
-  <li><a href="#aft" id="toc-aft" class="nav-link" data-scroll-target="#aft">AFT</a></li>
+  <li><a href="#aft" id="toc-aft" class="nav-link" data-scroll-target="#aft">AFT</a>
+  <ul class="collapse">
+  <li><a href="#log-logistic" id="toc-log-logistic" class="nav-link" data-scroll-target="#log-logistic">Log-logistic</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -202,7 +206,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 14, 2024</p>
+      <p class="date-modified">November 29, 2024</p>
     </div>
   </div>
     
@@ -228,7 +232,7 @@ window.Quarto = {
 </ul>
 <section id="mathematical-framework" class="level1">
 <h1>Mathematical framework</h1>
-<p>Define <span class="math inline">\(X\)</span> as a non-negative, continuous random variable on the interval <span class="math inline">\([0, \infty)\)</span> representing the time to a terminal event, e.g.&nbsp;death of an individual. In survival analysis, in addition to the pdf and cdf associated with <span class="math inline">\(X\)</span>, we consider the survival and hazard functions.</p>
+<p>Define <span class="math inline">\(X\)</span> to be a non-negative, continuous random variable on the interval <span class="math inline">\([0, \infty)\)</span> representing the time to a terminal event, e.g.&nbsp;death of an individual. In survival analysis, in addition to the pdf and cdf associated with <span class="math inline">\(X\)</span>, we consider the survival and hazard functions.</p>
 <p>The survival function is the probability that the event will occur beyond time <span class="math inline">\(x\)</span>:</p>
 <p><span class="math display">\[
 S(x) = 1 - F(x) = \text{Pr}(X \ge x) = \int_x^\infty f(s) ds
@@ -241,13 +245,13 @@ h(x) &amp;= \lim_{\delta\to\infty} \frac{\text{Pr}(x\le X &lt; x + \delta | X \g
   &amp;= \frac{f(x)}{1 - F(x)} = \frac{f(x)}{S(x)}
 \end{aligned}
 \]</span></p>
-<p>The hazard function characterises the instantaneous risk of the event of interest given survival to <span class="math inline">\(x\)</span>. The hazard informs the cumulative hazard:</p>
+<p>The hazard function characterises the instantaneous risk of the event of interest given survival to time <span class="math inline">\(x\)</span>. The hazard is used to define the cumulative hazard via:</p>
 <p><span class="math display">\[
 \begin{aligned}
 H(x) &amp;= \int_0^x h(s) ds
 \end{aligned}
 \]</span></p>
-<p>Relations exist between the various definitions, e.g.</p>
+<p>And relations exist between the various quantities, e.g.</p>
 <p><span class="math display">\[
 \begin{aligned}
 H(x) &amp;= \int_0^x  \frac{f(s)}{1 - F(s)} ds = -\log(S(x))
@@ -257,13 +261,13 @@ H(x) &amp;= \int_0^x  \frac{f(s)}{1 - F(s)} ds = -\log(S(x))
 <p><span class="math display">\[
 S(x) = \exp(-H(x))
 \]</span></p>
-<p>Parameteric assumptions may be made about the time to event data, of which the LogNormal, Exponential, Weibull and Gamma are popular choices.</p>
+<p>Parameteric assumptions may be made about the time to event data. The LogNormal, Exponential, Weibull and Gamma distributions are popular choices.</p>
 </section>
 <section id="censoring" class="level1">
 <h1>Censoring</h1>
-<p>Survival data are commonly censored (a less commonly considered feature is truncation). This is the main reason that survival analysis is a dealt with as a separate topic. If you just use the length of followup as is, then this will introduces bias into your inference. Censoring is not good, ideally you want to observe every unit.</p>
-<p>For censoring, the subject is known, but we only know that the event will occur at some point in the future, or the event has occurred and we just don’t know when it happened.</p>
-<p>We routinely assume that censoring is independent of the event of interest, i.e.&nbsp;the censoring is uninformative. However, if a particular subset of the subjects are both more likely to be censored and also have the event of interest, then the censoring might become informative. Most models make the assumption of uninformative censoring by virtue of the manner in which the likelihood is constructed.</p>
+<p>Survival data are commonly censored (a less commonly considered feature is truncation) which is the main reason that a distinct branch of statistics is devoted to it. For example, if you just use the length of followup as is, then this would introduces bias into your analysis results.</p>
+<p>Censoring is not desirable - ideally you want to observe every unit. When censored, the subject is known, but we know only that the event will occur at some point in the future, or the event has occurred but we don’t know when it happened.</p>
+<p>Routinely, we assume that censoring is independent of the event of interest, i.e.&nbsp;the censoring is uninformative. If a particular subset of the subjects are both more likely to be censored and also have the event of interest, then the censoring might become informative. Irrespective of whether it is explicitly stated, most modelling approaches will make the assumption of uninformative censoring.</p>
 <section id="right-left-interval" class="level2">
 <h2 class="anchored" data-anchor-id="right-left-interval">Right, left, interval</h2>
 <p>Right censoring is where we know that the subject has not yet had the event at the time we stop followup either because the study ends or something else happens that stops us from observing the event.</p>
@@ -292,12 +296,13 @@ S(x) = \exp(-H(x))
 </section>
 <section id="likelihood" class="level1">
 <h1>Likelihood</h1>
-<p>Define the complete data as a time-part and censoring part <span class="math inline">\(D  \equiv (y, \delta)\)</span> where <span class="math inline">\(y\)</span> are the event times and <span class="math inline">\(\delta\)</span> the censoring indicators. For each event time, we assume that <span class="math inline">\(f_i(t | \theta)\)</span> is known except for the parameters, similarly with <span class="math inline">\(S\)</span> and <span class="math inline">\(h\)</span>. The likelihood is the product of the densities for the observed times and the probabilities for the censoring times:</p>
+<p>Define the complete data as a time-part and censoring part <span class="math inline">\(D  \equiv (y, \delta)\)</span> where <span class="math inline">\(y\)</span> are the event times and <span class="math inline">\(\delta\)</span> the censoring indicators. For each event time, we assume that <span class="math inline">\(f_i(t | \theta)\)</span> is known except for the parameters, similarly with <span class="math inline">\(S\)</span> and <span class="math inline">\(h\)</span>. Assuming uninformative right-censoring and that the <span class="math inline">\(n\)</span> time/indicator pairs are i.i.d, the likelihood is proportional to the product of the densities for the observed times and the probabilities for the censoring times:</p>
 <p><span class="math display">\[
 \begin{aligned}
 L(\theta | D) \propto \prod_{i=1}^n [f_i(y_i | \theta)]^{\delta_i}[S_i(y_i|\theta)]^{1 - \delta_i}
 \end{aligned}
 \]</span></p>
+<p>Of note is the fact that this form is solely a function of <span class="math inline">\(F\)</span>.</p>
 <p>Given the relation <span class="math inline">\(h(x) = \frac{f(x)}{S(x)}\)</span> the above can be written as</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -305,18 +310,50 @@ L(\theta | D) \propto \prod_{i=1}^n [h_i(y_i | \theta)]^{\delta_i}[S_i(y_i|\thet
 \end{aligned}
 \]</span></p>
 </section>
+<section id="log-location-scale-models" class="level1">
+<h1>Log-location-scale models</h1>
+</section>
 <section id="regression-analysis" class="level1">
 <h1>Regression analysis</h1>
 <p>Accelerated failure time and proportional hazards models are two forms of survival analysis used when we have predictor information associated with each individual.</p>
 <section id="aft" class="level2">
 <h2 class="anchored" data-anchor-id="aft">AFT</h2>
-<p>The AFT is a log-linear regression model:</p>
+<p>The AFT model incorporates parameters that act multiplicatively on the time-scale. These models are most suitable when the hazards are likely to converge as time progresses or where a proportional hazards assumption is unreasonable and expected to be violated.</p>
+<p>One might also adopt an AFT model because you are interested in the event time compression/expansion rather than an instantaneous risk. For example, if you believe that certain treatments fundamentally alter the progression of the disease over time then you might want to consider an AFT. However, be aware that the AFT requires specifying a parameteric distribution and should generally be contrasted against alternative assumptions.</p>
+<p>Under an AFT, the survival time of an individual on treatment is taken to be a multiple of the survival time of an individual on control. The effect of treatment is therefore to speed up or slow down the passage of time-to-event time to event of one unit (say on the treatment arm) is the <span class="math inline">\(\phi\)</span> times the time-to-event for a unit in, say the control arm.</p>
+<p>An AFT assumes failure times <span class="math inline">\(y_1, y_2, \dots y_n\)</span> that arise according to probability model:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\log(T_i) &amp;= x_i^' \beta + \sigma \epsilon_i \\
-\epsilon &amp;\sim F_\epsilon(.)
+y_i &amp;= \exp(x_i^\prime \beta) \nu_i \\
+\log(y_i) &amp;= x_i^\prime \beta + \theta_i \\
 \end{aligned}
 \]</span></p>
+<p>where <span class="math inline">\(x_i^\prime \beta\)</span> represents the linear predictor (including an intercept) and <span class="math inline">\(\theta_i = \log(\nu_i)\)</span> is the error term. Sometimes, <span class="math inline">\(\theta_i\)</span> is replaced with <span class="math inline">\(\sigma \epsilon_i\)</span> where <span class="math inline">\(\epsilon\)</span> is the error and <span class="math inline">\(\sigma\)</span> is a scale parameter.</p>
+<p>The AFT naturally encompasses a wider range of survival time distributions than the PH model. In principle, while any continuous distribution for non-negative random variables will suffice, the log-logistic, lognormal, gamma and inverse gaussian are all popular for use in AFT. The functions of interest are outline for the log-logistic distribution below.</p>
+<section id="log-logistic" class="level3">
+<h3 class="anchored" data-anchor-id="log-logistic">Log-logistic</h3>
+<p>The hazard, survival and density functions are:</p>
+<p><span class="math display">\[
+\begin{aligned}
+h(t) &amp;= \frac{\exp(\theta) \kappa t^{\kappa - 1}}{1 + \exp(\theta) t^\kappa} \\
+S(t) &amp;= \{1 + \exp(\theta) t^\kappa\}^{-1} \\
+f(t) &amp;= \frac{\exp(\theta) \kappa t^{\kappa-1}}{ (1 + \exp(\theta) t ^\kappa)^2}
+\end{aligned}  
+\]</span></p>
+<p>In this setting we assume <span class="math inline">\(\log(T)\)</span> has a logistic distribution. The <span class="math inline">\(p^{th}\)</span> percentile is</p>
+<p><span class="math display">\[
+\begin{aligned}
+t(p) = \left( \frac{p \exp(-\theta)}{100-p}  \right)^{1/\kappa}
+\end{aligned}  
+\]</span></p>
+<p>which gives a median</p>
+<p><span class="math display">\[
+\begin{aligned}
+t(50) = \exp(-\theta/\kappa)
+\end{aligned}  
+\]</span></p>
+<p>A nice property of the log-logistic is that it can model a hazard that initially rises and then falls.</p>
+</section>
 </section>
 </section>
 <section id="references" class="level1">
