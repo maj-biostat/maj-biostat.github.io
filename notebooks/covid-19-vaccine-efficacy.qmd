@@ -28,8 +28,8 @@ where $\pi_v$, $\pi_p$ are the probabilities of infection under the vaccine and 
 
 The lower the risk of infection on receipt of the vaccine relative to the risk of infection under placebo, the higher the VE with VE capped at 100%, $\lim_{\pi_v \to 0} VE = 1$.
 
-If we can reasonably assume that $p_v \le p_c$ (implying the risk of infection is going to be lower on receipt of the vaccine than on placebo) then the lower bound of VE will be constrained to zero.
-However, when we cannot make this assumption and $p_v > p_c$ then VE may become negative.
+If we can reasonably assume that $\pi_v \le \pi_p$ (implying the risk of infection is going to be lower on receipt of the vaccine than on placebo) then the lower bound of VE will be constrained to zero.
+However, when we cannot make this assumption and $\pi_v > \pi_p$ then VE may become negative.
 
 The VE is given various representations via the risk-ratio, incidence rate ratio and hazard ratio, specifically:
 
@@ -40,6 +40,8 @@ VE &= 1 - IRR = 1 - \frac{c_v/T_v}{c_p/T_p}  \\
 VE &= 1 - HR = 1 - \frac{\lambda_v}{\lambda_p}
 \end{aligned}
 $$
+
+where $c_.$ are the cases and $N_.$ are the total number of participants, $T_.$ is person-time and $\lambda_.$ are hazard rates.
 
 If we take the second representation and set $r = T_v/T_p$ as the ratio of person-time, then a few manipulations give us:
 
