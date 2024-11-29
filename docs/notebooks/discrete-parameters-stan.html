@@ -386,18 +386,18 @@ Total execution time: 0.2 seconds.</code></pre>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>f1<span class="sc">$</span><span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 10 × 10
-   variable     mean     median     sd      mad       q5     q95  rhat ess_bulk
-   &lt;chr&gt;       &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
- 1 lp__     -14.9    -14.7      0.601  0.345    -1.60e+1 -14.4    1.00    1561.
- 2 theta      0.574    0.585    0.0998 0.108     4.00e-1   0.720  1.00    1298.
- 3 lq[1]    -14.6    -13.7      2.09   0.803    -1.89e+1 -13.1    1.00    1393.
- 4 lq[2]    -15.5    -14.9      1.72   1.17     -1.90e+1 -14.0    1.00    1958.
- 5 lq[3]    -18.1    -17.0      3.59   3.12     -2.52e+1 -14.6    1.00    1511.
- 6 lq[4]    -21.7    -20.5      5.83   6.24     -3.28e+1 -15.1    1.00    1321.
- 7 p_n_X[1]   0.586    0.702    0.364  0.399     8.60e-3   0.992  1.00    1298.
- 8 p_n_X[2]   0.225    0.192    0.176  0.230     7.30e-3   0.507  1.00    1800.
- 9 p_n_X[3]   0.119    0.0213   0.157  0.0316    1.15e-5   0.437  1.00    1391.
-10 p_n_X[4]   0.0699   0.000578 0.154  0.000857  6.11e-9   0.444  1.00    1298.
+   variable     mean     median    sd      mad       q5     q95  rhat ess_bulk
+   &lt;chr&gt;       &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+ 1 lp__     -14.9    -14.7      0.620 0.369    -1.61e+1 -14.4    1.01    1376.
+ 2 theta      0.573    0.585    0.104 0.112     3.88e-1   0.722  1.00    1191.
+ 3 lq[1]    -14.7    -13.7      2.21  0.854    -1.96e+1 -13.1    1.01    1245.
+ 4 lq[2]    -15.6    -15.0      1.77  1.27     -1.92e+1 -14.0    1.00    1819.
+ 5 lq[3]    -18.2    -17.0      3.66  3.19     -2.54e+1 -14.6    1.00    1489.
+ 6 lq[4]    -21.8    -20.5      5.97  6.45     -3.30e+1 -15.1    1.00    1263.
+ 7 p_n_X[1]   0.582    0.703    0.370 0.403     5.40e-3   0.993  1.01    1191.
+ 8 p_n_X[2]   0.219    0.177    0.176 0.217     6.90e-3   0.507  1.00    1779.
+ 9 p_n_X[3]   0.121    0.0212   0.158 0.0314    9.92e-6   0.436  1.01    1334.
+10 p_n_X[4]   0.0782   0.000572 0.167 0.000848  4.87e-9   0.506  1.01    1191.
 # ℹ 1 more variable: ess_tail &lt;dbl&gt;</code></pre>
 </div>
 </div>
@@ -480,8 +480,8 @@ Total execution time: 0.2 seconds.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 2 parallel chains...
 
-Chain 1 finished in 1.0 seconds.
 Chain 2 finished in 0.9 seconds.
+Chain 1 finished in 1.0 seconds.
 
 Both chains finished successfully.
 Mean chain execution time: 1.0 seconds.
