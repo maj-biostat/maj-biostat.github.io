@@ -1,0 +1,137 @@
+---
+title: "Power analysis by simulation"
+author: "maj"
+date: "2025-03-13"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+embed-resources: true
+categories:
+  - power analysis
+---
+
+```{r}
+library(data.table)
+library(ggplot2)
+library(gt)
+```
+
+
+Power analyses inform us as to chances an experiment has of identifying a treatment differences based on our criteria, various assumptions about the design, sample size and over the effect sizes we imagine might arise.
+Power analyses can be implemented via simulation.
+The following methods provide a basic demonstration of the power analysis for an experiment with a single analysis where we consider the binary outcome under differing treatment regimes at a fixed sample and a range of effect sizes.
+For the sake of the example, logistic regression is used as the analysis model although one might reasonable select from a range of analysis models, with some being more efficient than others.
+For example, non-parametric approaches may yield lower power, but might make less assumptions, depending on the particular method chosen.
+
+Assume:
+
++ a baseline probability of response in the standard treatment that equals 0.2
++ effect sizes from -0.25 to 0.25 on the risk scale
++ sample size of 100 per treatment type
+
+Method 1 creates a fine grid over the entire effect size range of interest and then performs a single trial for each of these effect sizes based on data simulated at this effect size.
+For each trial, we will either detect an effect or not based on the criteria we are using to make a decision (i.e. reject a null hypothesis).
+The probability of detecting an effect for each trial is equal to the power.
+Therefore, if we interpolate over these points, we can produce an approximation of the power curve over the entire range.
+
+```{r}
+
+n_sim <- 10000
+p_0 <- 0.5
+rd <- seq(-0.25, 0.25, len = n_sim)
+win <- numeric(n_sim)
+
+y_0 <- rbinom(n_sim, 100, p_0)
+y_1 <- rbinom(n_sim, 100, p_0 + rd)
+
+i <- 1
+for(i in 1:n_sim){
+  
+  y <- rbind(
+    c(y_0[i], 100 - y_0[i]),
+    c(y_1[i], 100 - y_1[i])
+  )
+  x <- c(0, 1)
+  
+  f1 <- glm(y ~ x, family = binomial)
+  win[i] <- summary(f1)$coef[2, 4] < 0.025
+  
+}
+
+
+d_fig_1 <- data.table(
+  x = rd,
+  win = win
+)
+
+```
+
+Method 2 simulates a large number of trials at each effect size of interest.
+The power at each effect size is computed as the proportion of trials where the effect was identified based on the criteria we are using to make a decision.
+This process is done for a range of effect sizes below.
+Method 2 is clearly more computationally demanding than method 1.
+
+```{r}
+n_sim <- 5000
+p_0 <- 0.5
+p_1 <- p_0 + c(-0.2, -0.1, 0.0, 0.1, 0.2)
+
+pwr <- numeric(length(p_1))
+
+
+for(i in 1:length(p_1)){
+  
+  y_0 <- rbinom(n_sim, 100, p_0)
+  y_1 <- rbinom(n_sim, 100, p_1[i])
+  
+  win <- numeric(n_sim)
+  
+  for(j in 1:n_sim){
+  
+    y <- rbind(
+      c(y_0[j], 100 - y_0[j]),
+      c(y_1[j], 100 - y_1[j])
+    )
+    x <- c(0, 1)
+    
+    f1 <- glm(y ~ x, family = binomial)
+    win[j] <- summary(f1)$coef[2, 4] < 0.025
+    
+  } 
+  
+  pwr[i] <- mean(win)
+}
+
+
+d_fig_2 <- data.table(
+  x = p_1 - p_0,
+  pwr = pwr
+)
+```
+
+
+
+```{r}
+#| echo: FALSE
+#| label: fig-pwr
+#| fig-cap: 'Power curves characterising power by effect size at a sample size of 100 per arm in two group study with binary outcome (points show results from method 2)'
+#| fig.height: 4.5
+#| fig.width: 4.5
+#| fig-pos: H
+
+
+ggplot(d_fig_1, aes(x = x, y = win)) +
+  geom_smooth(se = F, lwd = 0.3, col = 1, 
+              method = "gam", formula = y ~ s(x, bs = "ps")) +
+  geom_point(
+    data = d_fig_2,
+    aes(x = x, y = pwr), inherit.aes = F
+  ) +
+  scale_y_continuous("Pr(theta > 0) > 0.975", breaks = seq(0, 1, by = 0.1)) +
+  scale_x_continuous("Risk difference (theta)") +
+  theme_minimal()
+```
+
+
+<!-- ::: {#refs} -->
+<!-- ::: -->

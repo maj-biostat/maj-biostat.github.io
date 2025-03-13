@@ -1,6 +1,7 @@
 ---
 listing:
   contents:
+    - "notebooks/power-analysis-by-sim.qmd"
     - "notebooks/random-walk-prior.qmd"
     - "notebooks/robust-errors.qmd"
     - "notebooks/mann-whitney-u.qmd"

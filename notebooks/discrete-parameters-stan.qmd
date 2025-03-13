@@ -17,23 +17,25 @@ library(ggplot2)
 ```
 
 
-Hamiltonian Monte Carlo can most directly estimate parameters for which the uncertainty is represented by continuous random variables.
+Hamiltonian Monte Carlo is usually used to estimate continuous parameters.
 However, sometimes we are interested in discrete parameters.
 
 HMC runs on log-probabilities.
-So, as long as we can still increment the log-probability associated with our model (whatever the model is), we can code up discrete parameters.
-
-This typically requires us to marginalise out the discrete parameter(s) and then increment the log-density by that marginal density.
+Therefore, as long as we can increment the log-probability associated with our model (whatever the model is), we can code it up, even if it uses discrete parameters.
+For models with discrete parameter, we have to 'marginalise out' the discrete parameter(s) and increment the log-density by the marginal density.
 
 Ben Lambert has an example:
 
-Consider a series of $K$ experiments where get someone flips a coin $n$ times.
-The use the same coin across all the experiments.
-Accordingly, the probability of heads remains constant $\text{Pr}(X = \text{heads}) = \theta$.
-In each experiment we count the number of heads giving us data $X_k$ for experiment $k$ yielding $(X_1, X_2, \dots X_K)$.
-Both $\theta$ and $n$ are unknown to us, $\theta$ is continuous, but $n$ is discrete and so not directly amenable to inference in stan.
+Consider a series of $K$ experiments where we get someone flips a coin a fixed number of times,  $n$, for each experiment, but we are never told $n$.
+The individual uses the same coin across all the experiments and the probability of heads remains constant $\text{Pr}(X = \text{heads}) = \theta$.
+We define $X_k$ as the number of heads obtained in each experiment $k$ yielding $(X_1, X_2, \dots X_K)$.
+Again, both $\theta$ and $n$ are unknown to us; $\theta$ is continuous, but $n$ is discrete.
 
-Assume the following data were observed $X_k = (2, 4, 3, 3, 3, 3, 3, 3, 4, 4)$ for $K = 10$ experiments and that we will adopt independent priors on $\theta$ and $n$, namely:
+We want to be able to make inference on both $\theta$ and $n$, i.e. talk about the probability intervals for theta and the probability that $n$ takes on certain values.
+
+Assume that we know $K = 10$ experiments were run and the following data was observed $X_k = (2, 4, 3, 3, 3, 3, 3, 3, 4, 4)$.
+
+We adopt independent priors on $\theta$ and $n$:
 
 $$
 \begin{aligned}
@@ -42,8 +44,9 @@ n &\sim \text{Discrete-Unif}(5, 8) \\
 \end{aligned}
 $$
 
-To proceed we first have to write down the joint posterior of $\theta$ and $n$, i.e. $\text{Pr}(\theta, n | X)$ and then work towards marginalising out $n$.
-Once we have an expression that excludes the problematic $n$ (at least for stan) then we can get stan to use that expression to conduct the sampling we want it to do.
+We can write down the joint posterior of $\theta$ and $n$, i.e. $\text{Pr}(\theta, n | X)$ and then marginalise out the discrete parameter, $n$.
+Once we have an expression that excludes the $n$, then we can get stan to use that expression to conduct the sampling we want it to do.
+We have:
 
 $$
 \begin{aligned}
@@ -51,7 +54,7 @@ $$
 \end{aligned}
 $$
 
-Stan runs on the log probability so what we actually have is:
+Stan runs on the log probability so we need to think in those terms:
 
 $$
 \begin{aligned}
@@ -62,15 +65,15 @@ $$
 
 where the second line is to ensure we are dealing with log probabilities for both terms.
 
-The log-sum-exp operation (implemented in stan) gives us what we need in a mathematically stable way.
+In stan, the above can be achieved in a mathematically stable way via the [`log-sum-exp`](https://mc-stan.org/docs/stan-users-guide/floating-point.html#log-sum-of-exponentials){.external target="_blank"} function.
 
 $$
 \begin{aligned}
-\log(\text{Pr}(\theta | X)) &= \text{log\_sum\_exp}_{n=5}^8 \left(  \text{Pr}(\theta, n | X) \right)
+\log(\text{Pr}(\theta | X)) &= \text{log\_sum\_exp}_{n=5}^8 \left( \log( \text{Pr}(\theta, n | X) ) \right)
 \end{aligned}
 $$
 
-The problem we now face is that we do not have $\text{Pr}(\theta, n | X)$ but we can use Bayes rule to determine what it is:
+Unfortunately, we do not have $\text{Pr}(\theta, n | X)$ but we can use Bayes rule to determine what it is:
 
 $$
 \begin{aligned}
@@ -88,16 +91,14 @@ $$
 \end{aligned}
 $$
 
-The first term on the RHS is the likelihood for which we use the binomial distribution. 
-The second term is the log of the discrete uniform distribution that we defined earlier.
-For a given $n \in \{ 5,6,7,8 \}$ this is $\log(1/4)$.
-Finally, the third term is standard uniform.
-However, given that the third term does not contain $n$, we do not actually need to include it in the expression for the joint distribution (although we do still include it in the model block).
++ The first term on the RHS is the likelihood for which we use the binomial distribution. 
++ The second term is the log of the discrete uniform distribution that we defined earlier. For a given $n \in \{ 5,6,7,8 \}$ this is $\log(1/4)$ as we assume each option has equal probability.
++ Finally, the third term is standard uniform. However, given that the third term does not contain $n$, we do not actually need to include it in the expression for the joint distribution (although we do still include it in the model block as a standard uniform).
 
 The above allows us to estimate models with discrete parameters by marginalising them out of the joint density.
 But, what if we want to do inference on the discrete parameters?
 
-The answer to this is to write down the unnormalised density of $n$ conditional on $X$ and estimate via MCMC:
+Answer; write down the unnormalised density of $n$ conditional on $X$ and estimate via MCMC:
 
 $$
 \begin{aligned}
@@ -153,48 +154,11 @@ f1$summary()
 
 ```
 
-In the above, the data were created in an arbitrary fashion.
-The model can be revised slightly to assume any $n$ and then we can simualate data more formally and see what we recover.
 
-
-```{r}
-#| class-output: stan
-#| echo: false
-
-cat(readLines("stan/discrete-param-2.stan"), sep = "\n")
-```
-
-```{r, eval = T}
-m2 <- cmdstanr::cmdstan_model("stan/discrete-param-2.stan")
-
-
-set.seed(1)
-theta <- 0.1
-n <- 7
-# 1000 experiments!!!
-K <- 1e3
-# K experiments, each with n = 7 and theta = 0.4 produces 
-# the data for X
-X <- rbinom(K, n, theta)
-# range(X)
-
-ld <- list(
-  K = K, X = X, P = 5, n = c(5, 6, 7, 8, 9)
-)
-
-f2 <- m2$sample(
-    ld, iter_warmup = 1000, iter_sampling = 1000,
-    parallel_chains = 2, chains = 2, refresh = 0, show_exceptions = F,
-    max_treedepth = 10)
-
-
-# p_n_X is giving you the probability of n given 
-# the observations contained in our data X
-f2$summary()
-
-```
-
-
+Obviously, the above is somewhat contrived. 
+We gnerally do not know the bounds on the discrete parameters.
+For example, how did we know that the bounds of $n$ were 5 and 8?
+How would we have modified the model to account for observing a 6 in the data?
 
 
 

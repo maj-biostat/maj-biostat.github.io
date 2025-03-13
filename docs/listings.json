@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/notebooks/power-analysis-by-sim.html",
       "/notebooks/discrete-parameters-stan.html",
       "/notebooks/covid-19-vaccine-efficacy.html",
       "/notebooks/graphviz.html",
