@@ -31,8 +31,8 @@ Assume:
 
 Method 1 creates a fine grid over the entire effect size range of interest and then performs a single trial for each of these effect sizes based on data simulated at this effect size.
 For each trial, we will either detect an effect or not based on the criteria we are using to make a decision (i.e. reject a null hypothesis).
-The probability of detecting an effect for each trial is equal to the power.
-Therefore, if we interpolate over these points, we can produce an approximation of the power curve over the entire range.
+The probability of detecting an effect for each simulated trial equates to the power at that effect size.
+If we interpolate over these indicator values as to whether an effect was detected or not, we can produce an approximation of the power curve over the entire range.
 
 ```{r}
 
@@ -54,6 +54,7 @@ for(i in 1:n_sim){
   x <- c(0, 1)
   
   f1 <- glm(y ~ x, family = binomial)
+  # assume a typical frequentist critria
   win[i] <- summary(f1)$coef[2, 4] < 0.025
   
 }
@@ -127,7 +128,7 @@ ggplot(d_fig_1, aes(x = x, y = win)) +
     data = d_fig_2,
     aes(x = x, y = pwr), inherit.aes = F
   ) +
-  scale_y_continuous("Pr(theta > 0) > 0.975", breaks = seq(0, 1, by = 0.1)) +
+  scale_y_continuous("Power", breaks = seq(0, 1, by = 0.1)) +
   scale_x_continuous("Risk difference (theta)") +
   theme_minimal()
 ```
