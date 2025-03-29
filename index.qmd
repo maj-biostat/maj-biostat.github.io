@@ -1,6 +1,7 @@
 ---
 listing:
   contents:
+    - "notebooks/log-logistic-aft-in-stan.qmd"
     - "notebooks/power-analysis-by-sim.qmd"
     - "notebooks/random-walk-prior.qmd"
     - "notebooks/robust-errors.qmd"

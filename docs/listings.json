@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/notebooks/log-logistic-aft-in-stan.html",
       "/notebooks/power-analysis-by-sim.html",
       "/notebooks/discrete-parameters-stan.html",
       "/notebooks/covid-19-vaccine-efficacy.html",
