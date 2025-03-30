@@ -17,7 +17,28 @@ categories:
 library(data.table)
 library(ggplot2)
 library(gt)
+suppressPackageStartupMessages(library(flexsurv))
 ```
+
+In a parametric AFT model, the effect of covariates is to speed or slow down time.
+
+$$
+\begin{aligned}
+\log(T) = X\gamma + \text{error}
+\end{aligned}
+$$
+
+Where:
+
++ $T$ is the survival time
++ $X\gamma$ is the linear predictor
+
+and the error term is made up of a scale parameter $\sigma$ and a random variable $W$ with a specific distribution.
+In the usual setup, we observe the event/censoring indicator and the associated event or censoring time $C$, with the event and censoring process assumed to be independent.
+
+For the log-logistic model, the residual distribution is determined by the shape parameter.
+If $\log(T) = X\gamma + \sigma W$ where $W$ has a logistic distribution then $T$ follows a log-logistic distribution with scale parameter $\alpha = \exp(X\gamma)$ and shape parameter $\beta = 1/\sigma$.
+For further reference see section 2.2.4 in @Sun2006, chapter 13 of @Christensen2011, chapter 6 of @Collett2015 (possibly the clearest explanation) and @Cleves2010.
 
 The hazard function associated with log-logistic event times is hump-shaped, a bit like the log normal case but with longer tails.
 It initially increases, reaches a maximum and then decreases toward 0 as lifetimes become larger and larger.
@@ -152,7 +173,7 @@ $$
 \end{aligned}
 $$
 
-for the censored observations, the survival function is used:
+for the right censored records, the survival function is used:
 
 $$
 \begin{aligned}
@@ -247,7 +268,36 @@ Extract the parameters that we are interested in:
 #| code-fold: true
 
 m1$summary(variables = c("gamma", "shape", "med_surv_time0", "med_surv_time1"))
+
+
+
+
+
 ```
+
+By way of a sanity check, run the equivalent model using the `flexsurv` package.
+
+```{r}
+#| code-fold: true
+
+m2 <- flexsurvreg(Surv(t_evt_obs, evt) ~ trt, data = d_sim, dist = "llogis")
+print(m2)
+```
+
+Another option for model implementation might be through brms with a custom family (if that is possible).
+
+```{r, eval = F}
+#| code-fold: true
+
+d_sim[, censored := 1-evt]
+# brms is backwords - 
+# for cens, specify 0 to indicate no censoring and 1 to indicate right censoring
+
+brms::make_stancode(t_evt_obs | cens(censored) ~ trt, data = d_sim, family = lognormal())
+brms::make_stancode(t_evt_obs | cens(censored) ~ trt, data = d_sim, family = weibull())
+
+```
+
 
 Exponentiating the $\gamma_2$ parameter gives the acceleration factor associated with the treatment effect.
 For example, if $\gamma_2 > 0$ we can say that change from the control to treatment arm is associated with survival times being multiplied by a factor of $\exp(\gamma_2)$, indicating prolonged survival/delayed events.
