@@ -19,11 +19,11 @@ library(ggplot2)
 library(gt)
 ```
 
-The hazard function associated with log-logistic event times is hump-shaped, a bit like theand is a bit like a log normal but with longer tails.
+The hazard function associated with log-logistic event times is hump-shaped, a bit like the log normal case but with longer tails.
 It initially increases, reaches a maximum and then decreases toward 0 as lifetimes become larger and larger.
 Definitions for the density function can be found in the stan docs:
 [https://mc-stan.org/docs/functions-reference/positive_continuous_distributions.html#log-logistic-distribution](https://mc-stan.org/docs/functions-reference/positive_continuous_distributions.html#log-logistic-distribution) and in the `flexsurv` help file, see `?flexsurv::dllogis`.
-Unlike lognormal, loglistic has a closed form hazard function.
+Unlike lognormal, the log-logistic has a closed form hazard function.
 
 $$
 \begin{aligned}
@@ -31,7 +31,8 @@ f = \frac{(\beta/\alpha)(t/\alpha)^{\beta-1}}{(1 + (t/\alpha)^\beta)^2}
 \end{aligned}
 $$
 
-the cumulative distribution function is
+with shape parameter $\beta >0$ and scale parameter $\alpha >0$.
+The cumulative distribution function is
 
 $$
 \begin{aligned}
@@ -64,7 +65,7 @@ $$
 Say that we want to simulate data where there was 10% cumulative incidence by day 360, e.g. in the first 360 days of life about 10% of infants will experience a medical attendance for RSV, a respiratory illness.
 
 We want $S(360) = \frac{1}{1 + (360/\alpha)^\beta} = \pi = 0.9$.
-As $\alpha$ is the scale parameter, which is modelled as a linear function of parameters (treatment effects etc), assume that $\beta$ is known and solve for $\alpha$
+As $\alpha$ is the scale parameter, which is usually modelled as a linear function of parameters (treatment effects etc), assume that $\beta$ is known and solve for $\alpha$
 
 $$
 \begin{aligned}
@@ -72,7 +73,9 @@ $$
 \end{aligned}
 $$
 
-For example, say $\beta = 2$, this implies $\alpha = \frac{360}{((1/0.9) - 1)^{1/2}} = 1080$ gives
+For example, say $\beta = 2$, this implies $\alpha = \frac{360}{((1/0.9) - 1)^{1/2}} = 1080$ and gives the functional forms as shown below.
+Setting the survival probability to 0.5 and solving for time gives the median survival time under these parameters, i.e $1080 \times 1^{1/\beta} = 1080$.
+Obviously, these values are just for demonstration and can be calibrated to subject matter expertise as necessary for simulating trial designs etc.
 
 ```{r}
 #| code-fold: true
@@ -87,7 +90,7 @@ b <- 2
 a <- 360 / ( (1/0.9)-1 )^(1/b)    
 
 # Create a data.table with days from 1 to 360
-dt <- data.table(day = 1:360)
+dt <- data.table(day = 1:1080)
 
 # Compute the survival function S(t) = 1 / (1 + (t/a)^b)
 dt[, survival := 1 / (1 + (day / a)^b)]
@@ -101,14 +104,16 @@ dt[, hazard := density / survival]
 # Plot the survival curve
 ggplot(dt, aes(x = day, y = survival)) +
   geom_line(color = "blue", lwd = 0.4) +
+  geom_vline(xintercept = 360, lwd = 0.2) +
   labs(title = "Survival Curve for RSV (Log-Logistic Model)",
        x = "Day of Life", y = "Survival Probability S(t)") +
-  scale_y_continuous(limits = c(0, 1)) +
+  scale_y_continuous("Survival S(t)", limits = c(0.5, 1), seq(0.5, 1, by = 0.1)) +
   theme_minimal()
 
 # Plot the hazard function
 ggplot(dt, aes(x = day, y = hazard)) +
   geom_line(color = "darkgreen", lwd = 0.4) +
+  geom_vline(xintercept = 360, lwd = 0.2) +
   labs(title = "Hazard Function for RSV (Log-Logistic Model)",
        x = "Day of Life", y = "Hazard h(t)") +
   theme_minimal()
@@ -116,12 +121,13 @@ ggplot(dt, aes(x = day, y = hazard)) +
 # Plot the density function
 ggplot(dt, aes(x = day, y = density)) +
   geom_line(color = "red", lwd = 0.4) +
+  geom_vline(xintercept = 360, lwd = 0.2) +
   labs(title = "Density Function for RSV (Log-Logistic Model)",
        x = "Day of Life", y = "Density f(t)") +
   theme_minimal()
 ```
 
-In AFT, the scale parameter is allowed to vary with the covariates, such as:
+In an AFT model, which is appropriate when we are more concerned with direct assessment of event times (AFT is also a way to work around non-proportional hazards) rather than a focus on instantaneous risk, the scale parameter is allowed to vary with the covariates, such as:
 
 $$
 \begin{aligned}
@@ -142,7 +148,7 @@ taking logs of this gives the log-likelihood for observation $i$:
 
 $$
 \begin{aligned}
-\log f(t_i) &= \log(\beta) - \mu_i + (\beta - 1)\left[ \log(t_i) - \mu_i \right]   -2 \left( 1 + \exp(  \beta [\log(t_i) - \mu_i] )   \right)
+\log f(t_i) &= \log(\beta) - \mu_i + (\beta - 1)\left[ \log(t_i) - \mu_i \right]   -2 \log \left( 1 + (t_i/\exp(\mu_i))^\beta    \right)
 \end{aligned}
 $$
 
@@ -158,8 +164,7 @@ taking logs:
 
 $$
 \begin{aligned}
-\log S &= 0 + \log \left[ 1 + \left( \frac{t_i}{\exp(\mu_i)} \right)^\beta        \right] \\
-  &= \log \left[ 1 + \exp ( \beta (\log (t_i) - \mu_i)    )    \right] \\ 
+\log S &= 0 + \log \left[ 1 + \left( \frac{t_i}{\exp(\mu_i)} \right)^\beta        \right] 
 \end{aligned}
 $$
 
@@ -180,79 +185,59 @@ Running the model with the assumed data gives parameter estimates.
 mod_01 <- cmdstanr::cmdstan_model("stan/log-logistic-aft-01.stan")
 
 # Simulation parameters
-N <- 500  # Number of observations
-P <- 2    # Number of predictors
+N <- 2000 
 
 gamma_true <- c(log(1080), 1)  
 # True shape parameter
 shape_true <- 2  
 
 # Simulate covariates
-simulate_data <- function() {
+simulate_data <- function(
+    N = 2000,
+    gamma_true = c(log(1080), 0.3)  ,
+    shape_true = 2  ,
+    t_cen = 360
+    ) {
   
   d <- data.table(
-    x1 = rep(0:1, length  = N)
+    trt = rep(0:1, length  = N)
   )
   
-  # Design matrix
-  X <- as.matrix(d[, .(1, x1)])
+  d[trt == 0, scale := exp(gamma_true[1])]
+  d[trt == 1, scale := exp(gamma_true[1] + gamma_true[2])]
   
-  # Linear predictor
-  mu <- X %*% gamma_true
-  
-  # Scale parameter (a in the formula)
-  scale <- exp(mu)
-  
-  # Simulate survival times from log-logistic distribution
-  # Using quantile function: t = a * (p/(1-p))^(1/b) where p is uniform(0,1)
-  u <- runif(N)
-  t <- scale * (u / (1 - u))^(1 / shape_true)
-  
-  # Simulate censoring (administrative censoring at a fixed time point)
-  max_follow_up <- quantile(t, 0.8)  # Censoring at 80th percentile of times
-  censored <- t > max_follow_up
-  observed_time <- pmin(t, max_follow_up)
-  event <- as.numeric(!censored)
-  
-  # Return data
-  d[, `:=`(
-    time = observed_time,
-    event = event
-  )]
-  
-  return(list(
-    data = d,
-    X = X,
-    true_times = t,
-    censoring_rate = mean(censored)
-  ))
+  d[, t_evt := flexsurv::rllogis(.N, shape = shape_true, scale = scale)]
+  d[, evt := as.numeric(t_evt <= t_cen)]
+  d[evt == 1, t_evt_obs := t_evt]
+  d[evt == 0, t_evt_obs := t_cen]
+
+  # d[, .N, keyby = .(trt, evt)]
+  d
 }
 
 # Simulate data
-sim_data <- simulate_data()
-
-
-cat("Censoring rate:", sim_data$censoring_rate, "\n")
+d_sim <- simulate_data()
+# d_sim[, .N, keyby = .(trt, evt)]
 
 # Prepare data for Stan
 ld <- list(
-  N = N,
-  P = P,
-  X = sim_data$X,
-  y = sim_data$data$time,
-  event = sim_data$data$event,
+  N = nrow(d_sim),
+  P = 2,
+  X = cbind(1, d_sim$trt),
+  y = d_sim$t_evt_obs,
+  event = d_sim$evt,
   N_pred = 361,
   t_surv = 0:360
 )
 
 
 # Fit the Stan model - sink to remove the noise
-snk <- capture.output(
+# snk <- capture.output(
   m1 <- mod_01$sample(
       ld, iter_warmup = 1000, iter_sampling = 1000,
       parallel_chains = 4, chains = 4, refresh = 0, show_exceptions = F,
       max_treedepth = 10)
-)
+# )
 
 ```
 
@@ -261,14 +246,15 @@ Extract the parameters that we are interested in:
 ```{r}
 #| code-fold: true
 
-m1$summary(variables = c("gamma", "shape"))
+m1$summary(variables = c("gamma", "shape", "med_surv_time0", "med_surv_time1"))
 ```
 
 Exponentiating the $\gamma_2$ parameter gives the acceleration factor associated with the treatment effect.
-For example, if $\gamma_2 > 0$ we can say that change from the control to treatment arm is associated with survival times being multiplied by a factor of $\exp(\gamma_2)$, indicating prolonged survival.
+For example, if $\gamma_2 > 0$ we can say that change from the control to treatment arm is associated with survival times being multiplied by a factor of $\exp(\gamma_2)$, indicating prolonged survival/delayed events.
 Similarly, if $\gamma_2 < 0$ we have a reduction in survival (the time to event speeds up).
 
-In a log-logistic AFT model, I think that the median survival time for an individual with covariates $X$ is given by $\exp( X' \gamma)$ but have to confirm that.
+In a log-logistic AFT model with the current parameterisation, the median survival time for an individual with covariates $x_i$ is given by $\exp( \gamma x_i') = \alpha_i = \text{scale}_\text{i}$.
+Median survival is a common measure used to contrast groups.
 
 Produce a posterior for the survival curve:
 
@@ -296,13 +282,36 @@ ggplot(d_fig, aes(x = x, y = mu, group = trt, col = trt)) +
   geom_line() + 
   scale_y_continuous(limits = c(0.7, 1), breaks = seq(0.7, 1, by = 0.1)) +
   scale_color_discrete("") +
+  scale_fill_discrete("") +
   theme_minimal() +
   theme(
     legend.position = "bottom"
   )
 ```
 
-Estimate restricted mean survival time by group by integrating under the survival curve function for each draw from the posterior.
+
+Posterior on the median survival time, the time at which 50% of the cohort has experienced the occurrence of the event, e.g. a medical attendance for RSV ARI.
+
+```{r}
+#| code-fold: true
+
+d_post <- data.table(m1$draws(variables = c("med_surv_time0", "med_surv_time1"), format = "matrix"))
+
+d_fig <- melt(d_post, measure.vars = names(d_post), variable.name = "trt")
+
+d_fig[, trt := factor(trt, levels = c("med_surv_time0", "med_surv_time1"), labels = c("ctl", "trt"))]
+
+ggplot(d_fig, aes(x = value, group = trt, col = trt)) +
+  geom_density() +
+  scale_x_continuous("Median survival time") +
+  scale_color_discrete("Treatment") +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+Estimate the posterior for restricted mean survival time (by treatment group) by integrating under the survival curve function for each draw from the posterior.
 
 The RMST can be interpreted as the average survival time (i.e. time without the event, here being occurrence of RSV) during a defined time period ranging from time 0 to a specific follow-up time point.
 
@@ -365,8 +374,14 @@ d_rmst[, diff := rmst1 - rmst0]
 
 ```
 
-From here, we could evaluate differences in the RMST between groups considering what level of improvement in the mean survival to 360 days would be warranted to adopt the treatment over the control.
+From here, we could evaluate differences in the RMST between groups considering what level of improvement in the mean survival to 360 days would be warranted to decide on adopting the treatment over the control.
 
+Note that I have assumed a log-logistic parametric assumption here, primarily because I wanted something similar to a log-normal but more tractable. 
+Other distributional assumptions might be more suitable. 
+For example, if the data have a peaked hazard followed by a decline, then standard log-logistic or generalized log-logistic may work well.
+However, if the hazard function is more complex (e.g. bathtub shape, non-monotonic tail behavior etc), the Generalized F or Burr distributions might be better.
+Weibull or gamma models are simpler if only a monotonically increasing or decreasing hazard is required.
+All of these are reasonably straight forward to code up.
 
 
 <!-- ::: {#refs} -->

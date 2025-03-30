@@ -17,13 +17,10 @@ parameters {
 }
 
 transformed parameters {
-  vector<lower=0>[N] scale;   // Scale parameter for each observation (a in the formula)
-  vector<lower=0>[N] mu;      // Location parameter (log-scale)
+  // Location parameter (log-scale)
+  vector[N] mu;      
   
   mu = X * gamma;
-  for (i in 1:N) {
-    scale[i] = exp(mu[i]);
-  }
 }
 
 model {
@@ -36,10 +33,10 @@ model {
     if (event[i] == 1) {
       // For observed events, use the log-logistic density
       target += log(shape) - mu[i] + (shape - 1) * (log(y[i]) - mu[i]) - 
-                2 * ( 1 + exp(  shape * (log(y[i]) - mu[i]) ) );
+                2 * log1p(pow(y[i] / exp(mu[i]), shape));
     } else {
-      // For censored observations, use the survival function
-      target += log1p( exp( shape * (log(y[i])   - mu[i])  )  ) ;
+      // For censored observations, use the log survival function
+      target += -log1p(pow(y[i] / exp(mu[i]), shape));
     }
   }
 }
@@ -48,6 +45,12 @@ generated quantities {
   vector[N_pred] surv0;
   vector[N_pred] surv1;
   
+  real med_surv_time0;
+  real med_surv_time1;
+  
+  // obviously raising 1 to anything is 1 so only need the scale part
+  med_surv_time0 = exp(gamma[1]);
+  med_surv_time1 = exp(gamma[1] + gamma[2]);
   
   for(i in 1:N_pred){
     surv0[i] =  1 / (1 + pow(t_surv[i]/exp(gamma[1]),  shape));
