@@ -17,7 +17,9 @@ categories:
 library(data.table)
 library(ggplot2)
 library(gt)
+suppressPackageStartupMessages(library(survival))
 suppressPackageStartupMessages(library(flexsurv))
+options(scipen=999)
 ```
 
 In a parametric AFT model, the effect of covariates is to speed or slow down time.
@@ -248,8 +250,20 @@ ld <- list(
   y = d_sim$t_evt_obs,
   event = d_sim$evt,
   N_pred = 361,
-  t_surv = 0:360
+  t_surv = 0:360,
+  mu0_gamma = c(5, 0),
+  sd0_gamma = c(2, 2),
+  rho_shape = 0.5
 )
+
+
+# d_stan_gamma <- function(x, a, b){
+#   (b^a / gamma(a)) * x^(a-1) * exp(-b * x)
+# }
+# 
+# xx <- seq(0, 100, len = 1000)
+# yy <- d_stan_gamma(xx, 1, 0.1)
+# plot(xx, yy, type = "l")
 
 
 # Fit the Stan model - sink to remove the noise
@@ -260,22 +274,86 @@ ld <- list(
       max_treedepth = 10)
 # )
 
+  
+  
 ```
 
 Extract the parameters that we are interested in:
 
 ```{r}
+#| label: tbl-pars-mcmc
+#| tbl-cap: 'Parameters estimated by mcmc'
 #| code-fold: true
 
-m1$summary(variables = c("gamma", "shape", "med_surv_time0", "med_surv_time1"))
+d_post <- data.table(
+  m1$draws(variables = c("gamma", "shape", "scale0", "scale1"),
+           format = "matrix")
+)
+d_post <- melt(d_post, measure.vars = names(d_post))
 
+d_tbl <- d_post[, .(
+  mu = mean(value),
+  q_025 = quantile(value, prob = 0.025),
+  q_975 = quantile(value, prob = 0.975)
+), keyby = variable]
 
-
-
-
+gt(d_tbl) |>
+  cols_align(
+    align = "left",
+    columns = c("variable")
+    ) |>
+  fmt_number(columns = everything(), decimals = 2) |>
+  tab_options(
+      table.font.size = "80%"
+    ) 
 ```
 
-By way of a sanity check, run the equivalent model using the `flexsurv` package.
+Pathfinder variational inference is a bit quicker but coarser approximation:
+
+```{r}
+#| code-fold: true
+
+m3 <- mod_01$pathfinder(
+  ld, 
+  init = function() {list(
+    gamma = c(runif(1, 5, 10), runif(1, -1, 1)),
+    shape = runif(1, 0, 4)
+    )},
+  num_paths=4, single_path_draws=250,
+  history_size=50, max_lbfgs_iters=100,
+  refresh = 0, draws = 1000)
+```
+
+
+```{r}
+#| label: tbl-pars-pathfin
+#| tbl-cap: 'Parameters estimated by pathfinder algorithm'
+#| code-fold: true
+
+d_post <- data.table(
+  m3$draws(variables = c("gamma", "shape", "scale0", "scale1"),
+           format = "matrix")
+)
+d_post <- melt(d_post, measure.vars = names(d_post))
+
+d_tbl <- d_post[, .(
+  mu = mean(value),
+  q_025 = quantile(value, prob = 0.025),
+  q_975 = quantile(value, prob = 0.975)
+), keyby = variable]
+
+gt(d_tbl) |>
+  cols_align(
+    align = "left",
+    columns = c("variable")
+    ) |>
+  fmt_number(columns = everything(), decimals = 2) |>
+  tab_options(
+      table.font.size = "80%"
+    ) 
+```
+
+And by way of a sanity check, run the equivalent model using the `flexsurv` package.
 
 ```{r}
 #| code-fold: true
@@ -284,7 +362,7 @@ m2 <- flexsurvreg(Surv(t_evt_obs, evt) ~ trt, data = d_sim, dist = "llogis")
 print(m2)
 ```
 
-Another option for model implementation might be through brms with a custom family (if that is possible).
+Other options for model implementation might be through brms with a custom family (if that is possible).
 
 ```{r, eval = F}
 #| code-fold: true
@@ -297,7 +375,6 @@ brms::make_stancode(t_evt_obs | cens(censored) ~ trt, data = d_sim, family = log
 brms::make_stancode(t_evt_obs | cens(censored) ~ trt, data = d_sim, family = weibull())
 
 ```
-
 
 Exponentiating the $\gamma_2$ parameter gives the acceleration factor associated with the treatment effect.
 For example, if $\gamma_2 > 0$ we can say that change from the control to treatment arm is associated with survival times being multiplied by a factor of $\exp(\gamma_2)$, indicating prolonged survival/delayed events.
@@ -345,11 +422,11 @@ Posterior on the median survival time, the time at which 50% of the cohort has e
 ```{r}
 #| code-fold: true
 
-d_post <- data.table(m1$draws(variables = c("med_surv_time0", "med_surv_time1"), format = "matrix"))
+d_post <- data.table(m1$draws(variables = c("scale0", "scale1"), format = "matrix"))
 
 d_fig <- melt(d_post, measure.vars = names(d_post), variable.name = "trt")
 
-d_fig[, trt := factor(trt, levels = c("med_surv_time0", "med_surv_time1"), labels = c("ctl", "trt"))]
+d_fig[, trt := factor(trt, levels = c("scale0", "scale1"), labels = c("ctl", "trt"))]
 
 ggplot(d_fig, aes(x = value, group = trt, col = trt)) +
   geom_density() +

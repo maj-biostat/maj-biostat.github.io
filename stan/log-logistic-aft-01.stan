@@ -9,6 +9,12 @@ data {
   int N_pred;
   vector[N_pred] t_surv;    // time to predict survival at
   
+  // prior
+  vector[2] mu0_gamma;   // e.g. c(5, 0)
+  vector[2] sd0_gamma;   // e.g. c(2, 2)
+  
+  real rho_shape;        // e.g. 0.5 to 1
+  
 }
 
 parameters {
@@ -25,8 +31,9 @@ transformed parameters {
 
 model {
   // Priors - arbitrary at the moment
-  target += normal_lpdf(gamma | 0, 2);
-  target += gamma_lpdf(shape | 1, 0.1);
+  target += normal_lpdf(gamma[1] | 5, 3);
+  target += normal_lpdf(gamma[2] | 0, 2);
+  target += exponential_lpdf(shape | 0.5);
   
   // Likelihood
   for (i in 1:N) {
@@ -45,12 +52,12 @@ generated quantities {
   vector[N_pred] surv0;
   vector[N_pred] surv1;
   
-  real med_surv_time0;
-  real med_surv_time1;
+  real scale0;
+  real scale1;
   
-  // obviously raising 1 to anything is 1 so only need the scale part
-  med_surv_time0 = exp(gamma[1]);
-  med_surv_time1 = exp(gamma[1] + gamma[2]);
+  // these equate to the median survival time
+  scale0 = exp(gamma[1]);
+  scale1 = exp(gamma[1] + gamma[2]);
   
   for(i in 1:N_pred){
     surv0[i] =  1 / (1 + pow(t_surv[i]/exp(gamma[1]),  shape));
