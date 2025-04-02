@@ -232,6 +232,9 @@ simulate_data <- function(
   d[, t_evt := flexsurv::rllogis(.N, shape = shape_true, scale = scale)]
   d[, evt := as.numeric(t_evt <= t_cen)]
   d[evt == 1, t_evt_obs := t_evt]
+  # Assume everyone is followed up to 360 days. If you are doing this 
+  # incrementally then you need to consider the minimum of the censoring
+  # or follow up time.
   d[evt == 0, t_evt_obs := t_cen]
 
   # d[, .N, keyby = .(trt, evt)]
