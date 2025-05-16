@@ -326,6 +326,7 @@ rd <- plogis(mean(eta_1)) - plogis(mean(eta_0))
 rd
 
 # average risk by group, not average log-odds transformed as above
+# plogis(E[X]) \ne E[plogis(X)] due to nonlinearity
 rd <- mean(plogis(eta_1)) - mean(plogis(eta_0))
 rd
 ```
