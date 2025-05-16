@@ -290,8 +290,7 @@ d_1[s == 2 & z == 1, plogis(mean(eta))] - d_1[s == 2 & z == 0, plogis(mean(eta))
 
 ```{r, collapse = TRUE}
 #| hold: true
-# which will be different to the average probability across strata 
-# by treatment group
+# average probability across strata by treatment group
 d_1[s == 2 & z == 0, mean(plogis(eta))]
 d_1[s == 2 & z == 1, mean(plogis(eta))]
 d_1[s == 2 & z == 1, mean(plogis(eta))] - d_1[s == 2 & z == 0, mean(plogis(eta))]
@@ -299,7 +298,7 @@ d_1[s == 2 & z == 1, mean(plogis(eta))] - d_1[s == 2 & z == 0, mean(plogis(eta))
 
 ```{r, collapse = TRUE}
 #| hold: true
-# that should align somewhat to the observed data
+# should align somewhat to the observed data
 d_1[s == 2 & z == 0, mean(y)]
 d_1[s == 2 & z == 1, mean(y)]
 d_1[s == 2 & z == 1, mean(y)] - d_1[s == 2 & z == 0, mean(y)]
@@ -308,14 +307,13 @@ d_1[s == 2 & z == 1, mean(y)] - d_1[s == 2 & z == 0, mean(y)]
 Given we simulate the data, we know which strata is which so we can use g-computation to calculate the risk difference in the observed data.
 On average, this should be somewhere near the expected value but will not be equal to it.
 
-```{r}
+```{r, collapse = TRUE}
+#| hold: true
+
 # compliers
 d_s2 <- d_1[s == 2]
 f0 <- glm(y ~ z + x1 + x2, data = d_s2, family = binomial())
 
-# compute the log-odds of response for every unit
-# take the mean
-# convert to the probability scale
 d_s2_0 <- copy(d_s2)
 d_s2_0[, z := 0]
 eta_0 <- predict(f0, newdata = d_s2_0)
@@ -324,9 +322,12 @@ d_s2_1 <- copy(d_s2)
 d_s2_1[, z := 1]
 eta_1 <- predict(f0, newdata = d_s2_1)
 
-# risk on versus off treatment for every unit
-rd <- plogis(eta_1) - plogis(eta_0)
-mean(rd)
+rd <- plogis(mean(eta_1)) - plogis(mean(eta_0))
+rd
+
+# average risk by group, not average log-odds transformed as above
+rd <- mean(plogis(eta_1)) - mean(plogis(eta_0))
+rd
 ```
 
 Compile and fit the second implementation of the principal strata model that includes both monotonicity and ER assumptions:
