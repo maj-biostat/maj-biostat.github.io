@@ -250,24 +250,59 @@ $$
 
 
 ```{r}
-set.seed(99)
+set.seed(973589239)
 
-N <- 1e3
+N <- 1e4
 s <- sample(1:3, N, replace = TRUE, prob = c(0.2, 0.6, 0.2))
 z <- sample(c(0, 1), N, replace = TRUE, prob = c(0.5, 0.5))
 x1 <- rnorm(N)
 x2 <- rbinom(N, 1, 0.6)
 
-y1 <- rbinom(N, 1, plogis(0.1       + 1.1*x1 + 0.4*x2))
-# in expectation we anticipate a difference between groups equal to
-# plogis(-2 + 0.6 * 0.4) - plogis(0) \approx 0.35
-y2 <- rbinom(N, 1, plogis(  0  -2*z + 1.1*x1 + 0.4*x2))
-y3 <- rbinom(N, 1, plogis(-0.3      + 1.1*x1 + 0.4*x2))
+d_1 <- data.table(s = s, z = z, x1 = x1, x2 = x2)
 
-y <- y1 * (s == 1) + y2 * (s == 2) + y3 * (s == 3)
-d <- 0 * (s == 0) + z * (s == 1) + 1 * (s == 3)
+d_1[s == 1, d := 0]
+d_1[s == 2, d := z]
+d_1[s == 3, d := 1]
 
-d_1 <- data.table(s = s, z = z, d = d, x1 = x1, x2 = x2, y = y)
+d_1[s == 1, eta := 0.1 + 1.1*x1 + 0.4*x2]
+d_1[s == 2, eta := 0  -2*z + 1.1*x1 + 0.4*x2]
+d_1[s == 3, eta := -0.3      + 1.1*x1 + 0.4*x2]
+
+d_1[, y := rbinom(N, 1, plogis(eta))]
+```
+
+```{r, collapse = TRUE}
+#| hold: true
+# expected linear predictor for control 0 + -2*0 + 1.1*0 + 0.4*0.6 = 0.24
+# expected linear predictor for control 0 + -2*1 + 1.1*0 + 0.4*0.6 = -1.76
+d_1[s == 2 & z == 0, mean(eta)]
+d_1[s == 2 & z == 1, mean(eta)]
+```
+
+```{r, collapse = TRUE}
+#| hold: true
+# convert to prob scale 
+d_1[s == 2 & z == 0, plogis(mean(eta))]
+d_1[s == 2 & z == 1, plogis(mean(eta))]
+d_1[s == 2 & z == 1, plogis(mean(eta))] - d_1[s == 2 & z == 0, plogis(mean(eta))]
+```
+
+
+```{r, collapse = TRUE}
+#| hold: true
+# which will be different to the average probability across strata 
+# by treatment group
+d_1[s == 2 & z == 0, mean(plogis(eta))]
+d_1[s == 2 & z == 1, mean(plogis(eta))]
+d_1[s == 2 & z == 1, mean(plogis(eta))] - d_1[s == 2 & z == 0, mean(plogis(eta))]
+```
+
+```{r, collapse = TRUE}
+#| hold: true
+# that should align somewhat to the observed data
+d_1[s == 2 & z == 0, mean(y)]
+d_1[s == 2 & z == 1, mean(y)]
+d_1[s == 2 & z == 1, mean(y)] - d_1[s == 2 & z == 0, mean(y)]
 ```
 
 Given we simulate the data, we know which strata is which so we can use g-computation to calculate the risk difference in the observed data.
