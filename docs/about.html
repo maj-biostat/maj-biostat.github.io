@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="maj">
-<meta name="dcterms.date" content="2025-05-16">
+<meta name="dcterms.date" content="2025-07-04">
 
 <title>About – maj-biostat.github.io</title>
 <style>
@@ -183,7 +183,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 16, 2025</p>
+      <p class="date">July 4, 2025</p>
     </div>
   </div>
   
@@ -211,24 +211,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>Local:    main /Users/mark/Documents/project/website/src/maj-biostat.github.io
 Remote:   main @ origin (https://github.com/maj-biostat/maj-biostat.github.io)
-Head:     [b2609f1] 2025-05-16: Fix another error
+Head:     [6e5a738] 2025-05-16: Update site
 
 Branches:         1
 Tags:             0
-Commits:         68
+Commits:         69
 Contributors:     2
 Stashes:          0
-Ignored files:    2
-Untracked files: 39
-Unstaged files:  62
-Staged files:     0
+Ignored files:    3
+Untracked files: 42
+Unstaged files:  38
+Staged files:     1
 
 Latest commits:
+[6e5a738] 2025-05-16: Update site
 [b2609f1] 2025-05-16: Fix another error
 [14a8712] 2025-05-16: Fix error in example
 [eadc270] 2025-04-02: Add comment
-[a15bfbf] 2025-04-01: Minor edits
-[84a25d4] 2025-03-30: Add initial refs</code></pre>
+[a15bfbf] 2025-04-01: Minor edits</code></pre>
 </div>
 </div>
 
@@ -342,6 +342,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         if (link.dataset.originalHref !== undefined) {
           link.href = link.dataset.originalHref;
         }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+          // default icon
+          link.classList.add("external");
       }
     }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {

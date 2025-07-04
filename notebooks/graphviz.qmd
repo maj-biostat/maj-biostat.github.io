@@ -29,7 +29,7 @@ Edges are created when nodes are joined by the edge operator `->`.
 
 Unlike other types of quarto blocks, it is necessary to enter the control elements in the form `//| echo: true` rather than the usual `#| echo: FALSE`.
 
-```{dot, echo = T}
+```{dot}
 //| echo: true
 //| label: fig-1
 //| fig-cap: 'Example dot graph'
@@ -53,7 +53,6 @@ The size of the graph can be controlled with the `size` operator.
 If the drawing is too large, it is scaled uniformly as necessary to fit.
 
 ```{dot, echo = T}
-//| echo: true
 //| label: fig-2
 //| fig-cap: 'Example dot graph with attributes and comments'
 

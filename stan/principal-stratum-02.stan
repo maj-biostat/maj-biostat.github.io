@@ -56,21 +56,21 @@ model {
         {
             array[length] real log_l;
             if (Z[n] == 0 && D[n] == 0) {
-                // Z:0 D:0 S:0/1
+                // Z:0 D:0 S:0/1 never takers or compliers
                 log_l[1] = log_prob[1] + bernoulli_lpmf(Y[n] | inv_logit(XG[n] * beta_G[1]'));
                 log_l[2] = log_prob[2] + bernoulli_lpmf(Y[n] | inv_logit(XG[n] * beta_G[2]'));
             }
             else if (Z[n] == 1 && D[n] == 0) {
-                // Z:1 D:0 S:0
+                // Z:1 D:0 S:0 never takers (defiers don't exist)
                 log_l[1] = log_prob[1] + bernoulli_lpmf(Y[n] | inv_logit(XG[n] * beta_G[1]'));
             }
             else if (Z[n] == 1 && D[n] == 1) {
-                // Z:1 D:1 S:1/2
+                // Z:1 D:1 S:1/2 compliers or always takers
                 log_l[1] = log_prob[2] + bernoulli_lpmf(Y[n] | inv_logit(XG[n] * beta_G[3]'));
                 log_l[2] = log_prob[3] + bernoulli_lpmf(Y[n] | inv_logit(XG[n] * beta_G[4]'));
             }
             else if (Z[n] == 0 && D[n] == 1) {
-                // Z:0 D:1 S:2
+                // Z:0 D:1 S:2 always takers
                 log_l[1] = log_prob[3] + bernoulli_lpmf(Y[n] | inv_logit(XG[n] * beta_G[4]'));
             }
             target += log_sum_exp(log_l) - log_sum_exp(log_prob);

@@ -219,7 +219,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">October 22, 2024</p>
+      <p class="date-modified">July 4, 2025</p>
     </div>
   </div>
     
@@ -374,21 +374,6 @@ Figure&nbsp;1: Example dot graph
 </div>
 <p>Nodes and edges can be given attributes to control their representation and placement. The size of the graph can be controlled with the <code>size</code> operator. If the drawing is too large, it is scaled uniformly as necessary to fit.</p>
 <div class="cell" data-layout-align="default">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode dot code-with-copy"><code class="sourceCode dot"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">digraph</span> <span class="va">G</span> <span class="ot">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="at">size</span><span class="co"> </span><span class="ot">=</span><span class="st">"4,4"</span><span class="ot">;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span><span class="ot">];</span><span class="co">   /* this is a comment */</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">parse</span><span class="co"> </span><span class="ot">[</span><span class="at">weight</span><span class="ot">=</span><span class="dv">8</span><span class="ot">];</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">parse</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">execute</span><span class="ot">;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">init</span><span class="co"> </span><span class="ot">[</span><span class="at">style</span><span class="ot">=</span><span class="va">dotted</span><span class="ot">];</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">cleanup</span><span class="ot">;</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="ot">{</span><span class="co"> </span><span class="va">make_string</span><span class="ot">;</span><span class="co"> </span><span class="va">printf</span><span class="ot">}</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">init</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">make_string</span><span class="ot">;</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="kw">edge</span><span class="co"> </span><span class="ot">[</span><span class="at">color</span><span class="ot">=</span><span class="va">red</span><span class="ot">];</span><span class="co">   // so is this</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">printf</span><span class="co"> </span><span class="ot">[</span><span class="at">style</span><span class="ot">=</span><span class="va">bold</span><span class="co">,</span><span class="at">label</span><span class="ot">=</span><span class="st">"100 times"</span><span class="ot">];</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">make_string</span><span class="co"> </span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"make a\nstring"</span><span class="ot">];</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span><span class="co">,</span><span class="at">style</span><span class="ot">=</span><span class="va">filled</span><span class="co">,</span><span class="at">color</span><span class="ot">=</span><span class="st">".7 .3 1.0"</span><span class="ot">];</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">compare</span><span class="ot">;</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-2" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -519,15 +504,15 @@ Figure&nbsp;2: Example dot graph with attributes and comments
 <p>Some common <strong>node shapes</strong> available include <code>box</code>, <code>circle</code>, <code>record</code> and <code>plaintext</code>. A complete list can be found at [www.graphviz.org/doc/info/shapes.html]. The modifier <code>fixedsize=true</code> ensures that the node’s actual size is aligned with <code>width</code> and <code>height</code>. Linework can be doubled up using <code>peripheries=2</code> and orientation directed with <code>orientation</code> measured in degrees.</p>
 <p>While the default name of a node is its name, this can be modified with the <code>label</code> attribute.</p>
 <div class="cell" data-layout-align="default">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode dot code-with-copy"><code class="sourceCode dot"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">digraph</span> <span class="va">structs</span> <span class="ot">{</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="at">size</span><span class="co"> </span><span class="ot">=</span><span class="st">"2,2"</span><span class="ot">;</span><span class="co"> </span><span class="at">ratio</span><span class="ot">=</span><span class="va">fill</span><span class="ot">;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">node</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">record</span><span class="co">,</span><span class="at">fontsize</span><span class="ot">=</span><span class="dv">5</span><span class="ot">];</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct1</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">record</span><span class="co">,</span><span class="at">label</span><span class="ot">=</span><span class="st">"&lt;f0&gt; left|&lt;f1&gt; mid\ dle|&lt;f2&gt; right"</span><span class="ot">];</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct2</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">record</span><span class="co">,</span><span class="at">label</span><span class="ot">=</span><span class="st">"&lt;f0&gt; one|&lt;f1&gt; two"</span><span class="ot">];</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct3</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">record</span><span class="co">,</span><span class="at">label</span><span class="ot">=</span><span class="st">"hello\nworld |{ b |{c|&lt;here&gt; d|e}| f}| g | h"</span><span class="ot">];</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct1</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">struct2</span><span class="ot">;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct1</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">struct3</span><span class="ot">;</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode dot code-with-copy"><code class="sourceCode dot"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">digraph</span> <span class="va">structs</span> <span class="ot">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="at">size</span><span class="co"> </span><span class="ot">=</span><span class="st">"2,2"</span><span class="ot">;</span><span class="co"> </span><span class="at">ratio</span><span class="ot">=</span><span class="va">fill</span><span class="ot">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">node</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">record</span><span class="co">,</span><span class="at">fontsize</span><span class="ot">=</span><span class="dv">5</span><span class="ot">];</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct1</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">record</span><span class="co">,</span><span class="at">label</span><span class="ot">=</span><span class="st">"&lt;f0&gt; left|&lt;f1&gt; mid\ dle|&lt;f2&gt; right"</span><span class="ot">];</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct2</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">record</span><span class="co">,</span><span class="at">label</span><span class="ot">=</span><span class="st">"&lt;f0&gt; one|&lt;f1&gt; two"</span><span class="ot">];</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct3</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">record</span><span class="co">,</span><span class="at">label</span><span class="ot">=</span><span class="st">"hello\nworld |{ b |{c|&lt;here&gt; d|e}| f}| g | h"</span><span class="ot">];</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct1</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">struct2</span><span class="ot">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">  </span><span class="va">struct1</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">struct3</span><span class="ot">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-3" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -605,68 +590,68 @@ Figure&nbsp;3: Example of dot graph with nested attributes and comments
 <h1>R Integration</h1>
 <p>There are a number of ways to incorporate DOT within R. One approach is to use the <a href="https://rich-iannone.github.io/DiagrammeR/articles/graphviz-mermaid.html">DiagrammeR</a> package, specifically the <code>grViz()</code> function. This allows you to encode the graph using DOT notation but also pass in arguments as defined in R. <a href="#fig-r-integration" class="quarto-xref">Figure&nbsp;4</a> provides a simple example.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">24</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>N_A <span class="ot">&lt;-</span> <span class="dv">12</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>N_A_excl <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>N_A_analy <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>N_B <span class="ot">&lt;-</span> <span class="dv">12</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>N_B_analy <span class="ot">&lt;-</span> <span class="dv">12</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">grViz</span>(<span class="st">"digraph consort {</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="st">  node [fontname = Helvetica, shape = box, width = 1];</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="st">  enrolled [label = 'Enrolled </span><span class="sc">\n</span><span class="st">(n = @@1)'];  </span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="st">  allocA [label = 'Assigned A </span><span class="sc">\n</span><span class="st">(n = @@2)'];</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="st">  allocB [label = 'Assigned B </span><span class="sc">\n</span><span class="st">(n = @@3)'];</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="st">  { rank = same; allocA allocB } </span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="st">  exclA[label = 'Excl A </span><span class="sc">\n</span><span class="st">(n = @@6)'];</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="st">  analyA [label = 'Incl in analysis </span><span class="sc">\n</span><span class="st">(n = @@4)'];</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="st">  analyB [label = 'Incl in analysis </span><span class="sc">\n</span><span class="st">(n = @@5)'];</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="st">  { rank = same; analyA analyB } </span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="st">  blank1[label = '', width = 0.01, height = 0.01];</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="st">  blank2[label = '', width = 0.01, height = 0.01];</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="st">  blank3[label = '', width = 0.01, height = 0.01];</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="st">  blank4[label = '', width = 0.01, height = 0.01];</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="st">  /* all have same vertical position */</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="st">  { rank = same; blank2 blank3 blank4 }</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="st">  blank2 -&gt; blank3 [arrowhead=none, minlen = 5];</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="st">  blank3 -&gt; blank4 [arrowhead=none, minlen = 5];</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="st">  blank5[label = '', width = 0.01, height = 0.01]; </span></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="st">  { rank = same; blank5 exclA } </span></span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="st">  enrolled -&gt; blank1[dir = none];</span></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="st">  blank1 -&gt; blank3[arrowhead=none];</span></span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="st">  blank2 -&gt; allocA;</span></span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="st">  blank4 -&gt; allocB;</span></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="st">  allocA -&gt; blank5[arrowhead=none];</span></span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="st">  blank5 -&gt; exclA;</span></span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="st">  blank5 -&gt; analyA;</span></span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="st">  allocB -&gt; analyB;</span></span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="st">  [1]: N</span></span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="st">  [2]: N_A</span></span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="st">  [3]: N_B</span></span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a><span class="st">  [4]: N_A_analy</span></span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="st">  [5]: N_B_analy</span></span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a><span class="st">  [6]: N_A_excl</span></span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)</span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>fig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">24</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>N_A <span class="ot">&lt;-</span> <span class="dv">12</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>N_A_excl <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>N_A_analy <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>N_B <span class="ot">&lt;-</span> <span class="dv">12</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>N_B_analy <span class="ot">&lt;-</span> <span class="dv">12</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">grViz</span>(<span class="st">"digraph consort {</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="st">  node [fontname = Helvetica, shape = box, width = 1];</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="st">  enrolled [label = 'Enrolled </span><span class="sc">\n</span><span class="st">(n = @@1)'];  </span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="st">  allocA [label = 'Assigned A </span><span class="sc">\n</span><span class="st">(n = @@2)'];</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="st">  allocB [label = 'Assigned B </span><span class="sc">\n</span><span class="st">(n = @@3)'];</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="st">  { rank = same; allocA allocB } </span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="st">  exclA[label = 'Excl A </span><span class="sc">\n</span><span class="st">(n = @@6)'];</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="st">  analyA [label = 'Incl in analysis </span><span class="sc">\n</span><span class="st">(n = @@4)'];</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="st">  analyB [label = 'Incl in analysis </span><span class="sc">\n</span><span class="st">(n = @@5)'];</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="st">  { rank = same; analyA analyB } </span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="st">  blank1[label = '', width = 0.01, height = 0.01];</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="st">  blank2[label = '', width = 0.01, height = 0.01];</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="st">  blank3[label = '', width = 0.01, height = 0.01];</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="st">  blank4[label = '', width = 0.01, height = 0.01];</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="st">  /* all have same vertical position */</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="st">  { rank = same; blank2 blank3 blank4 }</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="st">  blank2 -&gt; blank3 [arrowhead=none, minlen = 5];</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="st">  blank3 -&gt; blank4 [arrowhead=none, minlen = 5];</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="st">  blank5[label = '', width = 0.01, height = 0.01]; </span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="st">  { rank = same; blank5 exclA } </span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="st">  enrolled -&gt; blank1[dir = none];</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="st">  blank1 -&gt; blank3[arrowhead=none];</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="st">  blank2 -&gt; allocA;</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="st">  blank4 -&gt; allocB;</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="st">  allocA -&gt; blank5[arrowhead=none];</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="st">  blank5 -&gt; exclA;</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="st">  blank5 -&gt; analyA;</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="st">  allocB -&gt; analyB;</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="st">  [1]: N</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="st">  [2]: N_A</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="st">  [3]: N_B</span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="st">  [4]: N_A_analy</span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="st">  [5]: N_B_analy</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="st">  [6]: N_A_excl</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>fig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="fig-r-integration" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-r-integration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-1cb15461cc8321686732" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-1cb15461cc8321686732">{"x":{"diagram":"digraph consort {\n\n  node [fontname = Helvetica, shape = box, width = 1];\n  \n  enrolled [label = \"Enrolled \n(n = 24)\"];  \n  allocA [label = \"Assigned A \n(n = 12)\"];\n  allocB [label = \"Assigned B \n(n = 12)\"];\n  \n  { rank = same; allocA allocB } \n  \n  exclA[label = \"Excl A \n(n = 2)\"];\n  \n  analyA [label = \"Incl in analysis \n(n = 10)\"];\n  analyB [label = \"Incl in analysis \n(n = 12)\"];\n  \n  { rank = same; analyA analyB } \n  \n  blank1[label = \"\", width = 0.01, height = 0.01];\n\n  blank2[label = \"\", width = 0.01, height = 0.01];\n  blank3[label = \"\", width = 0.01, height = 0.01];\n  blank4[label = \"\", width = 0.01, height = 0.01];\n  /* all have same vertical position */\n  { rank = same; blank2 blank3 blank4 }\n\n  blank2 -> blank3 [arrowhead=none, minlen = 5];\n  blank3 -> blank4 [arrowhead=none, minlen = 5];\n  \n  blank5[label = \"\", width = 0.01, height = 0.01]; \n  { rank = same; blank5 exclA } \n\n  enrolled -> blank1[dir = none];\n  blank1 -> blank3[arrowhead=none];\n  blank2 -> allocA;\n  blank4 -> allocB;\n  allocA -> blank5[arrowhead=none];\n  blank5 -> exclA;\n  blank5 -> analyA;\n  allocB -> analyB;\n  \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-9122e7f2e605e7667a2d" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-9122e7f2e605e7667a2d">{"x":{"diagram":"digraph consort {\n\n  node [fontname = Helvetica, shape = box, width = 1];\n  \n  enrolled [label = \"Enrolled \n(n = 24)\"];  \n  allocA [label = \"Assigned A \n(n = 12)\"];\n  allocB [label = \"Assigned B \n(n = 12)\"];\n  \n  { rank = same; allocA allocB } \n  \n  exclA[label = \"Excl A \n(n = 2)\"];\n  \n  analyA [label = \"Incl in analysis \n(n = 10)\"];\n  analyB [label = \"Incl in analysis \n(n = 12)\"];\n  \n  { rank = same; analyA analyB } \n  \n  blank1[label = \"\", width = 0.01, height = 0.01];\n\n  blank2[label = \"\", width = 0.01, height = 0.01];\n  blank3[label = \"\", width = 0.01, height = 0.01];\n  blank4[label = \"\", width = 0.01, height = 0.01];\n  /* all have same vertical position */\n  { rank = same; blank2 blank3 blank4 }\n\n  blank2 -> blank3 [arrowhead=none, minlen = 5];\n  blank3 -> blank4 [arrowhead=none, minlen = 5];\n  \n  blank5[label = \"\", width = 0.01, height = 0.01]; \n  { rank = same; blank5 exclA } \n\n  enrolled -> blank1[dir = none];\n  blank1 -> blank3[arrowhead=none];\n  blank2 -> allocA;\n  blank4 -> allocB;\n  allocA -> blank5[arrowhead=none];\n  blank5 -> exclA;\n  blank5 -> analyA;\n  allocB -> analyB;\n  \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-r-integration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;4: Example of dot graph that uses arguments defined in R
@@ -790,6 +775,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         if (link.dataset.originalHref !== undefined) {
           link.href = link.dataset.originalHref;
         }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+          // default icon
+          link.classList.add("external");
       }
     }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {

@@ -2,8 +2,13 @@ project:
   type: website
   output-dir: docs
   execute-dir: project
-  
+  render:
+    - "*.qmd"
+    - "!notebooks-drafts/*.*"
 
+execute:
+  freeze: true
+  
 highlight-style: github
 link-citations: true
 
@@ -28,6 +33,10 @@ format:
     theme: cosmo
     css: styles.css
     toc: true
+    link-external-icon: true
+    link-external-newwindow: true
+    execute:
+      freeze: auto  #re-render only when source changes
 
 
 
