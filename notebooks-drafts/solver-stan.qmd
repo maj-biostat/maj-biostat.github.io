@@ -1,0 +1,49 @@
+---
+title: "Solving systems of equations in stan"
+author: "maj"
+date: "2024-11-13"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - stan
+  - solver
+---
+
+
+```{r, eval = F}
+
+library(cmdstanr)
+library(data.table)
+library(ggplot2)
+
+
+m1 <- cmdstanr::cmdstan_model("stan/solver-1")
+  
+N <- 1e4
+ld <- list(
+  N = N,
+  y = rexp(N, 2),
+  dbg = 1
+)
+  
+f3 <- m2$sample(
+  ld, iter_warmup = 1000, iter_sampling = 1000,
+  parallel_chains = 1, chains = 1, refresh = 0, show_exceptions = T,
+  max_treedepth = 10)
+
+f3$output()
+
+f3$summary(variables = c("y_rep"))
+```
+
+
+
+
+
+
+
+# References
+
+<!-- ::: {#refs} -->
+<!-- ::: -->

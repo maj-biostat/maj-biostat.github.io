@@ -1,0 +1,21 @@
+---
+title: "Absolute versus relative measures of effect"
+author: "maj"
+date: "2024-10-11"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl  
+categories:
+  - model
+---
+
+
+Complex model per roadmap
+
+Estimate odds ratio for surgical domain treatment effect
+
+Look at decisions based on conditional model vs averaging over the parameters to get a marginal view.
+
+
+
+

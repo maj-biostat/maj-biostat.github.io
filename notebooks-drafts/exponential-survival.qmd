@@ -1,0 +1,89 @@
+---
+title: "Exponential survival model"
+author: "maj"
+date: "2024-11-13"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - stan
+  - bayes
+  - survival
+---
+
++ survival basics 
++ proportional hazards model
++ data generation under exponential
++ censoring types
++ visualisation
++ summary statistics
++ model 
++ goodness of fit post pred
++ model summaries
++ marginalisation
++ 
+
+# Survival basics
+
+Define $X$ as a non-negative, continuous random variable on the interval $[0, \infty)$ representing the time to a terminal event, e.g. death of an individual.
+In addition to the pdf and cdf associated with $X$, in survival analysis, we have interest in the survival and hazard functions.
+
+The survival function is the probability that the event will occur beyond time $x$:
+
+$$
+S(x) = 1 - F(x) = \text{Pr}(X \ge x) = \int_x^\infty f(s) ds
+$$
+
+The hazard function (sometimes referred to as an incidence rate or intensity) is:
+
+$$
+\begin{aligned}
+h(x) &= \lim_{\delta\to\infty} \frac{\text{Pr}(x\le X < x + \delta | X \ge x)}{\delta} \\
+  &= \frac{f(x)}{1 - F(x)} = \frac{f(x)}{S(x)}
+\end{aligned}
+$$
+
+The hazard function characterises the instantaneous risk of the event of interest given survival to $x$.
+The hazard informs the cumulative hazard:
+
+$$
+\begin{aligned}
+H(x) &= \int_0^x h(s) ds
+\end{aligned}
+$$
+
+Relations exist between the various definitions, e.g.
+
+$$
+\begin{aligned}
+H(x) &= \int_0^x  \frac{f(s)}{1 - F(s)} ds = -\log(S(x))
+\end{aligned}
+$$
+
+and therefore
+
+$$
+S(x) = \exp(-H(x))
+$$
+
+# Censoring
+
+Survival data are commonly censored (a less commonly considered feature is truncation).
+In fact, this is the main reason that survival analysis is a dealt with as a separate topic.
+If you use the length of followup as is, then this introduces bias.
+
+In censoring, the subject is known, but we only know that the event will occur at some point in the future, or the event has occurred and we just don't know when it happened.
+
+Right censoring is where we know that the subject has not yet had the event at the time we stop followup either because the study ends or something else happens that stops us from observing the event.
+
+
+
+
+
+
+
+
+# References
+
+<!-- ::: {#refs} -->
+<!-- ::: -->

@@ -1,0 +1,131 @@
+---
+title: "User stories"
+author: "maj"
+date: "2025-04-03"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+embed-resources: true
+categories:
+  - software engineering
+---
+
+```{r, echo = F}
+#| code-fold: true
+
+library(data.table)
+library(ggplot2)
+library(gt)
+suppressPackageStartupMessages(library(survival))
+suppressPackageStartupMessages(library(flexsurv))
+options(scipen=999)
+```
+
+
+Software development comprises three broad steps:
+
+1. Deciding what is required
+2. Implementation
+3. Verification - what was built, is what we wanted.
+
+Failing to communicate what it is you want, is one of the key reasons that software projects crash and burn.
+Deciding what you want you can be captured in the form of user stories, which to a large degree, have supplanted formal requirements analysis.
+While user stories have their own lexicon and associated procedures, they remain strongly related to the foundational goals of requirements as defined by the standards bodies such as the IEEE.
+The [ISO/IEC/IEEE Systems and software engineering - Vocabulary](https://standards.ieee.org/ieee/24765/6800/) (@ISO24765, page380) defines requirements as:
+
+3.3431 requirement
+1. statement that translates or expresses a need and its associated constraints and conditions [ISO/IEC TS 24748- 1:2016 Systems and software engineering — Life cycle management — Part 1: Guide for life cycle management, 2.41; ISO/IEC/IEEE 29148:2011 Systems and software engineering — Life cycle processes — Requirements engineering, 4.1.19] 
+
+2. condition or capability that must be met or possessed by a system, system component, product, or service to satisfy an agreement, standard, specification, or other formally imposed documents [IEEE 730-2014 IEEE Standard for Software Quality Assurance Processes, 3.2] 
+
+3. provision that contains criteria to be fulfilled [ISO/IEC 14143-2:2011 Information technology — Software measurement — Functional size measurement — Part 2: Conformity evaluation of software size measurement methods to ISO/IEC 14143-1, 3.10] 
+
+4. a condition or capability that must be present in a product, service, or result to satisfy a contract or other formally imposed specification [A Guide to the Project Management Body of Knowledge (PMBOK Guide) — Fifth Edition]
+cf. design requirement, functional requirement, implementation requirement, interface requirement, performance requirement, physical requirement
+
+To be clear, user stories (requirements) must not describe how the system should work; they are not about solving the problem.
+Commonly, it is difficult for users to articulate what they need, but are readily able to discern what they do not want.
+Therefore, with reference to the notion of requirements as *condition or capability that must be met or possessed by a system, system component, product*, the key to good requirements is to fully explore the problem to be solved.
+User stories start from the perspective of the user and what they want to achieve.
+
+Each user story will have the following components:
+
++ Title - so that we can easily reference, focus and discuss 
++ User - the character that will derive some value from the new capability 
++ Narrative - describing the context and need
++ Resolution - how we determine that everything has turned out well
+
+focusing on the outcomes the user needs, captured in non-technical, succinct language that everyone can understand.
+A user story is not the complete picture; it is a prompt for **conversations** that flesh out the detail, i.e. they are a representation of requirements rather than the definitive specification.
+
+
+
+## Concepts
+
+A user story can be defined as *a concise statement of functionality needed to deliver some value to a specific user* that contains who, what and why.
+Importantly, user stories are from the perspective of the user and not the system or developer.
+
+User stories are expanded through detailed discussion which also leads to the means by which we assess whether what was delivered meets the need.
+
+### Roles (who)
+
+*As a [role type]* clarifies who (whether it be an individual or group) will benefit from the story and ideally guides who should write the story (or whose perspective we should put ourselves into).
+The role type should be specific, avoid generic *users*.
+
+### Feature (what)
+
+*I want ...* describing the need to be delivered in a concise form.
+
+### Value (why)
+
+*so that ...* outlines the value and lets user stories be ranked in terms of priority.
+
+### Acceptance criteria and tests
+
+Acceptance criteria help derive tests to ensure that the user story is complete.
+The criteria comprise functional, non-functional and performance elements.
+For example, a functional criteria might be that some display was provided or options to do something were provided.
+Alternatively, the acceptance criteria might be formed in terms of pre-conditions to the user story, actions and results.
+For example, "Given that I am signed in, when I go to the bottom of a blog, I can make a comment."
+All user stories should have at least one acceptance criteria and all of them should resolve to true/false result.
+Ultimately, it is the acceptance criteria that drive the agreement about the lower level details associated with the story.
+For example, if the story was around viewing information about jobs returned from a search, then the scope of the tests might ensure that the specific types of information required are provided.
+
+### Scope
+
+Stories should realistically align with a day to a week or so of work.
+Any more than this, then they are too big.  
+Large stories are referred to as *epics* and are usually broken down into more management stories.
+
+The implicit short durations of work associated with a user story approach usually induces a different style of development to the traditional waterfall approach (where all the requirement processes are done up front).
+The idea is to have the stakeholders involved throughout the development and so users should be prepared to take a very active role.
+
+That said, a bulk initial set of stories can often come fairly easy and then this set can be prioritised and then an iteration length decided for progression towards the first release.
+
+## Approach
+
+INVEST has been proposed as an acronym for producing good stories.
+
+Each story should be Independent, Negotiable, Valuable, Estimatable, Small and Testable.
+By independence, we are just saying that stories should be self contained and no rely on the development of other stories as this causes planning issues.
+Negotiable refers to the fact that the description of functionality within the user story can be fleshed out in many possible ways.
+The Value of a story is dependent on perspective, one way to ensure this is to get the person in the roll to write the story.
+If a story cannot be estimated in terms of the development time then there is a probably an issue with domain knowledge, technical knowledge or story scope (too big). 
+Small refers to scope, but again this is dependent on capabilities, there is no one-size fits all.
+Without being testable, you won't know if the functionality is complete.
+
+
+## Common mistakes
+
+|Mistake | Comment |
+|--------|-----------|
+| Include aspects of the solution | Constrains options to solve the problem |
+| Monster stories | Results in large units of work  with slow turn around |
+| Misconstrue what is valuable | Small increments are still bring value by moving products forward |
+| Dependent stories | Focus on atomic increments that provide value, not the big machine |
+
+
+# References
+
+::: {#refs}
+:::

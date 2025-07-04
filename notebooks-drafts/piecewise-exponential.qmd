@@ -1,0 +1,424 @@
+---
+title: "Piecewise exponential survival model"
+author: "maj"
+date: "2024-09-25"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - stan
+  - bayes
+  - survival
+---
+
+
+
+```{r}
+# library(nphsim)
+
+hpw <- function(t = 2, bins = c(0,  20,  35), rate = c(1/15, 1/7, 1/20)){
+  if(any(t < 0)) stop("Negative values for t not supported")
+  y <- sapply(seq_along(t), function(i){
+    rate[findInterval(t[i], bins)]  
+  })
+  y  
+}
+Hpw <- function(t = 2, bins = c(0,  20,  35), rate = c(1/15, 1/7, 1/20)){
+  if(any(t < 0)) stop("Negative values for t not supported")
+  y <- sapply(seq_along(t), function(i){
+    idx <- findInterval(t[i], bins)
+    if(idx>1){
+      HH <- sum(diff(bins)[1:(idx-1)] * rate[1:(idx-1)])
+      HH <- HH + (t[i] - bins[idx])*rate[idx]
+    } else {
+      HH <- (t[i] - bins[idx])*rate[idx]
+    }
+    HH
+  })
+  y  
+}
+Spw <- function(t = 2, bins = c(0,  20,  35), rate = c(1/15, 1/7, 1/20)){
+  if(any(t < 0)) stop("Negative values for t not supported")
+  exp(-Hpw(t, bins, rate))
+}
+fpw <- function(t = 2, bins = c(0,  20,  35), rate = c(1/15, 1/7, 1/20)){
+  if(any(t < 0)) stop("Negative values for t not supported")
+  hpw(t, bins, rate) * exp(-Hpw(t, bins, rate))
+}
+```
+
+
+
+```{r}
+# This controls the range to be searched. Needs to be > 0.
+interval = c(1E-8, 1000)
+# To get sensible values.
+return_finite <- function(x){
+  x <- min(x, .Machine$double.xmax)
+  x <- max(x, -.Machine$double.xmax)
+  x
+}
+# The function to be solved. Note that the log transform is used
+# to give numerical stability.
+rootfn <- function(t, u, bins, rate){
+  lambda <- Hpw(t, bins, rate)
+  surv <- exp(-lambda); 
+  return_finite(log(surv) - log(u))
+}
+# Creates random draws
+rpw <- function(bins, rate){
+  u_i <- runif(1)
+  # rootfn(t=interval[1], u = u_i)  rootfn(t=interval[2], u = u_i)
+  at_limit <- rootfn(interval[2], u = u_i,
+                          bins = bins,
+                          rate = rate)
+  if(at_limit > 0){
+    return(c(interval[2], 0))
+  } else {
+    # trying to find the value for t at which S(t) - u = 0
+    t_i <- stats::uniroot(rootfn, 
+                          u = u_i, 
+                          interval = interval, 
+                          check.conv = TRUE,
+                          trace = 100,
+                          bins = bins,
+                          rate = rate)$root
+    # our random sample from the surv dist
+    return(t_i)
+  }
+}
+
+bins = c(0,  20)
+rate = c(1/20, 1/4)
+# yy1 <- nphsim::rpwexp(1000, 
+#                       rate = rate,
+#                       intervals = bins[2])
+
+yy2 <- replicate(1000, rpw(bins, rate))
+
+library(simtrial)
+
+yy3 <- simtrial::rpwexp(
+  n = 1000,
+  fail_rate = data.frame(rate = c(1/20, 1/4), duration = c(20))
+)
+```
+
+
+```{r, eval = F}
+plot(density(yy1))
+lines(density(yy2), col = 2)
+```
+
+
+```{r, eval = F}
+library(msm)
+library(survival)
+library(data.table)
+library(cmdstanr)
+x <- seq(0.1, 50, by=0.1)
+# baseline hazard
+rate <- c(0.1, 0.2, 0.05, 0.3)
+b_trt <- 0.3
+t <- c(0, 10, 20, 30)
+
+# true values
+s0 <- Spw(t = 0:70, bins = c(0, 10, 20, 30), rate = c(0.1, 0.2, 0.05, 0.3))
+s1 <- Spw(t = 0:70, bins = c(0, 10, 20, 30), rate = b_trt * c(0.1, 0.2, 0.05, 0.3))
+
+N <- 1e5
+y0 <- rpexp(n = N/2, rate = rate, t = t, start = min(t))
+y1 <- rpexp(n = N/2, rate = rate * b_trt, t = t, start = min(t))
+
+
+d1 <- data.table(
+  id = 1:N,
+  y = c(y0, y1), 
+  evt = 1,
+  trt = rep(0:1, each = N/2)
+)
+
+
+dbin <- data.table(
+  id_timept = 1:4,
+  tstart = c(0, 10, 20, 30),
+  tend =  c(10, 20, 30, 100)
+  )
+
+
+# Transform to counting process format
+d2 <- data.table(
+  survSplit(Surv(y, evt) ~ trt,
+            start="tstart", end="y", id = "id",
+            data=d1, cut=dbin$tstart)
+)
+# delta_ij = 1 if ith subject failed or was 
+# censored at the jth interval and 0 otherwise
+d2[, delta := 0]
+ix <- d2[, .I[.N], by = id][["V1"]]
+d2[ix, delta := 1]
+
+d3 <- merge(d2, dbin,
+            by.x = "tstart",
+            by.y = "tstart", all.x = TRUE)
+setkey(d3, id)
+setcolorder(d3, c("id", "id_timept", "tstart", "tend", "delta"))
+# d3 is the dataset transformed to counting process  and with added
+# elements to ease calculations for pwe loglik.
+# How many observations by each group?
+# d3[, .N, by = id_timept]
+# d3[, sum(evt), by = id_timept]
+## Locate the start and end indexes for each subject id
+d4 <- d3[, .(istart = .I[1], iend = .I[.N]), by = id]
+# merge these into the original tte data
+d5 <- merge(d1, d4, by.x = "id", by.y = "id")
+
+N_subj <- length(unique(d5$id))
+N_intvl = length(dbin$tstart)
+ld <- list(N_subj = N_subj,
+           id_sub = d5$id,
+           y = d5$y,
+           P = 1, 
+           X = array(d5$trt, dim = c(N_subj, 1)),
+           # Note this is needed to compute the likelihood as well as delta
+           evt = d5$evt,
+           istart = d5$istart, iend = d5$iend,
+           N_intvl = N_intvl,
+           N = nrow(d3), 
+           tstart = d3$tstart, 
+           tend = d3$tend,
+           delta = d3$delta, 
+           ga = 0.1, 
+           gb = 0.1, 
+           sig_b = 1)
+
+
+
+m1 <- cmdstanr::cmdstan_model("stan/pwe-01.stan")
+
+f1 <- m1$sample(
+    ld, iter_warmup = 1000, iter_sampling = 1000,
+    parallel_chains = 1, chains = 1, refresh = 100, show_exceptions = F,
+    max_treedepth = 10)
+
+f1$summary()
+# f1$read_cmdstan_csv()
+
+
+post <- data.table(f1$draws(variables = c("lambda", "b"), format = "matrix"))
+# post <- data.table(as.matrix(f3, pars = c("lambda", "b")))
+names(post) <- c(paste0("lambda", 1:(ncol(post)-1)), "b")
+# Say we want to predict for every week between 0 and 99
+# You need to line up the periods of constant hazard with you desired
+# prediction. So, if the original intervals were (0, 10], (10, 20]
+# (20, 50], (50, 100], (100, 170], you will need 10 from the first
+# col, 10 from the second, 30 from the third etc.
+# dbin$tend
+wks <- c(10, 10, 10, 41)
+H <- do.call(cbind, lapply(seq_along(wks), function(i){
+  cols <- paste0("lambda", rep(i, wks[i]))
+  post[, mget(cols)]
+}))
+H <- t(apply(H, 1, cumsum))
+S0 = exp(-H)
+S1 = exp(-H * exp(post$b))
+plot(0:70, colMeans(S0), type = "l")
+lines(0:70, colMeans(S1), col = 2)
+# true values:
+lines(0:70, s0, lty = 2)
+lines(0:70, s1, lty = 2, col = 2)
+
+# f4 <- survival::survfit(survival::Surv(u, evt) ~ trt, data = d1)
+# t <- 0:99
+# fs2 <- summary(f2, newdata = data.frame(trt = 0:1), t = t, ci = F)
+# s0_km <- fs2$surv[fs2$strata == "trt=0"]
+# s1_km <- fs2$surv[fs2$strata == "trt=1"]
+# lines(t,s0_km, col = 1, lty = 2)
+# lines(t,s1_km, col = 2, lty = 2)
+
+
+
+# pw <- msm::rpexp(n=nsample,rate=rates,t=breakpoints[-length(breakpoints)])
+# pw_rates <- eha::piecewise (enter=rep(0,nsample),
+#                             exit=pw,
+#                             event=rep(1,nsample),
+#                             cutpoints=breakp2)
+```
+
+
+```{r, eval = F}
+library(tidyverse)
+library(survival)
+set.seed(13960043)
+
+m2 <- cmdstanr::cmdstan_model("stan/pwe-02.stan")
+
+
+leukemia <- as_tibble(leukemia) %>%
+    mutate(id = seq_len(n())) %>%
+    select(id, everything())
+leukemia
+
+leukemia_summary <- leukemia %>%
+    filter(status == 1) %>%
+    summarize(n = n(),
+              mean_time = mean(time),
+              quantiles = list(quantile(time, probs = seq(from = 0, to = 1, by = 0.2)))) %>%
+    unnest()
+leukemia_summary
+
+coxph1 <- coxph(formula = Surv(time, status) ~ as.integer(x == "Maintained"),
+                data    = leukemia,
+                ties    = c("efron","breslow","exact")[1])
+summary(coxph1)
+
+
+## Cutpoints
+cutpoints_20 <- as.numeric(leukemia_summary$quantiles)
+## First cutpoint should be time 0.
+cutpoints_20[1] <- 0
+## Last cutpoint should be larger than the maximum failure time.
+cutpoints_20[length(cutpoints_20)] <- cutpoints_20[length(cutpoints_20)] + 1
+## Show
+cutpoints_20
+
+grid <- seq(from = 0, to = max(leukemia_summary$quantiles), by = 0.1)
+
+# https://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/R/R7_LogisticRegression-Survival/R7_LogisticRegression-Survival4.html
+# censoring status (0 if an individual was censored, 1 otherwise)
+
+ld <- list(lambda1_mean = 0.01,
+           lambda1_length_w = 10^4,
+           w = 0.01,
+           lambda_star = 0.05,
+           beta_mean = 0,
+           beta_sd = 100,
+           K = length(cutpoints_20) - 1,
+           cutpoints = cutpoints_20,
+           N = length(leukemia$time),
+           evt = leukemia$status,
+           y = leukemia$time,
+           x = as.integer(leukemia$x == "Maintained"),
+           grid_size = length(grid),
+           grid = grid)
+
+
+
+f2 <- m2$sample(
+    ld, iter_warmup = 1000, iter_sampling = 1000,
+    parallel_chains = 1, chains = 1, refresh = 100, show_exceptions = F,
+    max_treedepth = 10)
+
+f2$summary(variables = c("lambda","beta","lp__"))
+
+
+piecewise_ph_S_sample <- data.table(
+  f2$draws(variables = "S_grid", format = "matrix"))
+
+names(piecewise_ph_S_sample) <- as.character(grid)
+piecewise_ph_S_sample %>%
+    mutate(iter = seq_len(n())) %>%
+    gather(key = time, value = survival, -iter) %>%
+    mutate(time = as.numeric(time)) %>%
+    filter(iter %in% sample(1:max(iter), size = 500)) %>%
+    ##
+    ggplot(mapping = aes(x = time, y = survival, group = iter)) +
+    geom_line(alpha = 0.1) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
+          legend.key = element_blank(),
+          plot.title = element_text(hjust = 0.5),
+          strip.background = element_blank())
+
+```
+
+
+
+```{r, eval = F}
+m2 <- cmdstanr::cmdstan_model("stan/pwe-02.stan")
+
+# Simulation parameters
+x <- seq(0.1, 50, by=0.1)
+# baseline hazard
+rate <- c(0.1, 0.2, 0.05, 0.3)
+b_trt <- 0.3
+# cutpoints for simulation (upper bound not defined here)
+t <- c(0, 10, 20, 30)
+
+
+# simulate data
+N <- 1e5
+y0 <- rpexp(n = N/2, rate = rate, t = t, start = min(t))
+y1 <- rpexp(n = N/2, rate = rate * b_trt, t = t, start = min(t))
+
+cutpts <- c(t, ceiling(max(c(y0,y1)) + 1))
+
+# true values
+s0 <- Spw(t = 0:max(cutpts), bins = t, rate = rate)
+s1 <- Spw(t = 0:max(cutpts), bins = t, rate = b_trt * rate)
+
+  
+d1 <- data.table(
+  id = 1:N,
+  y = c(y0, y1), 
+  evt = 1,
+  trt = rep(0:1, each = N/2)
+)
+
+# For model cutpoints, normally just take quantiles, e.g.
+cutpts_q <- unlist(d1[evt == 1, as.list(quantile(y, probs = seq(0, 1, by = 0.2)))])
+# Extend low to zero
+cutpts_q[1] <- 0
+# Extend high to cover all observed data
+cutpts_q[length(cutpts_q)] <- cutpts_q[length(cutpts_q)] + 1
+
+# Grid for prediction
+grid <- seq(from = 0, to = max(cutpts_q), by = 0.1)
+
+ld <- list(
+  # hyperpars
+  lambda1_mu = 0.01, lambda1_len_w = 10^4, w = 0.01, lambda_star = 0.05,
+  b_mu = 0, b_sd = 100, K = length(cutpts) - 1, cutpt = cutpts,
+  N = nrow(d1),
+  evt = d1$evt,
+  y = d1$y,
+  x = d1$trt,
+  grid_size = length(grid),
+  grid = grid
+  )
+
+f2 <- m2$sample(
+    ld, iter_warmup = 1000, iter_sampling = 1000,
+    parallel_chains = 1, chains = 1, refresh = 100, show_exceptions = F,
+    max_treedepth = 10)
+
+f2$summary(variables = c("lambda","b","lp__"))
+
+
+
+piecewise_ph_S_sample <- data.table(
+  f2$draws(variables = "S_grid", format = "matrix"))
+
+names(piecewise_ph_S_sample) <- as.character(grid)
+piecewise_ph_S_sample %>%
+    mutate(iter = seq_len(n())) %>%
+    gather(key = time, value = survival, -iter) %>%
+    mutate(time = as.numeric(time)) %>%
+    filter(iter %in% sample(1:max(iter), size = 500)) %>%
+    ##
+    ggplot(mapping = aes(x = time, y = survival, group = iter)) +
+    geom_line(alpha = 0.1) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
+          legend.key = element_blank(),
+          plot.title = element_text(hjust = 0.5),
+          strip.background = element_blank())
+
+
+```
+
+
+# References
+
+<!-- ::: {#refs} -->
+<!-- ::: -->

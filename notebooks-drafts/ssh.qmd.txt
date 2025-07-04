@@ -1,0 +1,98 @@
+# ssh
+
+https://www.youtube.com/watch?v=VAN7rCwH-hQ
+
+Primarily assumes that you want to connect from a mac (client) to a linux box (server).
+
+Is it enabled on the target **server**? 
+Type `sudo systemctl status ssh`, if active you will hopefully get:
+
+
+```
+[sudo] password for xxx:
+● ssh.service - OpenBSD Secure Shell server
+     Loaded: loaded (/lib/systemd/system/ssh.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2025-01-29 13:50:41 AWST; 30min ago
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+   Main PID: 1111 (sshd)
+      Tasks: 1 (limit: 76734)
+     Memory: 3.9M
+     CGroup: /system.slice/ssh.service
+             └─1111 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+```
+
+
+Note - if the server is a mac, type `sudo systemsetup -getremotelogin` enter pass and then you will probably get:
+
+```
+Remote Login: Off
+```
+
+
+From the **client**, type `ssh -p [port num] username@remoteip`
+
+If it is the first time ssh then you will get a message giving us a fingerprint of the servers public key.
+
+
+The authenticity of host '[ipaddr]:port ([ipaddr]:port)' can't be established.
+ED25519 key fingerprint is SHA256:J22OUTHFljU7vajJ+vBRXPOI7w70EIU9815bkgA9U9Q.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? 
+
+
+If you have access to the server, you can physcially go to it and type:
+
+```
+sudo ssh-keygen -l -f /etc/ssh/ssh_host_ecdsa_key.pub
+```
+
+in order to see if you get the same fingerprint. 
+If you do then you know you are connecting to the right box.
+Assuming you have verified which box you are connecting to, you can say yes to continuing and then you will see that the server will be added to the list of known hosts on the client, e.g.
+
+```
+Warning: Permanently added '[ipaddr]:port' (ED25519) to the list of known hosts.
+```
+
+The list of know hosts can be usually found under the ~/.ssh folder and goes by the name of `known_hosts`.
+
+You will then be prompted for the username's password on the server box.
+To exit the session type `exit`.
+
+
+Using passwords for ssh is not ideal.
+Instead you can use a public/private key pair.
+The steps involved are:
+
+1. Generate a public/private key pair on the client box using the relevant encryption, e.g. ED25519 as used by the above server.
+2. Prior to disabling password based login on server, transmit the public key from the client to the server using ssh-copy
+3. Disable password access at the server
+4. ssh from the client to the server using the key
+
+To generate the public/private pair:
+
+
+
+
+/etc/ssh/sshd_config
+
+PasswordAuthentication no
+
+sudo systemctl stop ssh.service
+sudo systemctl start ssh.service
+
+
+
+# allowing new ports
+sudo ufw allow 3389
+sudo ufw deny 3389
+
+
+
+
+
+
+
+
+

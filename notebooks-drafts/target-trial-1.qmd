@@ -1,0 +1,224 @@
+---
+title: "Target trial emulation"
+author: "maj"
+date: "2025-05-11"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - causal-inference
+  - bayesian
+---
+
+https://www.youtube.com/watch?v=vtlxc4MG4zs
+
+https://www.youtube.com/watch?v=9lMhD2VfEjI
+
+
+Three main sources of bias
+
+Confounding
+Immortal time
+Selection
+
+
+# Introduction
+
+What's the causal question?
+
+What is the target trial protocol in terms of:
+
++ eligibility, 
++ treatment options (including start and end times), 
++ assignment procedures
++ follow up
++ outcome of interest
++ causal contrasts and estimation procedure
+
+
++ Specify the target trial — eligibility, interventions, follow-up, outcome, estimand
++ Define our observational analog — map each trial element to registry data
++ Construct analytic dataset — clone, censor, weight (IPTW)
++ Fit a Bayesian outcome model with cmdstanr
++ Interpret the estimated causal effect of antibiotic duration on cure at day 7
+
+Assume the following trial setup:
+
+| Trial Element     | This Registry Trial Emulation                            |
+| :---------------- | :--------------------------------------------------------|
+| **Eligibility**   | Children aged 6 m–5 y with acute respiratory infection   |
+| **Time zero**     | Day of clinical assessment and antibiotic decision       |
+| **Interventions** | Days of antibiotics prescribed                           |
+| **Follow-up**     | 7 days post–time zero                                    |
+| **Outcome**       | Cure by day 7 (yes/no)                                   |
+| **Estimand**      | Risk difference ITT by successive days of therapy        |
+
+Above is speculative. How do we actually conceptualise intervention?
+
+
+To emulate randomisation, need to account for baseline and time-varying confounders.
+
+
+Day treatment commenced (prescription filled and medication taken per directions).
+
+Assume the registry has the following information on each individual that was enrolled.
+
++ id
++ age_mo
++ sex
++ viral_test (positive/negative)
++ bacterial_test (positive/negative)
++ duration_symptoms_prior (days before visit)
++ abx_dur (observed days of antibiotic prescription; 0 to 7)
++ cured7 (1 = cured by day 7, 0 = not)
+
+plus baseline covariates such as comorbidities, maybe a severity score, prior antibiotic exposure etc
+
+To keep things simple, collapse abx_dur into three durations: 
+
++ 0 days (none)
++ 3 days (1–2 or 3–6 months grouped)
++ 7 days (7+)
+
+Simulate the registry data (this is suppose to represent what we actually collected).
+Again, keep it relatively simple and ignore the possibility of time-varying data, censoring and non-adherence.
+
+```{r}
+library(data.table)
+library(ggplot2)
+
+# Sample size
+N <- 3129
+
+# over represent lower age class
+xx <- exp(rnorm(55))
+p_age_mo <- xx / sum(xx)
+p_age_mo <- sort(p_age_mo, decreasing = T)
+
+# Simulate baseline variables
+d_orig <- data.table(
+  id = 1:N,
+  # in practice the db would contain a broader age range
+  age_mo = sample(6:60, N, replace = TRUE, prob = p_age_mo),
+  sex = rbinom(N, 1, 0.5),  # 0 = female, 1 = male
+  viral_test = rbinom(N, 1, 0.4),      # +ve viral test
+  bacterial_test = rbinom(N, 1, 0.35), # +ve bact test
+  duration_symptoms_prior = pmin(7, rpois(N, 2)), # capped at 7
+  severity_score = round(rnorm(N, mean = 1, sd = 1), 0)
+)
+
+# abx prescribed
+d_orig[, linpred_abx := -1 +
+         1.4 * bacterial_test +
+         2.2 * severity_score +
+         0.4 * scale(age_mo) +
+         0.2 * duration_symptoms_prior +
+         0.3 * (1 - viral_test) ]
+
+# Convert to probability for any antibiotic use
+d_orig[, p_abx := plogis(linpred_abx)]
+
+# Assign antibiotic prescribed or not
+d_orig[, abx_any := rbinom(.N, 1, p_abx)]
+
+# dcast(d_orig[, .N, keyby = .(abx_any, bacterial_test)], bacterial_test ~ abx_any, value.var = "N")
+# dcast(d_orig[, .N, keyby = .(abx_any, severity_score)], severity_score ~ abx_any, value.var = "N")
+
+# Abx duration (in days) conditional on abx_any
+xx <- 1 - 2 *exp(-c(1:7))
+p_abx_dur <- xx / sum(xx)
+p_abx_dur <- sort(p_abx_dur, decreasing = F)
+
+d_orig[, abx_dur := 0L]
+d_orig[abx_any == 1, abx_dur := sample(
+  1:7, .N, replace = TRUE, prob = p_abx_dur
+)]
+
+# d_orig[, .N, keyby = abx_any]
+# d_orig[, .N, keyby = abx_dur]
+
+f_emax <- function(
+    x = 0:7, 
+    e0 = qlogis(0.2), 
+    emax = qlogis(0.8) - qlogis(0.2), 
+    ec50 = 2, 
+    h = 1.15, 
+    prob = T){
+  
+  eta <- e0 +  (emax * x^h)/ (ec50^h + x^h)
+  if(prob){
+    return(plogis(eta))
+  } else{
+    return(eta)
+  }
+}
+
+d_orig[
+  bacterial_test == T, 
+  linpred_cure := 
+    f_emax(abx_dur, prob = F) - 0.1 * severity_score - 0.1 * (viral_test == 1)]
+
+# ggplot(d_orig[bacterial_test == T], aes(x = abx_dur, y = plogis(linpred_cure))) +
+#   geom_point()
+
+d_orig[
+  bacterial_test == F, 
+  linpred_cure := rnorm(.N, -0.4 - 0.1 * severity_score - 0.1 * (viral_test == 1), 0.1)]
+
+# ggplot(d_orig[bacterial_test == F], aes(x = abx_dur, y = plogis(linpred_cure))) +
+#   geom_point()
+
+# Convert to probability and simulate outcome
+d_orig[, p_cure := plogis(linpred_cure)]
+d_orig[, cured7 := rbinom(.N, 1, p_cure)]
+
+# Clean up
+d_orig[, c("linpred_abx", "p_abx", "linpred_cure", "p_cure", "abx_any") := NULL]
+
+# View structure
+d_orig[]
+
+```
+
+
+
+
+
+
+
+
+
+```{r}
+library(data.table)
+
+d_1 <- copy(d_orig)
+
+#— Define treatment strategies
+d_1[, trt := fifelse(abx_dur == 0, 0L,
+             fifelse(abx_dur <= 6, 3L, 7L))]
+
+#— Baseline covariates
+Wvars <- c("age_mo", "sex", "viral_test", "bacterial_test",
+           "duration_symptoms_prior", "severity_score")
+
+#— Fit multinomial propensity model
+library(nnet)
+ps_mod <- multinom(trt ~ ., data = d_1[, c("trt", Wvars), with=FALSE])
+
+#— Predict propensity
+p_mat <- predict(ps_mod, type = "probs")
+d_1[, paste0("ps0_", c(0,3,7)) := as.data.table(p_mat)]
+# weights: 1 / P(A=observed | W)
+d_1[, ipw := 1 / fifelse(trt==0, ps0_0,
+                 fifelse(trt==3, ps0_3, ps0_7))]
+
+#— Stabilized weights (optional)
+p_dist <- prop.table(table(d_1$trt))
+d_1[, sw := fifelse(trt==0, p_dist["0"]/ps0_0,
+            fifelse(trt==3, p_dist["3"]/ps0_3, p_dist["7"]/ps0_7))]
+
+#— Inspect weights
+d_1[, .(mean_ipw = mean(ipw), mean_sw = mean(sw))]
+
+```
+

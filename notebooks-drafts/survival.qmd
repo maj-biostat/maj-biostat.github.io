@@ -1,0 +1,234 @@
+---
+title: "Survival analysis"
+author: "maj"
+date: "2024-11-13"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - stan
+  - bayes
+  - survival
+---
+
++ survival basics 
++ proportional hazards model
++ data generation under exponential
++ censoring types
++ visualisation
++ summary statistics
++ model 
++ goodness of fit post pred
++ model summaries
++ marginalisation
++ 
+
+# Mathematical framework
+
+Define $X$ to be a non-negative, continuous random variable on the interval $[0, \infty)$ representing the time to a terminal event, e.g. death of an individual.
+In survival analysis, in addition to the pdf and cdf associated with $X$, we consider the survival and hazard functions.
+
+The survival function is the probability that the event will occur beyond time $x$:
+
+$$
+S(x) = 1 - F(x) = \text{Pr}(X \ge x) = \int_x^\infty f(s) ds
+$$
+
+it is usually the primary object of interest and takes on a prediction role along with giving access to the idea of median survival times.
+
+The hazard function (sometimes referred to as an incidence rate or intensity) is:
+
+$$
+\begin{aligned}
+h(x) &= \lim_{\delta\to\infty} \frac{\text{Pr}(x\le X < x + \delta | X \ge x)}{\delta} \\
+  &= \frac{f(x)}{1 - F(x)} = \frac{f(x)}{S(x)}
+\end{aligned}
+$$
+
+The hazard function characterises the instantaneous risk of the event of interest given survival to time $x$.
+The hazard is used to define the cumulative hazard via:
+
+$$
+\begin{aligned}
+H(x) &= \int_0^x h(s) ds
+\end{aligned}
+$$
+
+And relations exist between the various quantities, e.g.
+
+$$
+\begin{aligned}
+H(x) &= \int_0^x  \frac{f(s)}{1 - F(s)} ds = -\log(S(x))
+\end{aligned}
+$$
+
+and therefore
+
+$$
+S(x) = \exp(-H(x))
+$$
+
+Parameteric assumptions may be made about the time to event data.
+The LogNormal, Exponential, Weibull and Gamma distributions are popular choices.
+
+# Censoring
+
+Survival data are commonly censored (a less commonly considered feature is truncation) which is the main reason that a distinct branch of statistics is devoted to it.
+For example, if you just use the length of followup as is, then this would introduces bias into your analysis results.
+
+Censoring is not desirable - ideally you want to observe every unit.
+When censored, the subject is known, but we know only that the event will occur at some point in the future, or the event has occurred but we don't know when it happened.
+
+Routinely, we assume that censoring is independent of the event of interest, i.e. the censoring is uninformative.
+If a particular subset of the subjects are both more likely to be censored and also have the event of interest, then the censoring might become informative.
+Irrespective of whether it is explicitly stated, most modelling approaches will make the assumption of uninformative censoring.
+
+## Right, left, interval
+
+Right censoring is where we know that the subject has not yet had the event at the time we stop followup either because the study ends or something else happens that stops us from observing the event.
+
+Left censoring is where the subject has had the event prior to the start of the followup, e.g. we know someone is HIV positive, but we do not know when the disease was contracted.
+Medical studies often begin the clock at time of diagnosis, but it would be better (for infectious diseases) to start at time of infection.
+Unfortunately, time of infection isn't usually known and is therefore left censored.
+
+Interval censoring is where we only know that event occurred between two known time points, e.g. where followup for an event occurs on a six-month cycle.
+
+On top of these, there are the concepts of type-i and type-ii censoring.
+
+## Type-I, Type-II
+
+In **type-i**, the study ends at a predetermined time and all subjects that haven't had the event are censored.
+
+For example, say we plug in $n$ bulbs at the start of the study and observe them for some period of time $c$ noting when each bulb blows.
+
+Let $T_i$ be the true life of bulb $i$.
+We only observe $T_i$ if $T_i < c$ otherwise $T_i$ is right censored.
+We therefore observe the combination $(U_i, \delta_i)$ where $U_i = \text{min}(T_i, c)$ is the observed part of $T_i$ and $\delta_i = \mathbb{I}(T_i \le c)$ is the censoring indicator.
+
+Thus, under type-i, the data is a random number $r$ of uncensored lifetimes, all being less than $c$ and $n-r$ censored observations at time $c$.
+
+A variant of type-i censoring is **random censoring**. 
+Here the censoring time $c$ is now dependent on subject $i$.
+
+In **type-ii**, the study continues until a pre-determined number of events occurs.
+
+For example, we plug in the $n$ bulbs and wait until $r$ fail.
+Now we have $r$ uncensored lifetimes and $n-r$ censored.
+Now $r$ is constant and what we are observing are the first $r$ order statistics.
+
+# Truncation
+
+In contrast to censoring, where the subject is known to exist but with incomplete data, truncation excludes subjects entirely.
+Truncation dictates whether subjects are included in a study based on whether an event occurs.
+
+Left truncation (otherwise known as delayed entry) is where observation of the subject doesn't occur until a certain time and if the event occurred before this time, then the subject would not enter the study.
+
+For example, if we analysed length of employment based on the current employees of a firm then we have excluded all those employees that left the firm prior to the study.
+For all we know, the current employees may just be the ones that stay a long time and the ones that left before our study were only employed for a brief period of time.
+
+Right truncation is where the subject is only included when an event occurs.
+The standard situation that leads to right truncation is one where when you enroll participants into a study only after an initiating event (such as infection) and end when an event of interest occurs.
+The initiating events are often latent and the population only becomes 'visible' when another event occurs.
+
+For example, we might be interested in the incubation period of AIDS (time from HIV infection to development of AIDS).
+The population is selected based on the individuals that develop AIDS within the study period.
+More details on right truncation can be found [here](https://cran.r-project.org/web/packages/coxrt/vignettes/coxrt-vignette.html).
+
+# Likelihood
+
+Define the complete data as a time-part and censoring part $D  \equiv (y, \delta)$ where $y$ are the event times and $\delta$ the censoring indicators.
+For each event time, we assume that $f_i(t | \theta)$ is known except for the parameters, similarly with $S$ and $h$.
+Assuming uninformative right-censoring and that the $n$ time/indicator pairs are i.i.d, the likelihood is proportional to the product of the densities for the observed times and the probabilities for the censoring times:
+
+$$
+\begin{aligned}
+L(\theta | D) \propto \prod_{i=1}^n [f_i(y_i | \theta)]^{\delta_i}[S_i(y_i|\theta)]^{1 - \delta_i}
+\end{aligned}
+$$
+
+Of note is the fact that this form is solely a function of $F$.
+
+Given the relation $h(x) = \frac{f(x)}{S(x)}$ the above can be written as
+
+$$
+\begin{aligned}
+L(\theta | D) \propto \prod_{i=1}^n [h_i(y_i | \theta)]^{\delta_i}[S_i(y_i|\theta)]
+\end{aligned}
+$$
+
+
+# Log-location-scale models
+
+
+
+# Regression analysis
+
+Accelerated failure time and proportional hazards models are two forms of survival analysis used when we have predictor information associated with each individual.
+
+
+## AFT
+
+The AFT model incorporates parameters that act multiplicatively on the time-scale.
+These models are most suitable when the hazards are likely to converge as time progresses or where a proportional hazards assumption is unreasonable and expected to be violated.
+
+One might also adopt an AFT model because you are interested in the event time compression/expansion rather than an instantaneous risk.
+For example, if you believe that certain treatments fundamentally alter the progression of the disease over time then you might want to consider an AFT.
+However, be aware that the AFT requires specifying a parameteric distribution and should generally be contrasted against alternative assumptions.
+
+Under an AFT, the survival time of an individual on treatment is taken to be a multiple of the survival time of an individual on control.
+The effect of treatment is therefore to speed up or slow down the passage of time-to-event time to event of one unit (say on the treatment arm) is the $\phi$ times the time-to-event for a unit in, say the control arm.
+
+An AFT assumes failure times $y_1, y_2, \dots y_n$ that arise according to probability model:
+
+$$
+\begin{aligned}
+y_i &= \exp(x_i^\prime \beta) \nu_i \\
+\log(y_i) &= x_i^\prime \beta + \theta_i \\
+\end{aligned}
+$$
+
+where $x_i^\prime \beta$ represents the linear predictor (including an intercept) and $\theta_i = \log(\nu_i)$ is the error term. 
+Sometimes, $\theta_i$ is replaced with $\sigma \epsilon_i$ where $\epsilon$ is the error and $\sigma$ is a scale parameter.
+
+The AFT naturally encompasses a wider range of survival time distributions than the PH model.
+In principle, while any continuous distribution for non-negative random variables will suffice, the log-logistic, lognormal, gamma and inverse gaussian are all popular for use in AFT.
+The functions of interest are outline for the log-logistic distribution below.
+
+### Log-logistic
+
+The hazard, survival and density functions are:
+
+$$
+\begin{aligned}
+h(t) &= \frac{\exp(\theta) \kappa t^{\kappa - 1}}{1 + \exp(\theta) t^\kappa} \\
+S(t) &= \{1 + \exp(\theta) t^\kappa\}^{-1} \\
+f(t) &= \frac{\exp(\theta) \kappa t^{\kappa-1}}{ (1 + \exp(\theta) t ^\kappa)^2}
+\end{aligned}  
+$$
+
+In this setting we assume $\log(T)$ has a logistic distribution. 
+The $p^{th}$ percentile is 
+
+$$
+\begin{aligned}
+t(p) = \left( \frac{p \exp(-\theta)}{100-p}  \right)^{1/\kappa}
+\end{aligned}  
+$$
+
+which gives a median
+
+$$
+\begin{aligned}
+t(50) = \exp(-\theta/\kappa)
+\end{aligned}  
+$$
+
+A nice property of the log-logistic is that it can model a hazard that initially rises and then falls.
+
+
+
+
+# References
+
+<!-- ::: {#refs} -->
+<!-- ::: -->

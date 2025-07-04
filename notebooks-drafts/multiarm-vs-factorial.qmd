@@ -1,0 +1,78 @@
+---
+title: "Multi-arm study vs factorial"
+author: "maj"
+date: "2024-09-25"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+categories:
+  - stan
+  - bayes
+---
+
+# Overview
+
+```{r}
+library(data.table)
+
+N_sim <- 1000
+
+# only assess the arm with the non-zero effect.
+win <- matrix(NA, ncol = 2, nrow = N_sim)
+
+for(i in 1:N_sim){
+  
+  N <- 600
+  d1 <- data.table(
+    id = 1:N
+  )
+  d1[, x1 := rbinom(N, 1, 0.5)]
+  d1[, x2 := rbinom(N, 1, 0.5)]
+  
+  p <- c(0.6, 0.6, 0.7)
+  
+  b0 <- qlogis(p[1])
+  b1 <- qlogis(p[2]) - qlogis(p[1])
+  b2 <- qlogis(p[3]) - qlogis(p[1])
+  
+  d1[, eta := b0 + x1*b1 + x2*b2]
+  d1[, y := rbinom(N, 1, prob = plogis(eta))]
+  
+  f1 <- glm(y ~ x1 + x2, data = d1, family = binomial)
+  s1 <- summary(f1)$coef
+  
+  win[i, 1] <- as.numeric(s1[3, 4] < 0.025)
+  
+  d2 <- data.table(
+    id = 1:N,
+    x1 = factor(sample(1:3, size = N, replace = T))
+  )
+  d2 <- cbind(
+    d2, 
+    model.matrix(~ x1, data = d2)
+  )
+  d2[, eta := b0 + x12*b1 + x13*b2]
+  d2[, y := rbinom(N, 1, plogis(eta))]
+  
+  f2 <- glm(y ~ x12 + x13, data = d2, family = binomial)
+  s2 <- summary(f2)$coef
+
+  win[i, 2] <- as.numeric(s2[3, 4] < 0.025)
+  
+}
+
+colMeans(win)
+
+
+
+```
+
+
+
+
+
+
+# References
+
+<!-- ::: {#refs} -->
+<!-- ::: -->
