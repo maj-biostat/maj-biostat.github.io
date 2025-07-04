@@ -74,7 +74,7 @@
     "href": "about.html#repository-status",
     "title": "About",
     "section": "Repository status",
-    "text": "Repository status\n\nlibrary(git2r)\nrepo &lt;- git2r::repository(path = \".\")\nsummary(repo)\n\nLocal:    main /Users/mark/Documents/project/website/src/maj-biostat.github.io\nRemote:   main @ origin (https://github.com/maj-biostat/maj-biostat.github.io)\nHead:     [6e5a738] 2025-05-16: Update site\n\nBranches:         1\nTags:             0\nCommits:         69\nContributors:     2\nStashes:          0\nIgnored files:    3\nUntracked files: 42\nUnstaged files:  38\nStaged files:     1\n\nLatest commits:\n[6e5a738] 2025-05-16: Update site\n[b2609f1] 2025-05-16: Fix another error\n[14a8712] 2025-05-16: Fix error in example\n[eadc270] 2025-04-02: Add comment\n[a15bfbf] 2025-04-01: Minor edits"
+    "text": "Repository status\n\nlibrary(git2r)\nrepo &lt;- git2r::repository(path = \".\")\nsummary(repo)\n\nLocal:    main /Users/mark/Documents/project/website/src/maj-biostat.github.io\nRemote:   main @ origin (https://github.com/maj-biostat/maj-biostat.github.io)\nHead:     [93a7c89] 2025-07-04: Add draft page ideas, not for rendering yet\n\nBranches:         1\nTags:             0\nCommits:         71\nContributors:     2\nStashes:          0\nIgnored files:    3\nUntracked files: 30\nUnstaged files:   0\nStaged files:     0\n\nLatest commits:\n[93a7c89] 2025-07-04: Add draft page ideas, not for rendering yet\n[564aa93] 2025-07-04: Render site and add minor updates\n[6e5a738] 2025-05-16: Update site\n[b2609f1] 2025-05-16: Fix another error\n[14a8712] 2025-05-16: Fix error in example"
   },
   {
     "objectID": "notebooks/covid-19-vaccine-efficacy.html",
