@@ -199,6 +199,8 @@ Estimating a regression function based on a piecewise specification is trivial b
 One might therefore want to opt for an approach that has smooth transitions across the range of $x$ rather than the kinks.
 In doing so, we have made an assumption on the qualitative properties of the relationship, i.e. that the $f$ from $y = f(x) + \epsilon$ is smooth.
 
+Variations of the parameterisation are possible, for example see [https://stats.stackexchange.com/questions/570182/how-to-create-a-b-spline-basis-without-intercept-and-linear-trend-included](https://stats.stackexchange.com/questions/570182/how-to-create-a-b-spline-basis-without-intercept-and-linear-trend-included).
+
 Roughly speaking, splines are piecewise polynomials that are continuously differentiable (i.e smooth) up to a certain degree and connected at a sequence of breakpoints called knots.
 In contrast to global polynomial models, which combine higher-order terms for $x$ (i.e. $x^2$, $x^3$ etc) splines partition $x$ into smaller intervals (as was does with the piecewise regression) and influence the fit locally, rather than globally.
 
@@ -802,6 +804,8 @@ p4 + p5 +
   patchwork::plot_annotation(tag_levels = 'A')
 
 ```
+
+
 
 
 ## Other perspectives
