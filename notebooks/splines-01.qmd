@@ -1,0 +1,813 @@
+---
+title: "Splines 1"
+author: "maj"
+date: "2025-07-05"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+embed-resources: true
+categories:
+  - bayes
+  - stan
+  - mlm
+---
+
+```{r}
+#| echo: true
+#| label: load-libs
+#| code-fold: true
+#| code-summary: Setup and dependencies
+
+library(data.table)
+library(ggplot2)
+library(ggh4x)
+library(gt)
+suppressPackageStartupMessages(library(cmdstanr))
+suppressPackageStartupMessages(library(brms))
+suppressPackageStartupMessages(library(mgcv))
+
+# devtools::install_github("thomasp85/patchwork")
+library(patchwork)
+
+library(splines2)
+library(pander)
+
+
+toks <- unlist(tstrsplit(getwd(), "/")) 
+if(toks[length(toks)] == "maj-biostat.github.io"){
+  prefix_stan <- "./stan"
+} else {
+  prefix_stan <- "../stan"
+}
+```
+
+## Introduction
+
+The concept of linearity in the linear model refers to linearity in the parameters and not the predictors themselves. 
+A model becomes nonlinear if the parameters are involved in nonlinear functions, e.g. $\beta_1 ^{x_1}$, $\text{sin}(\beta_1 x_1)$ etc. 
+In referring to *linearity violation*, one is usually considering whether the relationship between a predictor and outcome is being adequately represented by a linear term.
+
+For an example of a non-linearity relationship, one might look towards the age versus height in humans.
+In our early, or early to mid-years, the height/age relationship is somewhat linear.
+However, from age 18 onwards, increases in age would not be expected to result in changes in height.
+This may change again, much later in life, when height might start to decrease with increasing age.
+More generally, one could consider any such relationship between an outcome and an explanatory variable in which the relationship between the predictor and outcome is not a straight line on the scale of the linear predictor.
+When this occurs, a one unit change in the explanatory variable will result in a varying change in the outcome that depends on where in the scale of the predictor the change was made.
+
+Piecwise regression is a way to model such structure where breakpoints are defined (usually arbitrarily) along the range of the explanatory variable, allowing the relationship with the outcome to vary.
+Formally, a piecewise regression model with $K$ breakpoints can be defined as:
+
+$$
+\begin{align*}
+y_i = \beta_0 + \beta_1 x_i + \sum_{k=1}^K \delta_k (x_i - \tau_k)_{+} + \epsilon_i
+\end{align*}
+$$
+
+where
+
++ $x$ is a continuous predictor
++ $\tau_1, \tau_2, \dots, \tau_K$ are a set of ordered breakpoints
++ $\beta_0$ is the intercept
++ $\beta_1$ is the slope of the first segment
++ $\delta_k$ is the change in the slope at the breakpoint $\tau_{k-1} \text{for segment } k = 2, \dots, K + 1$
++ $\epsilon$ is the error
+
+If we assume $0 < x < 10$ with $K = 2$ breakpoints, one at $x = 3$ and the other at $x = 6$ then we get $K + 1 = 3$ segments, i.e. 
+
++ Segment 1: $0 \le x \le 3$ for which the slope is $\beta_1$
++ Segment 2: $3 < x \le 6$ for which the slope is $\beta_1 + \delta_1$
++ Segment 4: $x > 6$ for which the slope is $\beta_1 + \delta_1 + \delta_2$
+
+This model uses the basis function:
+
+$$
+\begin{align*}
+(x - \tau)_{+} = max(0, x - \tau)
+\end{align*}
+$$
+
+and these give zeros when $x \le \tau$ and are linearly increasing when $x > \tau$.
+The parameters associated with these basis functions influence the mean when $x_i > \tau_k$ and $\delta_k$ represent the incremental change to the slope at the breakpoint $\tau_k$.
+This form of model gives a kink in the functional form of the association at each $x = \tau_k$ which allows the slope to change while ensuring continuity.
+
+@fig-basis-1 shows the basis functions for $x$ over the $(0, 10)$ interval.
+The basis functions are an essential concept in the construction of splines.
+
+```{r, eval = T}
+#| echo: true
+#| label: fig-basis-1
+#| code-fold: true
+#| code-summary: Piecewise basis
+#| fig-cap: 'Basis functions - piecewise regression'
+#| fig.height: 4.5
+#| fig.width: 5
+#| fig-pos: H
+  
+x <- seq(0, 10, len = 100)
+
+# Breakpoints
+tau1 <- 2
+tau2 <- 5
+tau3 <- 8
+
+# Construct basis functions
+x1 <- pmax(0, x - tau1)
+x2 <- pmax(0, x - tau2)
+x3 <- pmax(0, x - tau3)
+
+d_fig <- data.table(cbind(x = x, basis_1 = x1, basis_2 = x2, basis_3 = x3))
+d_fig <- melt(d_fig, id.vars = "x")
+
+ggplot(d_fig, aes(
+  x = x, y = value, group = variable, col = variable)) +
+  geom_line() +
+  scale_x_continuous("x", breaks = 0:10) +
+  scale_y_continuous("f(x)") +
+  scale_color_discrete("") +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+## B-spline to P-splines
+
+Selecting some arbitrary values for the parameters, data can be simulated as shown in @fig-data-1 and these will be used throughout.
+
++ $x$ is a continuous predictor
++ $\tau_1 = 3$
++ $\tau_2 = 6$
++ $\beta_0 = 1$
++ $\beta_1 = 0.2$
++ $\delta_1 = 1.0$
++ $\delta_2 = -1.2$ flatlines
++ $\delta_3 = -0.8$
++ $\sigma = 0.15$ standard deviation for epsilon noise
+
+```{r}
+#| echo: true
+#| label: fig-data-1
+#| code-fold: true
+#| code-summary: Data simulation
+#| fig-cap: 'Simulated data'
+#| fig.height: 4.5
+#| fig.width: 5
+#| fig-pos: H
+  
+N <- 250
+
+d_1 <- data.table()
+d_1[, x := sort(runif(N, 0, 10))]
+
+# Breakpoints
+tau1 <- 2
+tau2 <- 4.5
+tau3 <- 8.5
+
+# Construct basis for piecewise reg
+d_1[, u_1 := pmax(0, x - tau1)]
+d_1[, u_2 := pmax(0, x - tau2)]
+d_1[, u_3 := pmax(0, x - tau3)]
+
+# Parameters
+beta0 <- 1
+beta1 <- 0.2        # initial slope
+delta1 <- 1.0       # change in slope at tau1
+delta2 <- -1.2     # change in slope at tau2
+delta3 <- -0.8     # change in slope at tau2
+sigma <- 0.15
+
+# Generate response
+d_1[, mu := beta0 + beta1 * x + delta1 * u_1 + delta2 * u_2 + delta3 * u_3]
+d_1[, y := rnorm(.N, mu, sigma) ]
+
+d_fig <- copy(d_1)
+
+ggplot(d_fig, aes(
+  x = x, y = y)) +
+  geom_point(size = 0.5) +
+  scale_x_continuous("x", breaks = 0:10) +
+  scale_y_continuous("f(x)") +
+  # scale_color_discrete("") +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+Estimating a regression function based on a piecewise specification is trivial but the lack of smoothness might be a concern in many settings.
+One might therefore want to opt for an approach that has smooth transitions across the range of $x$ rather than the kinks.
+In doing so, we have made an assumption on the qualitative properties of the relationship, i.e. that the $f$ from $y = f(x) + \epsilon$ is smooth.
+
+Roughly speaking, splines are piecewise polynomials that are continuously differentiable (i.e smooth) up to a certain degree and connected at a sequence of breakpoints called knots.
+In contrast to global polynomial models, which combine higher-order terms for $x$ (i.e. $x^2$, $x^3$ etc) splines partition $x$ into smaller intervals (as was does with the piecewise regression) and influence the fit locally, rather than globally.
+
+B-splines basis can be computed using an recursive algorithm, which is skipped here as the implementation is provided in several R packages.
+The basis matrix is formed as:
+
+$$
+\begin{align*}
+B = \begin{bmatrix}
+  B_1(x_1) & B_2(x_1) & \dots & B_q(x_1) \\
+  B_1(x_2) & B_2(x_2) & \dots & B_q(x_2) \\
+  \vdots   & \vdots   & \dots & \vdots \\
+  B_1(x_n) & B_2(x_n) & \dots & B_q(x_n) \\
+a & b & c
+\end{bmatrix}
+\end{align*}
+$$
+
+and then the mean of the fitted line is computed $\mu = B \gamma$ (although other terms might be entered independently of the bais).
+
+As an example, we might adopt a B-spline as shown in @fig-basis-2 with four internal knots.
+
+```{r, eval = T}
+#| echo: true
+#| label: fig-basis-2
+#| code-fold: true
+#| code-summary: B-spline basis functions
+#| fig-cap: 'Basis functions - B-spline'
+#| fig.height: 4.5
+#| fig.width: 5
+#| fig-pos: H
+
+x <- seq(0, 10, len = 200)
+
+# Breakpoints
+knots <- seq(1, 9, by = 2)
+
+# Construct basis functions
+d_B_ref <- data.table(x = x, bSpline(x, knots = knots, intercept = F))
+names(d_B_ref) <- c("x", paste0("g_", 1:(ncol(d_B_ref)-1)))
+
+d_fig <- melt(d_B_ref, id.vars = "x")
+
+ggplot(d_fig, aes(
+  x = x, y = value, group = variable, col = variable)) +
+  geom_line() +
+  geom_vline(
+    data = data.table(k = knots),
+    aes(xintercept = k), lty = 2, lwd = 0.3
+  ) +
+  scale_x_continuous("x", breaks = 0:10) +
+  scale_y_continuous("f(x)") +
+  scale_color_discrete("") +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+The simulated data generated earlier can be used to form a B-spline basis matrix from the $x$ values.
+The result can then be passed into a linear regression as the design matrix to obtain estimates for $\gamma$.
+
+If we choose $K=$ `r length(knots)` knots and with functions of degree 3, we end up with `r length(knots) + 3` columns in the basis matrix (assuming the intercept was dropped from the basis and included independently in the model, as is done by default when using `lm`). 
+
+To predict the values for the fitted curve, we use the reference basis matrix that was created using sequential values of $x$ over a range of interest and then run `predict`, see @fig-fit-1 (A).
+
+The number or placement of knots clearly has an impact on the nature of the fit and the amount of curvature that can be represented.
+In the toy example, we know the true data generation process and thus can see that the spline has overfit the data.
+If the number of knots is increased to 50, overfitting is further exacerbated as shown in @fig-fit-1 (B).
+However, the extent the wiggliness depends not only on the number of columns in the basis matrix, but also the parameter values.
+Specifically, when the $\gamma$ parameters are highly erratic, there will be more movement in the fitted curves.
+
+The main idea of P-splines (penalised B-splines) is to take a large basis matrix and then apply a penalty to some measure of roughness.
+For the penalty, differences (first or second) in neighbouring values of the parameters can be considered from which roughness can be computed as the sum of squares.
+In traditional least squares, the roughness is entered into the objective function, i.e.
+
+$$
+\begin{align*}
+O = (y - B \gamma)^\prime W (y - B \gamma) + \lambda || D \alpha ||^2
+\end{align*}
+$$
+
+where $\lambda$ is a derived measure of roughness, $D$ is a matrix difference operator and $W$ corresponds to a set of regression weights.
+
+```{r}
+#| echo: true
+#| label: spline-5-knots
+#| code-fold: true
+#| code-summary: Model based on spline with 5 knots
+
+
+# Construct basis functions except exclude the intercept
+d_B <- data.table(bSpline(d_1$x, knots = knots, intercept = F))
+names(d_B) <- paste0("g_", 1:ncol(d_B))
+
+d_1 <- cbind(d_1, d_B)
+
+# x has now been replaced entirely by the linear combination of basis
+# functions
+
+fmla_1 <- as.formula(paste("y ~ ", paste(names(d_B), collapse = "+")))
+f1 <- lm(fmla_1, data = d_1)
+
+# predict y for the new x (as represented by the reference basis)
+d_B_ref[, y_hat := predict(f1, newdata = d_B_ref)]
+
+# save the plot
+p1 <- ggplot(d_1, aes(x = x, y = y)) +
+  geom_point(size = 0.5) +
+  geom_line(
+    data = d_B_ref, aes(x = x, y = y_hat),
+    col = "red"
+  ) +
+  scale_x_continuous("x", breaks = 0:10) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
+
+```
+
+
+```{r}
+#| echo: true
+#| label: spline-50-knots
+#| code-fold: true
+#| code-summary: Model based on spline with 50 knots
+
+knots <- seq(1, 9, len = 50)
+
+d_2 <- copy(d_1[, .(x, mu, y)])
+
+# Construct basis functions except exclude the intercept
+d_B <- data.table(bSpline(d_2$x, knots = knots, intercept = F))
+names(d_B) <- paste0("g_", 1:ncol(d_B))
+
+d_2 <- cbind(d_2, d_B)
+
+# x has now been replaced entirely by the linear combination of basis
+# functions
+
+fmla_1 <- as.formula(paste("y ~ ", paste(names(d_B), collapse = "+")))
+f1 <- lm(fmla_1, data = d_2)
+
+x <- seq(0, 10, len = 200)
+
+# Recreate reference basis with 50 knots
+d_B_ref <- data.table(x = x, bSpline(x, knots = knots, intercept = F))
+names(d_B_ref) <- c("x", paste0("g_", 1:(ncol(d_B_ref)-1)))
+
+# Predict outcome
+d_B_ref[, y_hat := predict(f1, newdata = d_B_ref)]
+
+# This was just out of interest as to where the values of the coefficients were
+# relative to the where the modes of the basis functions sit on x
+B_modes <- apply(d_B_ref[, .SD, .SDcols = names(d_B_ref) %like% "g_"], 2, which.max)
+# d_B_ref$x[B_modes]
+
+p2 <- ggplot(d_2, aes(x = x, y = y)) +
+  geom_point(size = 0.5) +
+  geom_line(
+    data = d_B_ref, aes(x = x, y = y_hat),
+    col = "red"
+  ) +
+  # geom_point(
+  #   data = data.table(
+  #     x = d_B_ref$x[B_modes], 
+  #     y = coef(f1)[-1]),
+  #   aes(x = x, y = y), pch = 2, size = 2
+  # ) +
+  scale_x_continuous("x", breaks = 0:10) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+
+```{r}
+#| echo: true
+#| label: fig-fit-1
+#| code-fold: true
+#| code-summary: Render plots
+#| fig-cap: 'Simulated data and fitted splines with 5 knots (A) and 50 knots (B)'
+#| fig.height: 4.5
+#| fig.width: 8
+#| fig-pos: H
+
+p1 + p2 +
+  patchwork::plot_annotation(tag_levels = 'A')
+
+```
+
+## Bayesian variations
+
+A Bayesian analogue of the B-spline fit can is shown below and in absence of any penalty, the posterior mean of the fitted curve align closely to those that were obtained from least squares, see @fig-fit-2 and parameter comparison.
+However, the results are sensitive to specification of the priors for the basis matrix parameters.
+
+```{r}
+#| class-output: stan
+#| label: stan-1
+#| echo: false
+
+cat(readLines(paste0(prefix_stan, "/spline-1.stan")), sep = "\n")
+```
+
+```{r, eval = T}
+#| echo: FALSE
+#| label: fit-stan-1
+#| code-fold: true
+#| code-summary: "Initial spline fit in Bayesian framework"
+
+m1 <- cmdstanr::cmdstan_model(paste0(prefix_stan, "/spline-1.stan"))
+
+B <- d_2[, .SD, .SDcols = names(d_2) %like% "g_"]
+B_ref <- d_B_ref[, .SD, .SDcols = names(d_B_ref) %like% "g_"]
+
+ld = list(
+  N = nrow(d_2), 
+  y = d_2$y, 
+  Q = ncol(B),
+  B = B,
+  # used for prediction over domain of x
+  N_ref = nrow(B_ref),
+  B_ref = B_ref,
+  # be care. you need quite flexible priors to be able to 
+  # replicate the frequentist fit
+  prior_g = c(0, 10),
+  prior_only = 0
+)
+
+b1 <- m1$sample(
+  ld, iter_warmup = 1000, iter_sampling = 1000,
+  parallel_chains = 1, chains = 1, refresh = 0, show_exceptions = F,
+  max_treedepth = 10)
+
+d_post <- data.table(b1$draws(variables = c("mu"), format = "matrix"))
+d_post <- melt(d_post, measure.vars = names(d_post))
+
+d_fig <- d_post[, .(mu = mean(value),
+                    q_025 = quantile(value, prob = 0.025),
+                    q_975 = quantile(value, prob = 0.975)), keyby = variable]
+d_fig[, ix := gsub("mu\\[", "", variable)]
+d_fig[, ix := as.integer(gsub("\\]", "", ix))]
+d_fig[, x := d_B_ref$x[ix]]
+
+# generate plot for later
+p3 <- ggplot(d_2, aes(x = x, y = y)) +
+  geom_point(size = 0.5) +
+  geom_line(
+    data = d_fig,
+    aes(x = x, y = mu),
+    lwd = 0.4,
+    col = "red"
+  ) +
+  scale_x_continuous("x", breaks = 0:10) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r}
+#| echo: true
+#| label: param-cmp-1
+#| code-fold: true
+#| results: hold
+#| code-summary: Comparing selection of frequentist and Bayesian model parameters
+
+r_1 <- unname(round(c(
+  b0 = summary(f1)$coef[c("(Intercept)"), 1],
+  s_e = summary(f1)$sigma,
+  g_1 = summary(f1)$coef[c("g_1"), 1],
+  g_2 = summary(f1)$coef[c("g_2"), 1],
+  g_3 = summary(f1)$coef[c("g_3"), 1],
+  g_4 = summary(f1)$coef[c("g_4"), 1]
+), 3))
+  
+r_2 <- b1$summary(variables  = c("b0", "s_e", "g[1]", "g[2]", "g[3]", "g[4]"), "mean")
+
+pandoc.table(cbind(bayes = r_2, frequentist = r_1))
+```
+
+
+```{r}
+#| echo: true
+#| label: fig-fit-2
+#| code-fold: true
+#| code-summary: Render plots
+#| fig-cap: 'Classical (A) vs Bayesian fit (B)'
+#| fig.height: 4.5
+#| fig.width: 8
+#| fig-pos: H
+
+p2 + p3 +
+  patchwork::plot_annotation(tag_levels = 'A')
+
+```
+
+
+## Implementing penalities
+
+In a Bayesian context, a P-spline analogue would aim to replicate essential aspects of the approach to penalisation.
+One way to do achieve this is to induce a dependency over the set of spline parameters through a random walk prior.
+As the P-splines commonly use second differences on the parameters as the input to calculating a roughness measure, from which a derived value is used as a penalty, a second order random walk (RW2) prior is apt.
+Assuming equal spacing in the knots^[This is important caveat and the approach needs to be changed somewhat if equal spacing is not possible.] we can specify a RW2 using a difference representation, which closely maps to a relatively efficient implementation.
+
+RW2 assumes that the second differences on the latent process $\theta_j$ are IID normal:
+
+$$
+\begin{align*}
+\delta_2 \sim \text{Normal}(0, \tau_{\delta_2}) 
+\end{align*}
+$$
+
+While it is possible to work directly with $\theta$ it is usually better to reconstruct the latent process via the differences, so define:
+
++ $\delta_1[k] = \theta_k - \theta_{k-1}$ as the first order differences 
++ $\delta_2[k] = \delta_1[k] - \delta_1[k-1]$ as the first order differences 
+
+the second line expands to 
+
+$$
+\begin{align*}
+\delta_2[k] &= (\theta_k - \theta_{k-1}) - (\theta_{k-1} - \theta_{k-2}) \\
+  &= \theta_k - 2 \theta_{k-1} + \theta_{k-2}
+\end{align*}
+$$
+
+In the implementation, we draw starting values for $\theta_1$, $\delta_1[1]$ (indexing the first element of $\delta_1$ of length $Q-1$) and $\delta_2$ (which has length $Q-2$) from our priors and then we reconstruct the first differences as:
+
+$$
+\begin{align*}
+\delta_1[1] &\sim \text{Normal}(0, \tau_{\delta_1}) \\
+\delta_1[2] &= \delta_1[1] + \delta_2[1] \\
+\delta_1[3] &= \delta_1[2] + \delta_2[2] \\
+&\vdots  \\
+\delta_1[Q-1] &= \delta_1[Q-2] + \delta_2[Q-2] \\
+\end{align*}
+$$
+
+and then reconstruct $\theta$ as:
+
+$$
+\begin{align*}
+\theta[1] &\sim \text{Normal}(0, \sigma_\theta) \\
+\theta[2] &= \theta[1] + \delta_1[1] \\
+\theta[3] &= \theta[2] + \delta_1[2] \\
+& \quad \vdots  \\
+\theta[Q] &= \theta[Q-1] + \delta_1[Q-1] \\
+\end{align*}
+$$
+
+The stan implementation and fitted results are shown below, @fig-fit-3.
+The model takes a quite a while to fit under MCMC, but addresses some of the overfitting issues, even though we continue to fit the model based using a basis matrix setup over 50 knots.
+Accepting the fact that for this data, 50 knots is excessive, the point is that we can effectively reduce the effective dimension of the model via the RW2 prior.
+
+```{r}
+#| class-output: stan
+#| label: stan-2
+#| echo: false
+
+cat(readLines(paste0(prefix_stan, "/spline-3.stan")), sep = "\n")
+```
+
+```{r, eval = T}
+#| echo: FALSE
+#| label: fit-stan-3
+#| code-fold: true
+#| code-summary: "Spline fit under RW2"
+
+m3 <- cmdstanr::cmdstan_model(paste0(prefix_stan, "/spline-3.stan"))
+
+B <- d_2[, .SD, .SDcols = names(d_2) %like% "g_"]
+B_ref <- d_B_ref[, .SD, .SDcols = names(d_B_ref) %like% "g_"]
+
+ld = list(
+  N = nrow(d_2), 
+  y = d_2$y, 
+  Q = ncol(B),
+  B = B,
+  # used for prediction over domain of x
+  N_ref = nrow(B_ref),
+  B_ref = B_ref,
+  prior_only = 0
+)
+
+# have to ramp up the adapt delta and tree depth to ensure adequate sampling
+b3 <- m3$sample(
+  ld, iter_warmup = 1000, iter_sampling = 1000,
+  parallel_chains = 1, chains = 1, refresh = 0, show_exceptions = F,
+  adapt_delta = 0.95,
+  max_treedepth = 15)
+
+# fit_optim <- m3$optimize(data = ld, jacobian = TRUE)
+# b3 <- m3$variational(
+#   ld, 
+#   mode = fit_optim,
+#   draws = 1000)
+
+# b3 <- m3$variational(
+#   ld, 
+#   draws = 1000)
+
+# b3 <- m3$pathfinder(
+#   ld,
+#   init = function() {list(
+#     b0 = c(runif(1, 0, 2)),
+#     s_e = runif(1, 0, 1),
+#     z0 = runif(1, -1, 1),
+#     z1 = runif(1, -1, 1),
+#     delta2 = runif(ld$Q - 2, -1, 1),
+#     s_d = runif(1, 0, 1)
+#     )},
+#   show_exceptions = F,
+#   num_paths=4, single_path_draws=250,
+#   history_size=50, max_lbfgs_iters=100,
+#   refresh = 0, draws = 1000)
+
+d_post <- data.table(b3$draws(variables = c("mu"), format = "matrix"))
+d_post <- melt(d_post, measure.vars = names(d_post))
+
+d_fig <- d_post[, .(mu = mean(value),
+                    q_025 = quantile(value, prob = 0.025),
+                    q_975 = quantile(value, prob = 0.975)), keyby = variable]
+d_fig[, ix := gsub("mu\\[", "", variable)]
+d_fig[, ix := as.integer(gsub("\\]", "", ix))]
+d_fig[, x := d_B_ref$x[ix]]
+
+
+p4 <- ggplot(d_2, aes(x = x, y = y)) +
+  geom_ribbon(
+    data = d_fig, 
+    aes(x = x, y = mu, ymin = q_025, ymax = q_975), 
+    alpha = 0.3, fill = "red") +
+  geom_point(size = 0.5) +
+  geom_line(
+    data = d_fig,
+    aes(x = x, y = mu),
+    lwd = 0.4,
+    col = "red"
+  ) +
+  scale_x_continuous("x", breaks = 0:10) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r}
+#| echo: true
+#| label: fig-fit-3
+#| code-fold: true
+#| code-summary: Render plots
+#| fig-cap: 'Unpenalised (A) vs Penalised (RW2) fit (B)'
+#| fig.height: 4.5
+#| fig.width: 8
+#| fig-pos: H
+
+p3 + p4 +
+  patchwork::plot_annotation(tag_levels = 'A')
+
+```
+
+## Imposing sparsity on deviations
+
+A further restriction might be imposed on the deviations to induce sparsity where parameters as implemented via a mixture of normals.
+
+The first order difference components from the RW2 deviations, used to give the skeleton for the fitted curve, are shown in @fig-fit-5 for the RW2 model and the RW2 with sparsity models.
+While the sparsity is applied to the second order differences, the approach has induced sparsity in the first order differences, whereby low magnitude shifts have been brought closer to zero and their uncertainty reduced.
+
+The approach can help avoid wiggliness in parts of the domain where the relationship is flat, @fig-fit-6.
+
+```{r, eval = T}
+#| echo: FALSE
+#| label: fit-stan-4
+#| code-fold: true
+#| code-summary: "Spline fit under RW2 with spike-slab on deviations"
+
+
+m5 <- cmdstanr::cmdstan_model(paste0(prefix_stan, "/spline-5.stan"))
+
+# have to ramp up the adapt delta and tree depth to ensure adequate sampling
+b5 <- m5$sample(
+  ld, iter_warmup = 1000, iter_sampling = 1000,
+  parallel_chains = 1, chains = 1, refresh = 0, show_exceptions = F,
+  adapt_delta = 0.95,
+  max_treedepth = 15)
+
+# b5 <- m5$pathfinder(
+#   ld,
+#   init = function() {list(
+#     b0 = c(runif(1, 0, 2)),
+#     s_e = runif(1, 0, 1),
+#     z0 = runif(1, -1, 1),
+#     z1 = runif(1, -1, 1),
+#     delta2 = runif(ld$Q - 2, -1, 1),
+#     s_d = runif(1, 0, 1)
+#     )},
+#   show_exceptions = F,
+#   num_paths=4, single_path_draws=250,
+#   history_size=50, max_lbfgs_iters=100,
+#   refresh = 0, draws = 1000)
+
+b5$summary(variable = c("s_spike", "s_slab", "pi"))
+
+d_post <- data.table(b5$draws(variables = c("mu"), format = "matrix"))
+d_post <- melt(d_post, measure.vars = names(d_post))
+
+d_fig <- d_post[, .(mu = mean(value),
+                    q_025 = quantile(value, prob = 0.025),
+                    q_975 = quantile(value, prob = 0.975)), keyby = variable]
+d_fig[, ix := gsub("mu\\[", "", variable)]
+d_fig[, ix := as.integer(gsub("\\]", "", ix))]
+d_fig[, x := d_B_ref$x[ix]]
+
+p5 <- ggplot(d_2, aes(x = x, y = y)) +
+  geom_ribbon(
+    data = d_fig, 
+    aes(x = x, y = mu, ymin = q_025, ymax = q_975), 
+    alpha = 0.3, fill = "red") +
+  geom_point(size = 0.5) +
+  geom_line(
+    data = d_fig,
+    aes(x = x, y = mu),
+    lwd = 0.4,
+    col = "red"
+  ) +
+  scale_x_continuous("x", breaks = 0:10) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+
+
+```{r}
+#| echo: true
+#| label: fig-fit-5
+#| code-fold: true
+#| code-summary: Render plots
+#| fig-cap: 'First differences from penalised (RW2) fit vs RW2 with sparsity'
+#| fig.height: 8
+#| fig.width: 9
+#| fig-pos: H
+
+d_g <- data.table(b3$draws(variable = "delta1", format = "matrix"))
+d_g <- melt(d_g, measure.vars = names(d_g))
+d_fig_1 <- d_g[, .(mu = mean(value),
+                 q_025 = quantile(value, prob = 0.025),
+                 q_975 = quantile(value, prob = 0.975)), 
+             keyby = .(variable)]
+d_fig_1[, x := 1:.N]
+
+d_g <- data.table(b5$draws(variable = "delta1", format = "matrix"))
+d_g <- melt(d_g, measure.vars = names(d_g))
+d_fig_2 <- d_g[, .(mu = mean(value),
+                 q_025 = quantile(value, prob = 0.025),
+                 q_975 = quantile(value, prob = 0.975)), 
+             keyby = .(variable)]
+d_fig_2[, x := 1:.N]
+
+d_fig <- rbind(
+  cbind(model = "RW2", d_fig_1),
+  cbind(model = "RW2 + sparsity", d_fig_2)
+)
+d_fig[, variable := gsub("delta1", "d1", variable)]
+d_fig[, variable := factor(
+  variable, 
+  levels = paste0("d1[", 1:length(unique(d_fig$variable)), "]"))]
+
+ggplot(d_fig, aes(x = model, y = mu, col = model)) +
+  geom_linerange(aes(ymin = q_025, ymax = q_975), 
+                 position = position_dodge2(width = 1), lwd = 0.5) +
+  geom_point(position = position_dodge(width = 1), size = 0.6) +
+  # scale_x_continuous("") +
+  scale_y_continuous("") +
+  scale_colour_discrete("") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()
+        ) +
+  ggh4x::facet_wrap2(~ variable, scales = "free_y", nrow = 8)
+```
+
+
+```{r}
+#| echo: true
+#| label: fig-fit-6
+#| code-fold: true
+#| code-summary: Render plots
+#| fig-cap: 'Penalised (RW2) (A) vs Penalised (RW2) with sparsity (B)'
+#| fig.height: 4.5
+#| fig.width: 8
+#| fig-pos: H
+
+p4 + p5 +
+  patchwork::plot_annotation(tag_levels = 'A')
+
+```
+
+
+## Other perspectives
+
+There are many other approaches to spline-based modelling.
+For example, it is common to convert a spline model into an equivalent mixed model form. This approach imposes a shared distribution on the basis matrix parameters.
+An alternative to the B-spline is a low-rank thin plate spline which uses a radial basis.
+I believe this is the default approach in `brms` and in `mgcv`.
+
