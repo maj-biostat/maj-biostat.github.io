@@ -72,11 +72,12 @@ where
 + $\delta_k$ is the change in the slope at the breakpoint $\tau_{k-1} \text{for segment } k = 2, \dots, K + 1$
 + $\epsilon$ is the error
 
-If we assume $0 < x < 10$ with $K = 2$ breakpoints, one at $x = 3$ and the other at $x = 6$ then we get $K + 1 = 3$ segments, i.e. 
+If we assume $0 < x < 10$ with $K = 3$ breakpoints, at $x = 2$, $x = 4.5$ and $x = 8.5$ then we get $K + 1 = 4$ segments, i.e. 
 
-+ Segment 1: $0 \le x \le 3$ for which the slope is $\beta_1$
-+ Segment 2: $3 < x \le 6$ for which the slope is $\beta_1 + \delta_1$
-+ Segment 4: $x > 6$ for which the slope is $\beta_1 + \delta_1 + \delta_2$
++ Segment 1: $0 \le x \le 2$ for which the slope is $\beta_1$
++ Segment 2: $2 < x \le 4.5$ for which the slope is $\beta_1 + \delta_1$
++ Segment 3: $4.5 < x \le 8.5$ for which the slope is $\beta_1 + \delta_1 + \delta_2$
++ Segment 4: $x > 8.5$ for which the slope is $\beta_1 + \delta_1 + \delta_2 + \delta_3$
 
 This model uses the basis function:
 
@@ -107,8 +108,8 @@ x <- seq(0, 10, len = 100)
 
 # Breakpoints
 tau1 <- 2
-tau2 <- 5
-tau3 <- 8
+tau2 <- 4.5
+tau3 <- 8.5
 
 # Construct basis functions
 x1 <- pmax(0, x - tau1)
@@ -159,11 +160,7 @@ N <- 250
 d_1 <- data.table()
 d_1[, x := sort(runif(N, 0, 10))]
 
-# Breakpoints
-tau1 <- 2
-tau2 <- 4.5
-tau3 <- 8.5
-
+# tau defined above
 # Construct basis for piecewise reg
 d_1[, u_1 := pmax(0, x - tau1)]
 d_1[, u_2 := pmax(0, x - tau2)]
