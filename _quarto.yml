@@ -23,13 +23,14 @@ website:
       - icon: github
         menu:
           - text: Source Code
-            href:  https://code.com
+            href:  https://github.com/maj-biostat/maj-biostat.github.io
   search: 
     location: navbar
     type: overlay
 
 format:
   html:
+    fontsize: 10pt
     theme: cosmo
     css: styles.css
     toc: true

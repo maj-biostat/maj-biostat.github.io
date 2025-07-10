@@ -1,6 +1,8 @@
 ---
 listing:
   contents:
+    - "notebooks/overdispersion-1.qmd"
+    - "notebooks/splines-01.qmd"
     - "notebooks/log-logistic-aft-in-stan.qmd"
     - "notebooks/power-analysis-by-sim.qmd"
     - "notebooks/random-walk-prior.qmd"

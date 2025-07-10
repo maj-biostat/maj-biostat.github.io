@@ -17,8 +17,11 @@ execute:
 ```
 
 in the _quarto.yml file. 
+
 This means never re-render during project render and so if you need the page/document to be re-rendered, you will have to render that document individually.
 Bascially, I want to avoid re-rendering old posts unless I explicitly need to do so.
+
+You need to include the pages explicitly in the `index.qmd` file!!!!
 
 Once all the pages are rendered, commit and push the content (including the docs folder which contains the rendered site).
 

@@ -74,7 +74,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-fc6d358c97f25a8ea829b86655043430.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-f3fb504896f8330e4610c1a7987504ff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-012a41ca190a8ef6d8b7b4ae67bdbb36.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -167,7 +167,7 @@ window.Quarto = {
       <a href="" title="" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label=""><i class="bi bi-github"></i></a>
       <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
           <li>
-            <a class="dropdown-item quarto-navbar-tools-item" href="https://code.com">
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://github.com/maj-biostat/maj-biostat.github.io">
             Source Code
             </a>
           </li>
@@ -373,7 +373,7 @@ Chain 1 finished in 0.2 seconds.</code></pre>
 <pre><code># A tibble: 1 × 10
   variable  mean median     sd    mad    q5   q95  rhat ess_bulk ess_tail
   &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 a        0.369  0.369 0.0198 0.0203 0.337 0.400  1.01     377.     610.</code></pre>
+1 a        0.336  0.337 0.0223 0.0226 0.297 0.370  1.01     339.     504.</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">data.table</span>(f1<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="st">"a"</span>, <span class="at">format =</span> <span class="st">"matrix"</span>))</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(post<span class="sc">$</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

@@ -21,6 +21,7 @@ categories:
 #| code-summary: Setup and dependencies
 
 library(data.table)
+
 library(ggplot2)
 library(ggh4x)
 library(gt)

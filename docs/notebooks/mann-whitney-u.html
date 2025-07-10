@@ -93,7 +93,7 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-fc6d358c97f25a8ea829b86655043430.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-f3fb504896f8330e4610c1a7987504ff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-012a41ca190a8ef6d8b7b4ae67bdbb36.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -186,7 +186,7 @@ window.Quarto = {
       <a href="" title="" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label=""><i class="bi bi-github"></i></a>
       <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
           <li>
-            <a class="dropdown-item quarto-navbar-tools-item" href="https://code.com">
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://github.com/maj-biostat/maj-biostat.github.io">
             Source Code
             </a>
           </li>
@@ -467,11 +467,11 @@ U_2 &amp;= \sum_{i = 1}^{n_1} \sum_{j = 1}^{n_2} \delta_{2}(i,j) \quad \text{whe
 <span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        [,1]    [,2]    [,3]    [,4]    [,5]    [,6]    [,7]    [,8]    [,9]
-[1,] 0.02213 0.02499 0.05718 0.10840 0.12231 0.15182 0.18078 0.14723 0.08593
-[2,] 0.02201 0.02478 0.05712 0.11024 0.12336 0.15173 0.18056 0.14748 0.08361
+[1,] 0.02317 0.02603 0.05830 0.10714 0.12389 0.15201 0.17807 0.14564 0.08490
+[2,] 0.02164 0.02566 0.05772 0.10894 0.12302 0.15311 0.17913 0.14584 0.08378
        [,10]
-[1,] 0.09923
-[2,] 0.09911</code></pre>
+[1,] 0.10085
+[2,] 0.10116</code></pre>
 </div>
 </div>
 <p>For small <span class="math inline">\(n\)</span> we can approximate a discrete version of the posterior for <span class="math inline">\(\Omega_e\)</span> using the above and assuming a uniform prior. In brief, the procedure is as follows:</p>
@@ -543,7 +543,7 @@ Pr(\Omega_k | U_e) = \frac{Pr(U_e | \Omega_k) Pr(\Omega_k)}{\sum_{k\in K} Pr(U_e
 <span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a><span class="co"># compute posterior</span></span>
 <span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>d_res[, pr_omega_u_e <span class="sc">:</span><span class="er">=</span> (pr_u_e <span class="sc">*</span> pr_omega)<span class="sc">/</span> <span class="fu">sum</span>(d_res<span class="sc">$</span>pr_omega <span class="sc">*</span> d_res<span class="sc">$</span>pr_u_e)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>From the results of the simulation, the posterior can be visualised and quantities such as <span class="math inline">\(Pr(\Omega &gt; 0.5)\)</span> can be computed as simple summaries. For example, <span class="math inline">\(Pr(\Omega &gt; 0.5)\)</span> = 0.7649052.</p>
+<p>From the results of the simulation, the posterior can be visualised and quantities such as <span class="math inline">\(Pr(\Omega &gt; 0.5)\)</span> can be computed as simple summaries. For example, <span class="math inline">\(Pr(\Omega &gt; 0.5)\)</span> = 0.7650373.</p>
 <div class="cell page-columns page-full">
 <div class="sourceCode cell-code" id="cb15" data-cap-location="margin"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(d_res, <span class="fu">aes</span>(<span class="at">x =</span> omega_k, pr_omega_u_e)) <span class="sc">+</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
