@@ -236,5 +236,19 @@
     "title": "Splines 1",
     "section": "Footnotes",
     "text": "Footnotes\n\n\nThis is important caveat and the approach needs to be changed somewhat if equal spacing is not possible.↩︎"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Biostatistician working mostly in the area of Bayesian adaptive clinical trials using R and stan. The site contains various posts/reminders on topics that are relevant to my day-to-day work."
+  },
+  {
+    "objectID": "about.html#repository-status",
+    "href": "about.html#repository-status",
+    "title": "About",
+    "section": "Repository status",
+    "text": "Repository status\n\nlibrary(git2r)\nrepo &lt;- git2r::repository(path = \".\")\nsummary(repo)\n\nLocal:    main /Users/mark/Documents/project/website/src/maj-biostat.github.io\nRemote:   main @ origin (https://github.com/maj-biostat/maj-biostat.github.io)\nHead:     [1033bf2] 2025-07-10: Update site\n\nBranches:         1\nTags:             0\nCommits:         82\nContributors:     2\nStashes:          0\nIgnored files:    3\nUntracked files: 42\nUnstaged files:   0\nStaged files:     0\n\nLatest commits:\n[1033bf2] 2025-07-10: Update site\n[fcfc78d] 2025-07-10: Fix breakpoint\n[875f45e] 2025-07-10: Update site (agains)\n[5a6df73] 2025-07-10: Update site\n[61c0924] 2025-07-10: Update site"
   }
 ]

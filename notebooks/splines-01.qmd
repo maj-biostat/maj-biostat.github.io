@@ -669,7 +669,17 @@ A further restriction might be imposed on the deviations to induce sparsity wher
 The first order difference components from the RW2 deviations, used to give the skeleton for the fitted curve, are shown in @fig-fit-5 for the RW2 model and the RW2 with sparsity models.
 While the sparsity is applied to the second order differences, the approach has induced sparsity in the first order differences, whereby low magnitude shifts have been brought closer to zero and their uncertainty reduced.
 
-The approach can help avoid wiggliness in parts of the domain where the relationship is flat, @fig-fit-6.
+The approach is shown in the implementation below and can help avoid wiggliness in parts of the domain where the relationship is flat, @fig-fit-6.
+
+
+```{r}
+#| class-output: stan
+#| label: stan-3
+#| echo: false
+
+cat(readLines(paste0(prefix_stan, "/spline-5.stan")), sep = "\n")
+```
+
 
 ```{r, eval = T}
 #| echo: FALSE
