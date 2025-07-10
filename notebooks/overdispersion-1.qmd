@@ -1,0 +1,266 @@
+---
+title: "Overdispersion 1"
+subtitle: "Poisson model alternative for counts with excess variance"
+author: "maj"
+date: "2025-07-09"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+embed-resources: true
+categories:
+  - bayes
+  - stan
+  - counts
+  - glm
+---
+
+```{r}
+#| echo: true
+#| label: load-libs
+#| code-fold: true
+#| code-summary: Setup and dependencies
+
+library(data.table)
+library(ggplot2)
+library(ggh4x)
+library(gt)
+suppressPackageStartupMessages(library(cmdstanr))
+suppressPackageStartupMessages(library(brms))
+suppressPackageStartupMessages(library(mgcv))
+
+# devtools::install_github("thomasp85/patchwork")
+library(patchwork)
+
+
+
+toks <- unlist(tstrsplit(getwd(), "/")) 
+if(toks[length(toks)] == "maj-biostat.github.io"){
+  prefix_stan <- "./stan"
+} else {
+  prefix_stan <- "../stan"
+}
+```
+
+## Introduction
+
+For Poisson, if $y$ is the counts, we have probability density 
+
+$$
+\begin{align*}
+f(y) = \frac{\mu^y \exp(-\mu)}{y!}
+\end{align*}
+$$
+
+and $\mu$ is the expected number of occurrences, which also equals the variance.
+Sometimes, you think about $\mu$ as a rate, e.g. average number of car crashes per 1000 population, per 1000 licensed drivers, per 10000 km travelled etc.
+In the latter view, rate is in terms of an exposure.
+
+If $y_i$ denote the number of events over exposure $n_i$ for the $i^\text{th}$ covariate pattern, the expected value is
+
+$$
+\begin{align*}
+E[y_i] = \mu_i = n_i \lambda_i
+\end{align*}
+$$
+
+Explanatory variables are usually modelled via
+
+$$
+\begin{align*}
+\lambda_i = \exp(X \beta)
+\end{align*}
+$$
+
+and so the GLM is 
+
+$$
+\begin{align*}
+y_i &\sim \text{Pois}(\mu_i) \\
+\mu_i &= n_i \exp(X \beta)
+\end{align*}
+$$
+
+the natural link is $\log$
+
+$$
+\begin{align*}
+\log(\mu_i) &= \log(n_i) + X \beta
+\end{align*}
+$$
+
+The inclusion of $\log(n_i)$ is the offset, a known constant whereas the $X$ and $\beta$ represent the usual covariate pattern and parameters.
+
+When over-dispersion is present (can indicate something is missing from the linear predictor or independence between observations is questionable) we can switch to a Negative binomial distribution for the likelihood.
+This has a number of parameterisations, one of which uses the mean directly then controls the overdispersion relative to the square of the mean.
+
+$$
+\begin{align*}
+y_i &\sim \text{NegBin}(\mu_i, \phi)
+\end{align*}
+$$
+
+with variance 
+
+$$
+\begin{align*}
+\text{Var}(y_i) = \mu + \frac{\mu^2}{\phi}
+\end{align*}
+$$
+
+i.e. $\frac{\mu^2}{\phi}$ is the additional variance over that for the Poisson.
+
+I believe this is actually the poisson gamma mixture but it is worth noting that there are other options for incorporating the excess variance. 
+Some of those I have come across include a poisson-lognormal ([https://www.sciencedirect.com/science/article/pii/S2001037025000856](https://www.sciencedirect.com/science/article/pii/S2001037025000856) and [https://solomonkurz.netlify.app/blog/2021-07-12-got-overdispersion-try-observation-level-random-effects-with-the-poisson-lognormal-mixture/](https://solomonkurz.netlify.app/blog/2021-07-12-got-overdispersion-try-observation-level-random-effects-with-the-poisson-lognormal-mixture/)) and additive random effects ([https://pmc.ncbi.nlm.nih.gov/articles/PMC4194460/](https://pmc.ncbi.nlm.nih.gov/articles/PMC4194460/)).
+
+## Overdispersed data
+
+Simulate overdispersed counts associated with 3 vaccine groups and where counts are represented per 35k but our interest is per million.
+
+```{r}
+#| echo: true
+#| label: simulate-data
+#| code-fold: true
+#| code-summary: Simulate overdispersed counts
+
+
+# we have 20 observations per vax, each having a count and a somewhat distinct 
+# covariate pattern (which I am ignoring for now)
+n_per_group <- 50
+cells_per_well <- 35000
+
+# arbitrary values
+true_rates <- c(vaxA = 5, vaxB = 10, vaxC = 15) / cells_per_well  
+# overdispersion (smaller => more dispersion)
+phi <- 2  
+
+# Simulate data
+d_sim <- rbindlist(lapply(names(true_rates), function(vaccine) {
+  mu <- true_rates[vaccine] * cells_per_well
+  data.table(
+    vaccine = vaccine,
+    response = rnbinom(n_per_group, mu = mu, size = phi),
+    # technically this could be varying for each obs
+    cells = cells_per_well
+  )
+}))
+d_sim[, group := as.integer(factor(vaccine))]
+d_sim[, log_cells := log(cells)]
+
+head(d_sim)
+
+```
+
+## Stan model implementation
+
+```{r}
+#| echo: true
+#| class-output: stan
+#| code-fold: true
+
+cat(readLines(paste0(prefix_stan, "/negbin-1.stan")), sep = "\n")
+```
+
+Fit with a stan model, compute the expected values per million in the generated quantities block.
+The reference values are `r paste0(round(1e6*true_rates), collapse = ", ")` for groups A, B and C.
+
+```{r}
+#| echo: true
+#| label: fit-model
+#| code-fold: true
+#| code-summary: Fit model with stan
+
+
+m1 <- cmdstanr::cmdstan_model(paste0(prefix_stan, "/negbin-1.stan"))
+
+# Prepare Stan data
+ld <- list(
+  N = nrow(d_sim),
+  G = length(unique(d_sim$group)),
+  group = d_sim$group,
+  y = d_sim$response,
+  log_cells = d_sim$log_cells
+)
+
+f1 <- m1$sample(
+  ld, iter_warmup = 1000, iter_sampling = 1000,
+  parallel_chains = 1, chains = 1, refresh = 0, show_exceptions = F,
+  max_treedepth = 10)
+
+# mu is scaled up to per 1 million cells
+f1$summary(variables = c("mu"))
+
+
+
+```
+
+Represent the posterior view of the means (per million cells).
+These are the expected counts, i.e. on average (central tendency) we expect blah from vaccine A, B, C.
+
+```{r}
+#| echo: true
+#| label: fig-posterior
+#| code-fold: true
+#| code-summary: Posterior means
+#| fig-cap: 'Posterior means per million cells by group'
+#| fig.height: 4.5
+#| fig.width: 5
+#| fig-pos: H
+
+d_post <- data.table(f1$draws(variables = c("mu"), format = "matrix"))
+d_post <- melt(d_post, measure.vars = names(d_post))
+
+d_fig_1 <- copy(d_post)
+d_fig_1[, group := gsub("mu\\[", "", variable)]
+d_fig_1[, group := as.factor(gsub("\\]", "", group))]
+
+d_fig_2 <- data.table(
+  group = factor(1:3),
+  tru = true_rates * 1e6
+)
+
+
+ggplot(d_fig_1, aes(x = value, group = group, col = group)) +
+  geom_vline(
+    data = d_fig_2, 
+    aes(xintercept = tru, group = group, col = group),
+    lwd = 0.2
+  ) +
+  geom_density() +
+  theme_bw()
+```
+
+
+```{r}
+#| echo: true
+#| label: fig-pp
+#| code-fold: true
+#| code-summary: Posterior predictive implementation
+#| fig-cap: 'Posterior predictive (counts per million) based on 10 samples of equal size to what we observed (in red) by vaccine group'
+#| fig.height: 9
+#| fig.width: 7
+#| fig-pos: H
+
+
+d_post <- data.table(f1$draws(variables = c("y_rep"), format = "matrix"))
+d_post[, ix := 1:.N]
+d_post <- melt(d_post, id.vars = "ix")
+
+ix_rnd <- sort(sample(1:max(d_post$ix), size = 10, replace = F))
+d_fig_1 <- copy(d_post[ix %in% ix_rnd])
+d_fig_1[, id := gsub("y_rep\\[", "", variable)]
+d_fig_1[, id := as.integer(gsub("\\]", "", id))]
+d_fig_1[, group := d_sim[id, group]]
+
+
+ggplot(d_fig_1, aes(x = value)) +
+  geom_histogram(
+    fill = "white", col = "black", bins = 17
+  ) +
+  geom_histogram(
+    data = d_sim,
+    aes(x = 1e6 * response / cells_per_well),
+    fill = "red", alpha = 0.3, bins = 15, lwd = 0.3
+  ) +
+  theme_bw() +
+  ggh4x::facet_grid2(ix ~ group, scales = "free_x", labeller = label_both)
+```
