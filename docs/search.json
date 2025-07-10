@@ -151,7 +151,7 @@
     "href": "about.html#repository-status",
     "title": "About",
     "section": "Repository status",
-    "text": "Repository status\n\nlibrary(git2r)\nrepo &lt;- git2r::repository(path = \".\")\nsummary(repo)\n\nLocal:    main /Users/mark/Documents/project/website/src/maj-biostat.github.io\nRemote:   main @ origin (https://github.com/maj-biostat/maj-biostat.github.io)\nHead:     [c9023b0] 2025-07-10: Add post on p-spline\n\nBranches:         1\nTags:             0\nCommits:         73\nContributors:     2\nStashes:          0\nIgnored files:    3\nUntracked files: 50\nUnstaged files:  55\nStaged files:     0\n\nLatest commits:\n[c9023b0] 2025-07-10: Add post on p-spline\n[b2c9d30] 2025-07-04: Update about page\n[93a7c89] 2025-07-04: Add draft page ideas, not for rendering yet\n[564aa93] 2025-07-04: Render site and add minor updates\n[6e5a738] 2025-05-16: Update site"
+    "text": "Repository status\n\nlibrary(git2r)\nrepo &lt;- git2r::repository(path = \".\")\nsummary(repo)\n\nLocal:    main /Users/mark/Documents/project/website/src/maj-biostat.github.io\nRemote:   main @ origin (https://github.com/maj-biostat/maj-biostat.github.io)\nHead:     [51d2356] 2025-07-10: Add missing notebook\n\nBranches:         1\nTags:             0\nCommits:         75\nContributors:     2\nStashes:          0\nIgnored files:    3\nUntracked files: 43\nUnstaged files:   0\nStaged files:     0\n\nLatest commits:\n[51d2356] 2025-07-10: Add missing notebook\n[dd44d97] 2025-07-10: Update site, add ref\n[c9023b0] 2025-07-10: Add post on p-spline\n[b2c9d30] 2025-07-04: Update about page\n[93a7c89] 2025-07-04: Add draft page ideas, not for rendering yet"
   },
   {
     "objectID": "notebooks/covid-19-vaccine-efficacy.html",
