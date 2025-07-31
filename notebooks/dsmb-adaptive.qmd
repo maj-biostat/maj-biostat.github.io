@@ -1,7 +1,7 @@
 ---
 title: "Role of DSMB for adaptive trials"
 author: "maj"
-date: "2025-07-05"
+date: "2025-07-30"
 date-modified: last-modified
 bibliography: ../etc/refs.bib
 csl: ../etc/biomed-central.csl
