@@ -2,6 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/notebooks/dsmb-adaptive.html",
+      "/notebooks/ich-adaptive-designs-e20.html",
       "/notebooks/overdispersion-1.html",
       "/notebooks/splines-01.html",
       "/notebooks/log-logistic-aft-in-stan.html",
