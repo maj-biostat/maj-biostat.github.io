@@ -1,0 +1,273 @@
+---
+title: "ICH Adaptive designs for clinical trials E20"
+author: "maj"
+date: "2025-07-05"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+embed-resources: true
+categories:
+  - regulatory
+  - adaptive trials
+  - complex innovative designs 
+---
+
+## Introduction 
+
+Per the [ICH](https://www.ich.org/page/efficacy-guidelines#19-1) blurb 
+
+*The E20 EWG is working on the development of a new E20 Guideline on “Adaptive Clinical Trials” on the design, conduct, analysis, and interpretation of adaptive clinical trials that provides a transparent and harmonized set of principles for the regulatory review of these studies in a global drug development program. These principles should also provide the flexibility to evaluate / discuss innovative approaches to clinical trial design throughout the development process.*
+
+Step 2b of the guideline was approved in June 2025 and step 3 is open for public consultation.
+The focus of the guideline is on the principles that should be applied in planning, conduct, analysis and interpretation.
+The principles are relevant to all phases of development but it does not discuss specific statistical methods.
+
+This set of notes provides a summary of key points, it is not aiming to be a substitute for the guidance; so if you want to know the full scoop, RTFM.
+Some familiarity with adaptive designs is assumed.
+AD are a type of clinical trial that allow for prospectively planned modifications to one or more aspects of the trial based on interim data.
+
+Advantages of ADs include improved flexibility and the ability to guard against uncertain initial assumptions, they can offer some benefit to the participants (ethical) and they can improve efficiency.
+However, these designs pose a number of challenges.
+
+ADs can make maintaining confidentiality difficult and they can be challenging to plan, which can result in higher costs and longer lead times.
+One of the key points made is that excessive design complexity can lead to issues with trial integrity, e.g. interpretation the results.
+The designs are also not suitable when you have fast enrolment because there is no time to evaluate the data and make adaptations before the target sample size is reached.
+Other issues raised include type-i error control and the potential for biased treatment effects.
+For any design, there needs to be a compelling justification, i.e. you don't just do a platform trial or introduce RAR because it seems like it might be a nice idea, you need to propose how the design addresses a need and the approach should be contrasted to alternative designs, including non-adaptive ones.
+
+## Topics
+
+After the preamble, the guideline is made of up four sections
+
+1. Key principles
+2. Types of adaptations
+3. Special topics
+4. Documentation
+
+The key principles sections are essentially "must-haves" in any adaptive trial that ensure the results are reliable and can be interpreted.
+Types of adaptations covers the most common adaptations that are used in ADs.
+Special topics a miscellaneous grab bag of items but includes discussion of simulation.
+Documentation covers a small set of the topics that should be addressed in documenting an AD.
+
+## Key principles
+
+These are critical considerations in any adaptive trial.
+
+### Adequacy within the development program
+
+Trials should build upon evidence moving from exploratory to confirmatory stages.
+In the confirmatory setting, adaptations shoud be limited.
+The key idea is that adaptation should not be used to completely replace the exploratory phase.
+For example, if dose-ranging has not been conducted then dose selection within a confirmatory setting is not well founded.
+
+
+### Adequacy of planning
+
+Predictably, the planning considerations that need to be specified for adaptive trials include:
+
++ number of interim analyses
++ timing of interim analyses
++ types of adaptations 
++ methods to be used for interim analyses
++ rules governing adaptations
++ methods for the primary analysis aligned to the targeted estimand
++ approaches to maintain trial integrity
+
+Unblinded adaptation is raised as a particular risk that needs to be managed and simulations are raised, especially their documentation.
+An interesting point is that the planning stage should involve the IDMC to confirm their understanding and support so that the panel is able to review interim results and make adaptation recommendations.
+A key point is specification of whether rules are to be binding or not.
+Non-binding rules are potentially useful where flexibility is needed to deal with safety issues, but the trial specification needs to be clear about how permissive deviations can be and what leads to them.
+Again, clarity in the specification is emphasised.
+
+### Minimise errors
+
+The section deals with error control, mainly minimising false positive efficacy conclusions within a frequentist framework but also false negatives (related to power).
+The discussion raises both type-i and multiplicity adjustments and refers the reader on to ICH E9 for consideration of when non-frequentist approaches can be used.
+Nothing much further of note.
+
+### Reliability
+
+This section basically considers with bias and variability of the effect estimates.
+
+One of the considerations that is pointed out relates to selecting treatment arms from a multi-arm design on the basis of the largest effects as this can lead to over estimation of the effect.
+Another point is how secondary endpoints may be biased in the presence of adaptation, but there wasn't any detail on this.
+
+### Trial integrity
+
+This section is quite a bit longer than the others.
+The central goal of trial integrity is to ensure that the objectives are met in a reliable, ethical and timely manner.
+
+Allocation concealment and blinding are raised, as is ensuring that summaries of accumalating data are controlled so that expectations and behaviours are not impacted.
+As an example, enrolment rates might be impacted through careless handling of data, especially if effect sizes based on the accruing data are small (and therefore interpreted as no effect).
+Ideally, everyone is blinded to individually treatment assignment and accumulating summary level data.
+If blinding is not possible for everyone then the personnel that have access to accumulating data should at least be independent in the sense that they do not have any role in trial activities.
+
+## Types of adaptation
+
+This section deals with some of the key adaptations that might be encountered.
+
+### Early stopping
+
+The main points that are made in this section are:
+
+1. appropriate control of type-i error
+2. timing analyses so that if stopping occurs, the results would be sufficiently persuasive
+3. logistical considerations (DSMC availability)
+4. ensuring that sufficient data accrues for meaningful secondary and safety outcomes (and subgroups)
+
+These all point to ensuring that interim analyses do not start too early and having solid justification for the stopping rule (e.g. ethics).
+
+With regards to the use of the data, the guidance indicates that two versions of the final analysis should be presented, the first based on the data to the time that the decision was triggered and the second that is based on that data plus any that continued to accrue due to delays between the decision being reached and suspension of enrolment.
+Clearly, this leads to the possibility of contradicting or revised results and these instances need to be assessed and explained in the reporting to ensure that the results are interpretable.
+
+Futility rules are recommended to be non-binding and thus type-i should be controlled in independent of these rule types.
+
+### Sample size adaptation
+
+Sample size adapatation is where the initial sample size calculation is revisited based on the accruing data.
+Many times people think early stopping is sample size adaptation, it isn't.
+The goal with sample size adapatation is to ensure that sufficient power is available to address the trial goals, in light of the uncertainty that is resolved on design parameters. 
+In practice, for researcher led trials, this isn't a very practical adapatation element.
+
+Within this adaptation, trial integrity should be considered such that re-estimation is undertaken blinded to treatment assignment.
+
+### Population selection
+
+Otherwise known as enrichment, conceives an adaptation rule based on treatment effect heterogeneity across population strata.
+For example, if effects are identified to be present in older but not younger cohorts, we might focus subsequent enrolment on the older cohort.
+Care needs to be taken against bias as cohorts are based on treatment effects and that the approach is based on a scientific rationale for the existence of heterogeneity.
+
+This adaptation has implications on the analysis approach, which should shift to be primarily focused on the enriched population, although all of the data should still be used (pooled).
+
+### Treatment selection
+
+Multi-arm trials may involve considerations to adapt based on arm performance with only better arms continuing over the entire study (e.g. as in dose selection).
+In this setting flexibile rules are recommended to allow for the full scope of information to be assessed.
+The guidance indicates that methods to reduce bias should be considered, but is silent on what methods might be used.
+
+### Participant allocation
+
+The section focuses on RAR and covariate adapted allocation.
+The challenges of RAR are discussed, particularly inflation of type-i and the potential for bias in the presence of time trends.
+For example, a RAR design would be more likely to show a false positive if earlier-enrolled participants are both more likely to be assigned to control and to have a poor prognosis (e.g., because of changes in background care or participant characteristics over time) than later-enrolled participants. 
+An additional concern is how sample size might be overly restricted in some arms to the point where inference is challenging.
+
+If RAR is to be used, the specific RAR procedure should be specified and justified which includes accounting for time trends.
+One approach is to restrict RAR to a single or small number of interim analyses.
+
+The logistical and trial integrity considerations are disussed.
+Specifically, allocation updates should be maintained confidentially so that information on treatment effects is not revealed.
+
+Finally, deterministic rules for RAR are strongly discouraged.
+
+## Special topics
+
+### Data monitoring
+
+The IDMC for adaptive designs should have the expertise required to make informed decisions for these kinds of trials.
+They need to have at least one statistician that are experienced in the area of adaptive designs and a charter needs to be produced in order to guide the IDMC (meeting schedule, logistics, confidentiality procedures, process for making recommendations).
+
+Within the trial team, the set of analysts responsible for implementing the interim analyses should be carved out and these should not be members of the monitoring committee.
+Ideally, these analysts would be independent from the sponsor.
+
+When the IDMC makes a recommendation then information may be communicated to the sponsor to allow them to make the final call on whether the trial should be stopped.
+Again, any unblinding should be carefully considered.
+
+### Simulations
+
+This appeared to be the largest section in the document.
+
+What simulations are and their intended goals are discussed along with how much detail (e.g. addressing missingness or not) should be implemented and their merit in comparing adaptive versus fixed designs.
+
+In terms of setting up a simulation, the guidance indicates that the focus and objectives should be thought through up front.
+This includes the selection of a benchmark design and analysis approach that should be a well-understood design.
+
+Options for variations across simulations may look at number and timing of interim analyses, types of adaptations, stopping rules and testing procedures.
+Nuisance parameters are raised as a key consideration.
+
+The operating characteristics to be reported include type-i, expected sample size, trial duration, power, coverage, bias, mean squared error of treatment effect, cumulative stopping probabilities.
+Different summary statistics for each might have merit.
+
+The assumptions for the simulations should be founded ideally on real data (e.g. published sources) rather than opinion.
+
+The implementation details for the simulations need to be described and justified, which includes the data-generating process, model specification number of simulations per scneario sufficient for the desired precision of summary statistics.
+The design, results and conclusions of the simulation study need to be documented.
+Include:
+
+1. Key questions to be addressed
+2. Clinical trial design and analysis options to be evaluated
+3. Choice of operating characteristics to be assessed
+4. Existing knowledge used to inform simulations
+5. Range of parameter configurations used along with justification
+6. Implementation details (DGP, number of trials per simulation)
+7. Software and code used along with detailed instructions on how to recreate simulations
+8. Summary of results, interpretation and conclusions
+9. Example trials
+10. Limitations of the simulation results
+11. Clinical discussion on the extent to which the simulations address key questions 
+
+The guidance strongly emphasises the documentation requirements.
+
+### Bayesian methods
+
+The guidance doesn't include anything surprising under this section.
+Borrowing information is explicitly discussed, specifically, the use of informative priors, the use of external data.
+Priors are still a point of contention and the need for justification is strongly stated.
+Sensitivity analyses are recommended.
+
+Stragely, partial-pooling and the use of hierarchical models isn't mentioned.
+
+### Time to event studies
+
+For time to event studies, the focus of events rather than number of participants is a key consideration.
+As such, adaptive designs based on time to event endpoints might (and probably should) be evaluated with respect to events rather than target sample sizes.
+This flows over into the types of adaptations that might be considered; sample size re-estimation becomes number-of-events re-estimation etc.
+Adaptations should rely on the primary endpoint (not secondary markers which can violate the independence assumption).
+In general, the participants that inform interim analyses should only be those that have reached their endpoint.
+
+### Exploratory trials
+
+The section highlights that exploratory trials can (relative to confirmatory trials) incorporate more adaptations.
+This is specifically geared towards early stage trials.
+
+### Operational aspects
+
+One of the main aspects of this section disussed the need to minimise information transfer so that things don't creep out of the interim results and thereby impact trial integrity.
+Another aspect is the requirement to be clear with participants about the possibility of adaptation, why they might happen and the impacts on them.
+
+Infrastructure requirements is another key point.
+
+## Documentation 
+
+The range of documentation is discussed such that the design can be adequately evaluated.
+
+### Pre-trial documentation
+
+Nothing particularly surprising in this section.
+The documentation needs to incorporate
+
++ rationale (clinical and statistical)
++ proposed adaptations and their specification
++ methods
++ procedures (who will do what)
++ confidentiality considerations
++ simulations
+
+Estimands should be documented in the protocol.
+
+### Marketing applications
+
+There wasn't much in here that is currently relevant to me.
+Basically, it is just about how you justify your results such that regulatory approval can be obtained.
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,130 @@
+---
+title: "Role of DSMB for adaptive trials"
+author: "maj"
+date: "2025-07-05"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+embed-resources: true
+categories:
+  - bayes
+  - adaptive trials
+  - dsmb
+---
+
+## Introduction 
+
+This is a summary from a youtube podcast presented by Scott Berry of Berry Consultants with guest Roger Lewis.
+The full presentation can be found [here](https://www.youtube.com/watch?v=8mkggFzfGYs).
+The summary is my interpretation of the discussion and should not be taken as a complete representation of the discussion that actually occurred.
+
+The role of the DSMB:
+
+*Generally groups of experts that are asked to keep an eye on the trial in order to keep participants from avoidable risk during the period of time that the trial is enrolling, which is also the period of time that the clinical investigators/research team are distanced from the trial data in order to ensure trial integrity.*
+
+The DSMB has three different levels of responsibility:
+
++ prevent avoidable risk to the participants in the trial, including risks that could not been forseen when the trial was being designed
++ provide assurance that the scientific integrity of the trial is maintained while protecting trial participants
++ operationalise the sponsor goals, for example, stopping for futility in full understanding of what the sponsor goals were, e.g. by familiarisation with documentation
+
+For example, in an adaptive trial, there are specific rules in place that must be followed if the trial is to have the operating characteristics that we have claimed it should have.
+
+In a classical trial, the DSMB is mainly monitoring data for safety signals or operational challenges that were not anticipated.
+In an adaptive trial, the role of the DSMB expands to ensure that the trial is conducted in the way that was intended as long as that continues to be ethically and scientifically appropriate.
+It is one thing to understand how a traditional trial is to be run but it is qualitatively more complicated to understand how an adaptive trial is to be conducted.
+
+## Skillset and process
+
+It is absolutely necessary to have people on the DSMB that fully understand how the statistics are supposed to work and how they will work if some of the assumptions that were made in the design process do not play out.
+For example, in some settings, enrolment rates will be important on the design characteristics but in other settings variation from the assumed enrolment rates may not result in significant changes to the operating characteristics.
+
+In terms of process, it is quite reasonable and actually very useful for the DSMB to have open discussions with the design team, the sponsor and regulatory agencies in order to understand the considerations made in the design, how it was developed, how it is supposed to work and how it was evaluated.
+These conversations can happen at any time before the DSMB has seen the unblinded data; after that time, the DSMB can only interact with the investigator team and sponsor through well-established lines of communication that are intended to maintain safety and validity of the participants and trial.
+Clearly, the process requires much more preparation up-front than for monitoring for a traditional trial design.
+
+The bottom line is that you need people that understand the general theory but also the specific application of the design that is being overseen.
+
+## Interactions with the DSMB
+
+During the period of open discussion with the DSMB, it is quite possible that they will be able to provide valuable insights (this might feel like criticism).
+However, if individuals on the DSMB are absolutely against the design, then consideration should be given to whether these people continue to serve on the DSMB.
+
+## DSMB members
+
+Adaptive trials are new and with this carry a number of abstract technical complexities that DSMB members will need to be familiarise themselves with. 
+As a result, in contrast to traditional fixed trials, much more preparation is required so that a DSMB member can make relevant contributions.
+Additionally, this preparation phase occurs before the meetings begin, before any data is seen and before each meeting is much greater than a traditional trial and thus a much greater demand is placed on DSMB members.
+Consequently, but somewhat counter-intuitively, more junior professionals may be more appropriate for DSMB membership as they have more time available to them to do the preparation stage.
+
+## Rules vs guidelines
+
+In group sequential studies, stopping rules often amounted to guidelines and so the DSMB had latitude to override stopping rules.
+However, in the context of contempoary adaptive designs, in most cases, the stopping rules are rules that must be adhered to in order to maintain the operating characteristics of the trials.
+If these rules are to be broken, there must be very explicit reasons for doing so and these must be discussed with the sponsor.
+For example, there may be an unanticipated safety signal that is directly relevant to the rule.
+
+Consider a futility stopping rule and the trial is evaluating treatments from a chronic degenerative disease.
+The first cohort of participants enrolled might be from a group with relatively long standing disease and that have been waiting for the trial to open up.
+This cohort may have systematically different (harder to treat) that people with new diagnosed disease.
+Here, a futility trigger may be appropriately interpreting the data, but we are considering the wrong population and later cohorts may have more favourable prognosis.
+This is a difficult situation to deal with, but is indicative of where a DSMB might face and might reasonably and justifiably be able to question the design rule.
+
+A similar scenario may come up in surgical settings where patients are enrolled globally and there is heterogeneity in how procedures work in the different regions.
+Again, the DSMB might become suspicious that the rule is missing an important consideration present in the data.
+
+## Interactions between DSMB and statistical analysis committee
+
+The statistical analysis committee (aka unblinded analytic group) are the group that perform analyses and present the results based on data provided from the trial data centres.
+The data have usually gone through initial quality control and cleaning but the data are not locked.
+The statistical analysis committee has the responsibility to perform an implement the specified analyses (in good faith effort given the state of the data) to evaluate and drive the decision rules.
+As a consequence of the detailed inspection of the data, the SAC become aware of aspects of the data that are complete, internally consistent, credible and so on, but also what problems exist and what parts of the data are impacted.
+
+As an concrete example, the SAC may be running interim 3 and note that some of the participants that were present in interim 2 have had their treatment assignment changed (or even their outcome).
+This is important information for the DSMB to get a sense of how confident they can be in the data quality, especially in relation to marginal decision triggers.
+
+## Blinding the DSMB
+
+A question often arises as to whether the DSMB should be blinded to treatment assignment.
+
+Fundamentally, the DSMB is tasked with balancing efficacy and safety, but these considerations are nearly never symmetric.
+For example, a DSMB will want to continue a trial when it is looking like a new treatment is helpful, but will not need anywhere near the same level of certainty to make a safety decision.
+As such, all information in the reports should be labelled explicitly with the true treatment assignments (no A vs B, no switching etc, no obfuscation whatsoever).
+For a detailed discussion of this point, see [Masked monitoring in Clinical Trials, NEJM (1998)](https://www.nejm.org/doi/abs/10.1056/NEJM199805073381911).
+
+As a final example, consider a study where the first interim for efficacy is at one-year but a first meeting is run at 6-months for an initial check of the data.
+The question arises whether the DSMB should see efficacy at this point and the answer to this is found in considering the fundamental role of the DSMB - to balance efficacy and safety.
+Given this fundamental role, the DSMB should still be considering the efficacy/safety, even at the initial look at the data and should therefore see both efficacy and safety.
+The level of safety considerations that the DSMB will tolerate is directly related to the amount of benefit that the participants may receive.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,8 @@
 ---
 listing:
   contents:
+    - "notebooks/dsmb-adaptive.qmd"
+    - "notebooks/ich-adaptive-designs-e20.qmd"
     - "notebooks/overdispersion-1.qmd"
     - "notebooks/splines-01.qmd"
     - "notebooks/log-logistic-aft-in-stan.qmd"
