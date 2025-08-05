@@ -1,5 +1,5 @@
 ---
-title: "Addendum on estimands and sensitivity analysis in clinical trials E9(R1)"
+title: "Estimands and sensitivity analysis in clinical trials E9(R1)"
 author: "maj"
 date: "2025-08-04"
 date-modified: last-modified

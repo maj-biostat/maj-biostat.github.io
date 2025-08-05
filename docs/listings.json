@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/notebooks/ich-estimands-e9-r1.html",
       "/notebooks/dsmb-adaptive.html",
       "/notebooks/ich-adaptive-designs-e20.html",
       "/notebooks/overdispersion-1.html",

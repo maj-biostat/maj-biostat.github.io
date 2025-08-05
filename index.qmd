@@ -1,6 +1,7 @@
 ---
 listing:
   contents:
+    - "notebooks/ich-estimands-e9-r1.qmd"
     - "notebooks/dsmb-adaptive.qmd"
     - "notebooks/ich-adaptive-designs-e20.qmd"
     - "notebooks/overdispersion-1.qmd"
