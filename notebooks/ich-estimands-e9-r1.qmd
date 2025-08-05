@@ -1,0 +1,200 @@
+---
+title: "Addendum on estimands and sensitivity analysis in clinical trials E9(R1)"
+author: "maj"
+date: "2025-08-04"
+date-modified: last-modified
+bibliography: ../etc/refs.bib
+csl: ../etc/biomed-central.csl
+embed-resources: true
+categories:
+  - regulatory
+  - estimands
+---
+
+
+```{r}
+#| code-fold: true
+
+library(data.table)
+library(ggplot2)
+library(gt)
+options(scipen=999)
+```
+
+## Introduction 
+
+The [ICH](https://ich.org/page/efficacy-guidelines) efficacy guidelines deal with the design, conduct, safety and reporting of clinical trials.
+E9 is about the statistical methdology applied to (later phase) clinical trials for marketing applications.
+E9 (R1) is an addendum to E9 that introduces the estimand franework with a focus on the statistical priniciples related to estimands and sensitivity analyses.
+
+There are six sections in the addendum:
+
++ Purpose and scope
++ Framework introduction
++ Estimand definitions
++ Impacts of framework on design and conduct
++ Impact on analyses
++ Documentation
+
+## Purpose
+
+The adendum is about achieving greater clarity about what treatment effects imply.
+To do so the estimands are introduced, which are just a precise description reflecting the clinical question posed by the trial.
+At a fundamental level, estimands assume a causal inference perspective:
+
+*"An estimand ... summarises at a population level what the outcomes would be in the same patients under different treatment conditions being compared."*
+*(ICH E9(R1) training materials.*
+
+While this is clearly drawing on concepts from the potential outcomes framework, the guidance never mentions this term explicitly.
+
+The stated purpose of the guidance is to address (1) the limitations of ITT with respect to its utility in decision making, (2) distinguishing missingness from intercurrent events (post randomisation events such as discontinuation of treatment, use of rescue medication, death etc) considerations especially when ICE impact the interpretaion of later measures (3) which analysis set should be referenced and how per protocol can be addressed and (4) the use of sensitivity analyses.
+
+The adendum (i.e. the use of the estimand framework) is relevant irrespective of whether the study is an RCT and whatever data type is considered.
+
+## Framework introduction
+
+The maintains a waterfall (linear/sequential) perspective on the development of clinical trials.
+Specifically, objectives should be translated into clinical questions, which would then be used to define estimands.
+
+Only once the estimands have been formulated can a method of estimation be chosen and then sensitivity analyses (targeting the same estimand) are used to explore how robust the inference is.
+
+The guideline wants the estimands to be the main determinant of the trial design, conduct and anlaysis.
+Doing this the other way around will effectively dictate the estimand from the selected analysis.
+
+## Estimands
+
+The estimand captures a very precise description of the treatment effect that reflects the clinical question.
+
+ICEs are events that happen after treatment and impact the interpretation or the existence of the measurements used to answer the clinical question.
+To fully understand the treatment effect, we need to consider ICEs.
+
+For example, if two participants are assigned to the treatment arm of a trial but one receives additional medicine, then the information on the treatment differs between the two participants.
+Additionally, whether a participant needs to take additional medication and whether or not they can continue taking the assigned treatment might depend on which treatment arm they are exposed to.
+What needs to be decided is whether these events should be considered explicitly when defining the clinical question.
+
+The guidance does not go into much detail for what ICEs it has considered so @tbl-ice-list gives a (somewhat) generic list:
+
+```{r}
+#| label: tbl-ice-list
+#| tbl-cap: 'Examples of possible ICEs'
+#| code-fold: true
+
+d_tbl <- fread("data/intercurrent_events_list.csv")
+d_tbl[, id_type := .GRP, by = type]
+
+# Order the data
+setorder(d_tbl, id_type)
+
+# Blank out repeated 'type' and 'subtype' values for better visual grouping
+d_tbl[, my_lag := shift(type, type = "lag")]
+d_tbl[, type_display := ifelse(my_lag != type | is.na(my_lag), type, "")]
+d_tbl[, my_lag := NULL]
+
+
+d_tbl[, my_lag := shift(subtype, type = "lag")]
+d_tbl[, subtype_display := ifelse(my_lag != subtype | is.na(my_lag), subtype, "")]
+d_tbl[, my_lag := NULL]
+
+d_tbl[, .(type, subtype_display, element)] |>
+  gt(groupname_col = "type") |>
+  gt::text_transform(
+    locations = cells_row_groups(),
+    fn = function(x) {
+      lapply(x, function(x) {
+        gt::md(paste0("**", x, "**"))
+      })
+    }
+  ) |>
+  cols_label(
+    # type = "Type",
+    subtype_display = "Subtype",
+    element = "Description"
+  ) |>
+  cols_width(
+    subtype_display ~ pct(25),
+    element ~ pct(75)
+  ) |>
+  # tab_style(
+  #   style = cell_text(indent = px(20)),
+  #   locations = cells_body(columns = subtype_display)
+  # ) |>
+  fmt_markdown(columns = everything()) |>
+  tab_options(
+    table.font.size = "x-small"
+  )
+```
+
+ICEs can have a range of impacts on the outcome and/or treatment:
+
++ Discontinuation of the assigned treatment or the use of additional or alternative therapy can impact the interpretation of outcome measures and thus treatment effect.
++ Death may lead to the outcome measure being impossible to observe.
+
+Some events will have permanent impacts on the outcome, others may be temporary.
+
+ICEs may also fully (or partially) define principal strata. 
+For example, some participants may never complete any of the treatments that they may be assigned.
+
+The guideline offers several strategies for handling intercurrent events:
+
++ Treatment policy
++ Hypothetical
++ Composite
++ While on treatment
++ Principal stratum
+
+### Treatment policy
+
+Within TP, ICE are considered irrelevant to the treatment effect of interest and thus the ICE becomes part of the treatment regime under comparison.
+In this sense, TP essentially replicates the ITT principle.
+However, TP cannot be implemented for terminal events such as death as the outcome variable will not exist.
+
+### Hypothetical
+
+The hypothetical estimand envisages a situation where the event would not occur.
+However, this estimand might be difficult to implement.
+For example, if discontinuation of medication is the event in question, we might consider what would be the effect of the drug if all participants did adhere.
+One of the issues is that the adherence status of participants on other treatment arms had they been assigned to the drug in question was not observed.
+
+As another example, we might consider the hypothetical estimand of the effect of a new inhaler were rescue medication inhaled.
+In this situation, the approach is implausible as it is unrealistic to implement and ethically problematic.
+
+### Composite
+
+The composite strategy treats the occurrence of an ICE as being informative of the patients outcome.
+Death is the classic example, but discontinuation because of toxicity is also a good example of a form of treatment failure.
+
+### While on treatment
+
+While on treatment is primarily for situations where the outcome variable is measure repeatedly and we are considering the effect of treatment up to the point where the ICE occurs.
+
+### Principal stratum
+
+Under principal stratum we consider the stratum where the ICE either occurs or does not and the clinical question relates to the effects only within the strata.
+For example, we might be interested in the effect of treatment on severity of the infection in the patients that become infected after infection.
+
+The guideline is very clear on the importance of distinguishing principal stratification (based on potential intercurrent events) from subsetting based on actual ICEs because the subset of participants who experience an ICE on the test treatment will likely be different from the subset that experience the same ICE on control.
+A naive perspective will lead to treatment effects being defined by comparing outcomes in subsets that confound the effects of the different treatments with the differences possibly being due to the different participant characteristics rather than any real effect.
+
+### Components of estimands
+
+To define an estimand, the treatment condition, the popoulation (entire trial population, subgroup, principal stratum etc), the endpoint to be obtained for each patient and population summary need to be considered and precisely specified.
+
+The guideline notes the important that when defining the treatment effect of interest, the definition identifies an effect due to treatment and not due to potential confounders such as differences in the duration of observation or participant characteristics.
+
+### Considerations
+
+The main emphasis of the guideline is to specify estimands that are useful to the decision maker under consideration.
+For example, a hypothetical estimand that evaluates what the variable of interest would have been in absence of rescue medication might be important in certain scenarios but might be completely unrealistic in others.
+
+
+More to come...
+
+## Impacts of framework on design and conduct
+
+## Impact on analyses
+
+
+
+## Documentation
+
+
